@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { COOLDOWN_METADATA } from '../constants';
+import { COOLDOWN_METADATA } from '@discord.ts/common';
 
 // ponytail: bounded in-memory map, FIFO evict on overflow, per-key expiry
 const MAX_ENTRIES = 5000;
@@ -42,9 +42,7 @@ export class CooldownGuard implements CanActivate {
 
   private async deny(ix: Record<string, unknown>, text: string): Promise<void> {
     try {
-      const reply = ix['reply'] as
-        | ((msg: unknown) => Promise<unknown>)
-        | undefined;
+      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
       if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
         await (reply as (m: unknown) => Promise<unknown>).call(ix, {
           content: text,

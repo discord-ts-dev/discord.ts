@@ -12,6 +12,10 @@ export interface DiscordModuleOptions {
   prefix?: string | string[];
   /** Shard ids for this process (large bots). Passed to discord.js Client. */
   shards?: number[] | 'auto';
-  /** Total shard count. Passed to discord.js Client. */
+  /** Total shard count. Passed to discord.js Client. Also total for --shards gate. */
   shardCount?: number;
+  /** Entry file each shard boots. Read by --shards gate. Default './src/main.ts'. */
+  shardFile?: string;
+  /** Respawn dead shards. Read by --shards gate. Default true. */
+  respawn?: boolean;
 }

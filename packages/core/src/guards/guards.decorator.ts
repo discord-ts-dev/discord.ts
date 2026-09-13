@@ -1,6 +1,6 @@
 import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
 import type { PermissionResolvable } from 'discord.js';
-import { COOLDOWN_METADATA, REQUIRED_PERMISSIONS_METADATA } from '../constants';
+import { COOLDOWN_METADATA, REQUIRED_PERMISSIONS_METADATA } from '@discord.ts/common';
 import { CooldownGuard } from './cooldown.guard';
 import { PermissionsGuard } from './permissions.guard';
 

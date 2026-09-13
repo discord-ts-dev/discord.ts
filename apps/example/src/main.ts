@@ -1,11 +1,5 @@
 import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
+import { bootstrapApp } from '@discord.ts/core';
 import { AppModule } from './app.module';
 
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.createApplicationContext(AppModule);
-  app.enableShutdownHooks();
-  await app.init();
-}
-
-void bootstrap();
+void bootstrapApp(AppModule);

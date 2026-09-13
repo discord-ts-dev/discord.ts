@@ -1,0 +1,22 @@
+name: Autofix
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  autofix:
+    if: github.event.issue.pull_request && github.event.comment.body == '/autofix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+      - uses: ./.github/actions/setup
+      - run: bunx oxlint . --fix
+      - run: bunx oxfmt --write apps packages scripts
+      - name: Commit and push
+        run: bash scripts/github/commit-autofix.sh

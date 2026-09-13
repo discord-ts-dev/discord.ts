@@ -9,6 +9,10 @@
       "dependsOn": ["^build"]
     },
     "lint": {},
+    "format": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

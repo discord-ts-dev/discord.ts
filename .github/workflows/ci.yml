@@ -1,15 +1,54 @@
-name: ci
+name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  lint:
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run lint
+
+  typecheck:
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run typecheck
+
+  format:
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run format:check
+
+  test:
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run test
+
+  scripts:
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run scripts:check
+
   build:
+    needs: [lint, typecheck, format, test]
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run build
+      timeout: 15
+
+  changeset-status:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: bun run build
-      - run: bun run typecheck
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Changeset status
+        run: bash scripts/github/check-changeset.sh "origin/${{ github.base_ref }}"

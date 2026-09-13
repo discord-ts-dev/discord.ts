@@ -1,0 +1,27 @@
+{
+  "name": "@discord.ts/ux",
+  "version": "0.1.0",
+  "description": "discord.ts message UX helpers: confirm dialogs, pagers",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint .",
+    "format": "oxfmt --write src",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "discord.js": "^14.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "discord.js": "^14.0.0"
+  }
+}

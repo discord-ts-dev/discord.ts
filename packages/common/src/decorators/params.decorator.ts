@@ -7,7 +7,12 @@ type R = {
 };
 const R = Reflect as unknown as R;
 
-function pushParamMeta(key: string, target: object, method: string | symbol | undefined, index: number) {
+function pushParamMeta(
+  key: string,
+  target: object,
+  method: string | symbol | undefined,
+  index: number,
+) {
   if (method === undefined) return;
   const fn = (target as Record<string | symbol, object>)[method] as object;
   const existing: number[] = R.getMetadata(key, fn) ?? [];

@@ -1,0 +1,21 @@
+name: Task (reusable)
+on:
+  workflow_call:
+    inputs:
+      run:
+        description: Command to run after setup
+        required: true
+        type: string
+      timeout:
+        required: false
+        type: number
+        default: 10
+
+jobs:
+  task:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - run: ${{ inputs.run }}
