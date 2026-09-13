@@ -34,6 +34,24 @@ updates:
       prefix: ci
     open-pull-requests-limit: 5
 
+  # oven/bun image in apps/example/Dockerfile
+  - package-ecosystem: docker
+    directory: /apps/example
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+    labels: [dependencies, automated]
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 5
+
 # NOTE: the packageManager field (bun binary) has no dependabot ecosystem.
 # Bump bun@1.3.14 by hand; run `git grep <old-version>` to catch workflows.
 # No docker entry: no Dockerfile exists.

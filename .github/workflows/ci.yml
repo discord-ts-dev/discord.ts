@@ -12,32 +12,38 @@ concurrency:
 jobs:
   lint:
     uses: ./.github/workflows/_task.yml
+    secrets: inherit
     with:
       run: bun run lint
 
   typecheck:
     uses: ./.github/workflows/_task.yml
+    secrets: inherit
     with:
       run: bun run typecheck
 
   format:
     uses: ./.github/workflows/_task.yml
+    secrets: inherit
     with:
       run: bun run format:check
 
   test:
     uses: ./.github/workflows/_task.yml
+    secrets: inherit
     with:
       run: bun run test
 
   scripts:
     uses: ./.github/workflows/_task.yml
+    secrets: inherit
     with:
       run: bun run scripts:check
 
   build:
     needs: [lint, typecheck, format, test]
     uses: ./.github/workflows/_task.yml
+    secrets: inherit
     with:
       run: bun run build
       timeout: 15

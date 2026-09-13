@@ -9,6 +9,7 @@
     "dev:shard": "discord dev:shard",
     "deploy": "discord deploy",
     "start": "discord start",
+    "start:bun": "discord dev",
     "start:shard": "discord start:shard",
     "lint": "oxlint .",
     "format": "oxfmt --write ."

@@ -10,11 +10,19 @@ on:
         required: false
         type: number
         default: 10
+    secrets:
+      TURBO_TOKEN:
+        required: false
+      TURBO_TEAM:
+        required: false
 
 jobs:
   task:
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeout }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup
