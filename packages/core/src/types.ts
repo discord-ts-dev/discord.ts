@@ -1,0 +1,13 @@
+import type { ClientOptions } from 'discord.js';
+
+export interface DiscordModuleOptions {
+  token: string;
+  clientId: string;
+  intents: ClientOptions['intents'];
+  /** Guild ids for instant dev sync. Empty = global. */
+  development?: string[];
+  /** Skip REST sync on boot (CI / manual deploy). */
+  skipRegistration?: boolean;
+  /** Prefix for text commands. Default '!'. Prefix routing only active if a @PrefixCommand exists. */
+  prefix?: string | string[];
+}

@@ -1,0 +1,21 @@
+# CONTEXT.md — core
+
+Ubiquitous language. Glossary only. No implementation.
+
+## Terms
+
+- **Module**: a NestJS `@Module()` grouping providers, commands, events. Root config via `DiscordModule.forRoot()`.
+- **Command**: a slash invocation `/name`. Declared with `@SlashCommand()`. Method-level.
+- **Subcommand**: a child of a command or group. Declared with `@Subcommand()`. Group made with `createCommandGroupDecorator()`.
+- **Context menu**: right-click action on user or message. Declared with `@ContextMenu()`.
+- **Component**: button or select menu attached to a message. Declared with `@Button()`, `@StringSelect()`, `@UserSelect()`, `@RoleSelect()`, `@ChannelSelect()`, `@MentionableSelect()`. Matched by `customId`.
+- **Modal**: popup form submit. Declared with `@Modal()`. Matched by `customId`.
+- **Autocomplete**: suggestion handler for a slash option. Declared with `@Autocomplete()`.
+- **Listener**: method that runs on a gateway event. Declared with `@OnEvent()` / `@OnceEvent()`. Event is a Discord `Events` value.
+- **Context**: the interaction object for current call. Injected with `@Context()`.
+- **Options**: validated DTO for slash options. Injected with `@Options()`. Fields use `@StringOption()` etc.
+- **Guard**: a `CanActivate` check before a command. Used via stock `@UseGuards()`. Reads interaction via `DiscordExecutionContext`.
+- **Sync**: push of command JSON to Discord REST. Auto on bootstrap unless `skipRegistration`. Target is global or `development` guilds.
+- **Prefix command**: a text invocation `!name args`. Declared with `@PrefixCommand()`. Args injected with `@PrefixArgs()` as `string[]`. Needs `MessageContent` intent.
+- **Deploy**: sync without login. Done via `deployWithModule(AppModule)` or `bun run deploy` in the app.
+- **Validated options**: an `Options` DTO checked on each call. Required fields plus `class-validator` rules plus stock `@UsePipes()`. Fail replies ephemeral and blocks the handler.
