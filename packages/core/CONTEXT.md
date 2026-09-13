@@ -27,4 +27,4 @@ Ubiquitous language. Glossary only. No implementation.
 - **Required permissions**: Discord permissions a caller must hold. Declared with `@RequirePermissions(...)`. Missing replies ephemeral and blocks.
 - **Confirm**: a Yes/No button dialog. `confirm()` returns true on accept, false on cancel or timeout.
 - **Pager**: prev/next embed navigation. `paginate()` handles buttons until timeout.
-- **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `main.ts`, spawned with `runShards()`.
+- **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `bootstrapApp()`, spawned with `runShards()`.
