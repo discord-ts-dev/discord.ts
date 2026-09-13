@@ -7,10 +7,10 @@
     "build": "turbo run build && bun run postinstall",
     "typecheck": "turbo run typecheck",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "turbo run lint && oxlint scripts",
     "format": "turbo run format",
-    "format:check": "oxfmt --check apps packages",
-    "postinstall": "node -e \"try{require('fs').chmodSync('packages/cli/dist/cli.js',0o755)}catch{};require('fs').mkdirSync('apps/example/node_modules/.bin',{recursive:true});try{require('fs').unlinkSync('apps/example/node_modules/.bin/discord')}catch{};require('fs').symlinkSync('../../../../packages/cli/dist/cli.js','apps/example/node_modules/.bin/discord')\""
+    "format:check": "oxfmt --check apps packages scripts",
+    "postinstall": "bash scripts/postinstall.sh"
   },
   "devDependencies": {
     "oxfmt": "^0.67.0",
