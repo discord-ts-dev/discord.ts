@@ -14,4 +14,6 @@ export const PREFIX_COMMAND_METADATA = 'discord:prefix-command';
 export const PARAM_CONTEXT_METADATA = 'discord:param:context';
 export const PARAM_OPTIONS_METADATA = 'discord:param:options';
 export const PARAM_PREFIX_ARGS_METADATA = 'discord:param:prefix-args';
+export const COOLDOWN_METADATA = 'discord:cooldown-seconds';
+export const REQUIRED_PERMISSIONS_METADATA = 'discord:required-permissions';
 export const OPTION_FIELD_METADATA = 'discord:option-field';

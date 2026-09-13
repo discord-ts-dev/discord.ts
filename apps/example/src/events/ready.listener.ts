@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Events } from 'discord.js';
-import { Context, OnEvent } from '@discord.ts/core';
+import { Context, OnEvent } from 'discord.ts';
 import type { Client } from 'discord.js';
 
 @Injectable()

@@ -1,6 +1,10 @@
 {
-  "name": "@discord.ts/core",
+  "name": "discord.ts",
   "version": "0.1.0",
+  "description": "NestJS-style Discord bot framework core: decorators, DI, discovery, sync",
+  "license": "MIT",
+  "keywords": ["discord", "discord.js", "nestjs", "bot", "framework"],
+  "files": ["dist"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

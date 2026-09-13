@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GatewayIntentBits } from 'discord.js';
-import { DiscordModule } from '@discord.ts/core';
+import { DiscordModule } from 'discord.ts';
 import { PingCommand } from './commands/ping.command';
 import { RollCommand } from './commands/roll.command';
 import { EchoPrefixCommand } from './commands/echo-prefix.command';

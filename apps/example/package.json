@@ -7,10 +7,11 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "dev": "bun src/main.ts",
     "deploy": "bun src/deploy.ts",
+    "shards": "bun src/shard-manager.ts",
     "lint": "echo \"no lint yet\""
   },
   "dependencies": {
-    "@discord.ts/core": "workspace:*",
+    "discord.ts": "workspace:*",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "class-transformer": "^0.5.1",

@@ -1,17 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Max, Min } from 'class-validator';
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { Context, IntegerOption, Options, SlashCommand, StringOption } from '@discord.ts/core';
-
-class RollDto {
-  @StringOption({ name: 'sides', description: 'Dice type', required: true, choices: [{ name: 'd6', value: 'd6' }, { name: 'd20', value: 'd20' }] })
-  sides!: string;
-
-  @IntegerOption({ name: 'count', description: 'How many dice', required: false })
-  @Min(1)
-  @Max(10)
-  count?: number;
-}
+import { Context, Options, SlashCommand } from 'discord.ts';
+import { RollDto } from './dto/roll.dto';
 
 @Injectable()
 export class RollCommand {

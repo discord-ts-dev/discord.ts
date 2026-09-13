@@ -19,3 +19,8 @@ Ubiquitous language. Glossary only. No implementation.
 - **Prefix command**: a text invocation `!name args`. Declared with `@PrefixCommand()`. Args injected with `@PrefixArgs()` as `string[]`. Needs `MessageContent` intent.
 - **Deploy**: sync without login. Done via `deployWithModule(AppModule)` or `bun run deploy` in the app.
 - **Validated options**: an `Options` DTO checked on each call. Required fields plus `class-validator` rules plus stock `@UsePipes()`. Fail replies ephemeral and blocks the handler.
+- **Cooldown**: per-user rate limit. Declared with `@Cooldown(seconds)`. Hit replies ephemeral and blocks.
+- **Required permissions**: Discord permissions a caller must hold. Declared with `@RequirePermissions(...)`. Missing replies ephemeral and blocks.
+- **Confirm**: a Yes/No button dialog. `confirm()` returns true on accept, false on cancel or timeout.
+- **Pager**: prev/next embed navigation. `paginate()` handles buttons until timeout.
+- **Sharding**: multi-process gateway split. Set via `shards` / `shardCount` in `forRoot()`; spawn via `runShards()`.
