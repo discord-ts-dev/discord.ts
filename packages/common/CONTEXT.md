@@ -5,6 +5,7 @@ Ubiquitous language. Glossary only. No implementation.
 ## Terms
 
 - **Command**: a slash invocation `/name`. Declared with `@SlashCommand()`. Method-level.
+- **Unified command**: one handler on slash and prefix. Declared with `@Command({ slash, prefix })`. At least one must be true.
 - **Subcommand**: a child of a command or group. Declared with `@Subcommand()`. Group made with `createCommandGroupDecorator()`.
 - **Context menu**: right-click action on user or message. Declared with `@ContextMenu()`.
 - **Component**: button or select menu attached to a message. Declared with `@Button()`, `@StringSelect()`, `@UserSelect()`, `@RoleSelect()`, `@ChannelSelect()`, `@MentionableSelect()`. Matched by `customId`.

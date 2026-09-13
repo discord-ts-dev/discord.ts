@@ -1,3 +1,4 @@
+import type { SlashCommandBuilder } from 'discord.js';
 import {
   OPTION_FIELD_METADATA,
   PARAM_CONTEXT_METADATA,
@@ -9,7 +10,9 @@ import type { Handler } from './handler.types';
 
 // ponytail: pure arg building, no DI. Shared by routing; optionsDto by discovery JSON.
 export function optionsDto(h: Handler): (new () => Record<string, unknown>) | undefined {
-  const idxs: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, h.instance[h.method]) ?? [];
+  const fn = h.instance[h.method] as (...a: never[]) => unknown;
+  if (typeof fn !== 'function') return undefined;
+  const idxs: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, fn) ?? [];
   if (!idxs.length) return undefined;
   const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
   return types[idxs[0]] as new () => Record<string, unknown>;
@@ -25,7 +28,8 @@ export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[
   for (const i of ctxIdx) args[i] = interaction;
   for (const i of optIdx) {
     const Dto = (types[i] ?? Object) as new () => Record<string, unknown>;
-    args[i] = buildDto(Dto, interaction);
+    args[i] =
+      prefixArgs !== undefined ? buildDtoFromArgs(Dto, prefixArgs) : buildDto(Dto, interaction);
   }
   for (const i of argIdx) args[i] = prefixArgs ?? [];
   // No decorators: pass interaction as single arg (lazy default)
@@ -77,4 +81,129 @@ export function buildEventArgs(h: Handler, raw: unknown[]): unknown[] {
   });
   for (const i of ctxIdx) args[i] = raw[0];
   return args;
+}
+
+// ponytail: prefix surface fills DTO positionally, then the same validate pipeline runs.
+export function buildDtoFromArgs(
+  Dto: new () => Record<string, unknown>,
+  args: string[],
+): Record<string, unknown> {
+  const dto = new Dto();
+  const fields: Record<string, OptionFieldMeta> =
+    Reflect.getMetadata(OPTION_FIELD_METADATA, Dto) ?? {};
+  Object.entries(fields).forEach(([key, f], i) => {
+    dto[key] = coerceArg(f, args[i]);
+  });
+  return dto;
+}
+
+function coerceArg(f: OptionFieldMeta, raw: string | undefined): unknown {
+  if (raw === undefined) return undefined;
+  if (f.kind === 'integer') return /^-?\d+$/.test(raw) ? Number.parseInt(raw, 10) : raw;
+  if (f.kind === 'number') {
+    const n = Number(raw);
+    return raw.trim() !== '' && Number.isFinite(n) ? n : raw;
+  }
+  if (f.kind === 'boolean') return raw === 'true' ? true : raw === 'false' ? false : raw;
+  return raw;
+}
+
+type OptionBuilder = Pick<
+  SlashCommandBuilder,
+  | 'addStringOption'
+  | 'addIntegerOption'
+  | 'addNumberOption'
+  | 'addBooleanOption'
+  | 'addUserOption'
+  | 'addChannelOption'
+  | 'addRoleOption'
+  | 'addMentionableOption'
+  | 'addAttachmentOption'
+>;
+
+// ponytail: extras mirror builder setters; limits are checked at boot by the validator.
+export function applyOptions(
+  b: OptionBuilder,
+  dto?: (new () => Record<string, unknown>) | undefined,
+): void {
+  if (!dto) return;
+  const fields: Record<string, OptionFieldMeta> =
+    Reflect.getMetadata(OPTION_FIELD_METADATA, dto) ?? {};
+  for (const f of Object.values(fields)) {
+    const base = (o: {
+      setName(n: string): unknown;
+      setDescription(d: string): unknown;
+      setRequired(r: boolean): unknown;
+    }): void => {
+      o.setName(f.name);
+      o.setDescription(f.description);
+      o.setRequired(!!f.required);
+    };
+    if (f.kind === 'string')
+      b.addStringOption((o) => {
+        base(o);
+        if (f.autocomplete !== undefined) o.setAutocomplete(f.autocomplete);
+        if (f.choices?.length)
+          o.addChoices(...f.choices.map((c) => ({ name: c.name, value: String(c.value) })));
+        if (f.minLength !== undefined) o.setMinLength(f.minLength);
+        if (f.maxLength !== undefined) o.setMaxLength(f.maxLength);
+        return o;
+      });
+    else if (f.kind === 'integer' || f.kind === 'number') {
+      const num = (o: {
+        setAutocomplete(b: boolean): unknown;
+        addChoices(...c: { name: string; value: number }[]): unknown;
+        setMinValue(n: number): unknown;
+        setMaxValue(n: number): unknown;
+      }): void => {
+        if (f.autocomplete !== undefined) o.setAutocomplete(f.autocomplete);
+        if (f.choices?.length)
+          o.addChoices(...f.choices.map((c) => ({ name: c.name, value: Number(c.value) })));
+        if (f.minValue !== undefined) o.setMinValue(f.minValue);
+        if (f.maxValue !== undefined) o.setMaxValue(f.maxValue);
+      };
+      if (f.kind === 'integer')
+        b.addIntegerOption((o) => {
+          base(o);
+          num(o);
+          return o;
+        });
+      else
+        b.addNumberOption((o) => {
+          base(o);
+          num(o);
+          return o;
+        });
+    } else if (f.kind === 'boolean')
+      b.addBooleanOption((o) => {
+        base(o);
+        return o;
+      });
+    else if (f.kind === 'user')
+      b.addUserOption((o) => {
+        base(o);
+        return o;
+      });
+    else if (f.kind === 'channel')
+      b.addChannelOption((o) => {
+        base(o);
+        if (f.channelTypes?.length) o.addChannelTypes(...f.channelTypes);
+        return o;
+      });
+    else if (f.kind === 'role')
+      b.addRoleOption((o) => {
+        base(o);
+        return o;
+      });
+    else if (f.kind === 'mentionable')
+      b.addMentionableOption((o) => {
+        base(o);
+        return o;
+      });
+    else
+      b.addAttachmentOption((o) => {
+        base(o);
+        return o;
+      });
+  }
 }
