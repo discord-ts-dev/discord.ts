@@ -1,0 +1,39 @@
+# Dependabot — org baseline (rules/dependabot.md) + 7-day cooldown.
+version: 2
+updates:
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+    labels: [dependencies, automated]
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        patterns: ['*']
+        update-types: ['minor', 'patch']
+    labels: [dependencies, automated]
+    commit-message:
+      prefix: ci
+    open-pull-requests-limit: 5
+
+# NOTE: the packageManager field (bun binary) has no dependabot ecosystem.
+# Bump bun@1.3.14 by hand; run `git grep <old-version>` to catch workflows.
+# No docker entry: no Dockerfile exists.

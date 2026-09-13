@@ -1,0 +1,36 @@
+name: Triage
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const isPR = !!context.payload.pull_request;
+            const num = context.payload.issue?.number ?? context.payload.pull_request?.number;
+            const labels = ['needs-triage'];
+            if (isPR) {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner, repo: context.repo.repo, pull_number: num, per_page: 100,
+              });
+              const names = files.map((f) => f.filename);
+              if (names.some((n) => n.startsWith('packages/core/'))) labels.push('area:core');
+              if (names.some((n) => n.startsWith('packages/common/'))) labels.push('area:common');
+              if (names.some((n) => n.startsWith('packages/ux/'))) labels.push('area:ux');
+              if (names.some((n) => n.startsWith('packages/cli/'))) labels.push('area:cli');
+              if (names.some((n) => n.startsWith('apps/'))) labels.push('area:example');
+            }
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: num, labels,
+            });

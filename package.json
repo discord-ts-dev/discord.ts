@@ -8,11 +8,15 @@
     "typecheck": "turbo run typecheck",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "turbo run format",
     "format:check": "oxfmt --check apps packages scripts",
+    "release": "changeset publish",
+    "codemod": "bun scripts/codemods/run.ts",
     "postinstall": "bash scripts/postinstall.sh"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.4",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
     "turbo": "^2.5.4",

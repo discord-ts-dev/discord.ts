@@ -12,7 +12,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint .",
-    "format": "oxfmt --write src"
+    "format": "oxfmt --write src",
+    "test": "bun test"
   },
   "dependencies": {
     "discord.js": "^14.0.0"

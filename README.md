@@ -1,5 +1,8 @@
 # discord.ts
 
+![CI](https://github.com/discord-ts-dev/discord.ts/actions/workflows/ci.yml/badge.svg)
+![Release](https://github.com/discord-ts-dev/discord.ts/actions/workflows/release.yml/badge.svg)
+
 NestJS-style Discord bot framework. OOP, DI, lifecycle, decorators on top of `discord.js` v14.
 
 ```ts
@@ -42,3 +45,8 @@ DISCORD_TOKEN=... bun run dev
 ## Docs
 
 Glossary map at `CONTEXT-MAP.md`. Skills config in `AGENTS.md`.
+
+## Release
+
+Changesets on `main` open a Version PR. Merge publishes to npm with provenance.
+Touch `packages/*`? Run `bunx changeset`. Tags like `@discord.ts/core@0.2.0` are publish output.
