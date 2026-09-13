@@ -14,6 +14,8 @@ import {
   Events,
   SlashCommandBuilder,
 } from 'discord.js';
+import chalk from 'chalk';
+import { DiscordLogger } from '../logger';
 import {
   AUTOCOMPLETE_METADATA,
   BUTTON_METADATA,
@@ -78,6 +80,7 @@ export class DiscordDiscoveryService
   private autocompletes: (Handler & { commandName?: string })[] = [];
   private events: (Handler & { event: string; once: boolean })[] = [];
   private prefix: (Handler & { name: string; aliases: string[] })[] = [];
+  private readonly logger = new DiscordLogger('Discovery');
 
   constructor(
     private readonly discovery: DiscoveryService,
@@ -91,7 +94,13 @@ export class DiscordDiscoveryService
 
   onModuleInit(): void {
     this.scan();
+    this.logRoutes();
     this.client.on(Events.InteractionCreate, (i) => void this.route(i));
+    // ponytail: warn/error always, debug only with DISCORD_DEBUG=true
+    this.client.on(Events.Warn, (m) => this.logger.warn(m));
+    this.client.on(Events.Error, (e) => this.logger.error(e));
+    if (process.env.DISCORD_DEBUG === 'true')
+      this.client.on(Events.Debug, (m) => this.logger.debug(m));
     for (const e of this.events) {
       const run = (...args: unknown[]) => void this.invoke(e, args[0], args);
       if (e.once) this.client.once(e.event, run);
@@ -105,6 +114,7 @@ export class DiscordDiscoveryService
   async onApplicationBootstrap(): Promise<void> {
     if (!this.opts.skipRegistration) await this.sync.sync(this.buildJson());
     await this.client.login(this.opts.token);
+    this.logger.ready('Logged in to Discord gateway');
   }
 
   async onApplicationShutdown(): Promise<void> {
@@ -136,6 +146,27 @@ export class DiscordDiscoveryService
       out.push(new ContextMenuCommandBuilder().setName(m.name).setType(m.type).toJSON());
     }
     return out;
+  }
+
+  // ponytail: Nest RoutesResolver style, one line per route plus summary
+  private logRoutes(): void {
+    for (const s of this.slash) {
+      const name = s.sub ? `/${s.top} ${s.sub}` : `/${s.top}`;
+      this.logger.route(
+        `Slash ${chalk.green(name)} -> ${s.instance.constructor.name}.${s.method}`,
+      );
+    }
+    for (const m of this.menus)
+      this.logger.route(`Menu ${chalk.green(m.name)} -> ${m.instance.constructor.name}.${m.method}`);
+    for (const p of this.prefix)
+      this.logger.route(`Prefix ${chalk.green(`!${p.name}`)} -> ${p.instance.constructor.name}.${p.method}`);
+    for (const e of this.events)
+      this.logger.route(
+        `Event ${chalk.yellow(e.event)} -> ${e.instance.constructor.name}.${e.method}`,
+      );
+    this.logger.log(
+      `Discovered ${this.slash.length} slash, ${this.menus.length} menus, ${this.buttons.length} buttons, ${this.selects.length} selects, ${this.modals.length} modals, ${this.events.length} events, ${this.prefix.length} prefix`,
+    );
   }
 
   private scan(): void {
@@ -401,7 +432,7 @@ export class DiscordDiscoveryService
       await (h.instance[h.method] as (...a: unknown[]) => unknown).apply(h.instance, args);
     } catch (err) {
       // ponytail: log, never crash gateway loop
-      console.error(`[discord.ts] handler ${h.method} failed:`, err);
+      this.logger.error(`handler ${h.method} failed:`, err);
     }
   }
 

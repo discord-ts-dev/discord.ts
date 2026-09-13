@@ -3,6 +3,7 @@ import { DiscoveryModule } from '@nestjs/core';
 import { Client } from 'discord.js';
 import { DISCORD_CLIENT, DISCORD_MODULE_OPTIONS } from './constants';
 import type { DiscordModuleOptions } from './types';
+import { loadDiscordConfig } from './config';
 import { DiscordDiscoveryService } from './discovery/discord-discovery.service';
 import { DiscordSyncService } from './discovery/discord-sync.service';
 import { CooldownGuard } from './guards/cooldown.guard';
@@ -24,6 +25,45 @@ export class DiscordModule {
               shards: opts.shards,
               shardCount: opts.shardCount,
             }),
+          inject: [DISCORD_MODULE_OPTIONS],
+        },
+        DiscordSyncService,
+        DiscordDiscoveryService,
+        CooldownGuard,
+        PermissionsGuard,
+      ],
+      exports: [DISCORD_MODULE_OPTIONS, DISCORD_CLIENT],
+      global: true,
+    };
+  }
+
+  // ponytail: file + env + overrides. Inline overrides win over all.
+  static forRootAsync(
+    opts: {
+      cwd?: string;
+      configPath?: string;
+      skipValidation?: boolean;
+      overrides?: Partial<DiscordModuleOptions>;
+    } = {},
+  ): DynamicModule {
+    return {
+      module: DiscordModule,
+      imports: [DiscoveryModule],
+      providers: [
+        {
+          provide: DISCORD_MODULE_OPTIONS,
+          useFactory: async (): Promise<DiscordModuleOptions> => {
+            const file = await loadDiscordConfig(opts);
+            const clean = Object.fromEntries(
+              Object.entries(opts.overrides ?? {}).filter(([, v]) => v !== undefined),
+            );
+            return { ...file, ...clean } as DiscordModuleOptions;
+          },
+        },
+        {
+          provide: DISCORD_CLIENT,
+          useFactory: (o: DiscordModuleOptions) =>
+            new Client({ intents: o.intents, shards: o.shards, shardCount: o.shardCount }),
           inject: [DISCORD_MODULE_OPTIONS],
         },
         DiscordSyncService,

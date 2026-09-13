@@ -1,4 +1,5 @@
 import { ShardingManager } from 'discord.js';
+import { DiscordLogger } from './logger';
 
 export interface ShardingOptions {
   /** Entry file each shard boots, e.g. `./src/main.ts`. Relative to cwd. */
@@ -10,12 +11,13 @@ export interface ShardingOptions {
 
 // ponytail: thin wrapper, discord.js negotiates shard ids over IPC
 export function createShardManager(opts: ShardingOptions): ShardingManager {
+  const logger = new DiscordLogger('Sharding');
   const manager = new ShardingManager(opts.file, {
     token: opts.token,
     totalShards: opts.totalShards ?? 'auto',
     respawn: opts.respawn ?? true,
   });
-  manager.on('shardCreate', (shard) => console.log(`[discord.ts] shard ${shard.id} spawned`));
+  manager.on('shardCreate', (shard) => logger.success(`shard ${shard.id} spawned`));
   return manager;
 }
 

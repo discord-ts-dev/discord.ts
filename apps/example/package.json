@@ -7,7 +7,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "dev": "bun src/main.ts",
     "deploy": "bun src/deploy.ts",
-    "shards": "bun src/shard-manager.ts",
+    "shards": "bun src/main.ts --shards",
     "lint": "echo \"no lint yet\""
   },
   "dependencies": {

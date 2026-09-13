@@ -5,6 +5,10 @@ Ubiquitous language. Glossary only. No implementation.
 ## Terms
 
 - **Module**: a NestJS `@Module()` grouping providers, commands, events. Root config via `DiscordModule.forRoot()`.
+- **Config**: the `discord.config.ts` file at app root. Declared with `defineConfig()`. Loaded via `forRootAsync()`. Env wins over file.
+- **App**: the consumer Nest app that calls `forRootAsync()`. Example lives in `apps/example`.
+- **Standard structure**: soft App convention: `discord.config.ts`, `src/main.ts`, `src/commands/`, `src/events/`. Warn-only, never blocks boot.
+- **Logger**: scoped signale + chalk output via `DiscordLogger(context)`. Startup lists each Slash, Menu, Prefix, Event plus counts, like Nest routes.
 - **Command**: a slash invocation `/name`. Declared with `@SlashCommand()`. Method-level.
 - **Subcommand**: a child of a command or group. Declared with `@Subcommand()`. Group made with `createCommandGroupDecorator()`.
 - **Context menu**: right-click action on user or message. Declared with `@ContextMenu()`.
@@ -23,4 +27,4 @@ Ubiquitous language. Glossary only. No implementation.
 - **Required permissions**: Discord permissions a caller must hold. Declared with `@RequirePermissions(...)`. Missing replies ephemeral and blocks.
 - **Confirm**: a Yes/No button dialog. `confirm()` returns true on accept, false on cancel or timeout.
 - **Pager**: prev/next embed navigation. `paginate()` handles buttons until timeout.
-- **Sharding**: multi-process gateway split. Set via `shards` / `shardCount` in `forRoot()`; spawn via `runShards()`.
+- **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `main.ts`, spawned with `runShards()`.

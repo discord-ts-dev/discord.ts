@@ -2,6 +2,8 @@ import 'reflect-metadata';
 
 export * from './constants';
 export * from './types';
+export * from './config';
+export * from './logger';
 export * from './discord.module';
 export * from './discovery/discord-discovery.service';
 export * from './discovery/discord-sync.service';
