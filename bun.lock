@@ -36,6 +36,7 @@
         "discord": "dist/cli.js",
       },
       "devDependencies": {
+        "@types/node": "^22.0.0",
         "typescript": "^5.6.3",
       },
     },
@@ -69,6 +70,7 @@
         "reflect-metadata": "^0.2.2",
       },
       "devDependencies": {
+        "@types/node": "^22.0.0",
         "typescript": "^5.6.3",
       },
       "peerDependencies": {
