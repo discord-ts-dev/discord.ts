@@ -4,6 +4,7 @@ Quick path: `bun install`, `bun run build`, `bun run test`.
 
 - Branch from `main`. One PR per change. Keep PR titles conventional (`feat:`, `fix:`, `chore:`).
 - Touch `packages/*`? Add a changeset: `bunx changeset`, pick bump, describe it.
+  Dependabot PRs skip this gate; their bumps ship with the next human release.
 - Run before push: `bun run lint`, `bun run typecheck`, `bun run format:check`, `bun run test`, `bun run scripts:check`.
 - Lint autofix available on PRs: comment `/autofix`.
 - Syntax renames go through `scripts/codemods` (dry-run first, see its README).
