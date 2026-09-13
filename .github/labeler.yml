@@ -1,0 +1,28 @@
+# PR path labels. Mirrors scripts/github/triage-label.mjs area mapping.
+area:common:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/common/*
+          - packages/common/**/*
+area:core:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/core/*
+          - packages/core/**/*
+area:ux:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/ux/*
+          - packages/ux/**/*
+area:cli:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/cli/*
+          - packages/cli/**/*
+area:example:
+  - changed-files:
+      - any-glob-to-any-file:
+          - apps/*
+          - apps/**/*
+          - docs/*
+          - docs/**/*

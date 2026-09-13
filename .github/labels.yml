@@ -1,0 +1,43 @@
+# Labels — synced by workflows/label-sync.yml. Triage roles in docs/agents/triage-labels.md.
+- name: needs-triage
+  description: Maintainer needs to evaluate this issue
+  color: fbca04
+- name: needs-info
+  description: Waiting on reporter for more information
+  color: 0075ca
+- name: ready-for-agent
+  description: Fully specified, ready for an AFK agent
+  color: 0e8a16
+- name: ready-for-human
+  description: Requires human implementation
+  color: 7057ff
+- name: wontfix
+  description: Will not be actioned
+  color: ffffff
+- name: area:common
+  description: Foundation (decorators, types, logger)
+  color: 5319e7
+- name: area:core
+  description: Runtime (module, discovery, routing, sync, guards, config)
+  color: 5319e7
+- name: area:ux
+  description: Message helpers (confirm dialogs, pagers)
+  color: 5319e7
+- name: area:cli
+  description: Runner (dev, shard, deploy, start)
+  color: 5319e7
+- name: area:example
+  description: Example bot and docs
+  color: 5319e7
+- name: bug
+  description: Something is not working
+  color: d73a4a
+- name: enhancement
+  description: New feature or request
+  color: a2eeef
+- name: dependencies
+  description: Pull requests that update a dependency file
+  color: 0366d6
+- name: automated
+  description: Pull requests opened by automation
+  color: e4e669

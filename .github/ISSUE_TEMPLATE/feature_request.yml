@@ -1,0 +1,52 @@
+name: Feature request
+description: Suggest a feature or behavior change
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One paragraph — what do you want built?
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What pain or missing capability motivates this? Who hits it?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: How should it work? API sketch, decorator shape, or behavior change.
+      value: |
+        ```ts
+        // ...
+        ```
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Other designs you considered and why not.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - common
+        - core
+        - ux
+        - cli
+        - example
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Links, discord.js references, related issues.
