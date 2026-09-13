@@ -16,10 +16,15 @@ on:
       TURBO_TEAM:
         required: false
 
+permissions:
+  contents: read
+
 jobs:
   task:
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeout }}
+    permissions:
+      contents: read
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
