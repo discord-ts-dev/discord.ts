@@ -5,7 +5,7 @@ import {
   DISCORD_CLIENT,
   DISCORD_MODULE_OPTIONS,
   type DiscordModuleOptions,
-} from '@discord-ts/common';
+} from '@discord.ts/common';
 import { loadDiscordConfig } from './config';
 import { DiscordDiscoveryService } from './discovery/discord-discovery.service';
 import { DiscordRoutingService } from './discovery/discord-routing.service';

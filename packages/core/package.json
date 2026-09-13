@@ -1,5 +1,5 @@
 {
-  "name": "@discord-ts/core",
+  "name": "@discord.ts/core",
   "version": "0.1.0",
   "description": "discord.ts runtime: module, discovery, sync, guards, config, sharding",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "format": "oxfmt --write src"
   },
   "dependencies": {
-    "@discord-ts/common": "workspace:*",
+    "@discord.ts/common": "workspace:*",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "chalk": "^4.1.2",

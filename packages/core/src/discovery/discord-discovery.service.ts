@@ -25,7 +25,7 @@ import {
   SUBCOMMAND_METADATA,
   type DiscordModuleOptions,
   type OptionFieldMeta,
-} from '@discord-ts/common';
+} from '@discord.ts/common';
 import { DiscordSyncService } from './discord-sync.service';
 import { optionsDto } from './discord-args';
 import type {

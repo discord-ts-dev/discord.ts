@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { deployWithModule } from '@discord-ts/core';
+import { deployWithModule } from '@discord.ts/core';
 import { AppModule } from './app.module';
 
 async function main(): Promise<void> {

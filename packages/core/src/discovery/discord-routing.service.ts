@@ -10,7 +10,7 @@ import {
   PARAM_OPTIONS_METADATA,
   type DiscordModuleOptions,
   type OptionFieldMeta,
-} from '@discord-ts/common';
+} from '@discord.ts/common';
 import { DiscordExecutionContext } from '../context/discord-execution-context';
 import { buildArgs, buildEventArgs } from './discord-args';
 import { DiscordDiscoveryService } from './discord-discovery.service';

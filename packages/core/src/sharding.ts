@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import type { Type } from '@nestjs/common';
 import { ShardingManager } from 'discord.js';
-import { DiscordLogger } from '@discord-ts/common';
+import { DiscordLogger } from '@discord.ts/common';
 import { loadShardingOptions } from './config';
 
 export interface ShardingOptions {

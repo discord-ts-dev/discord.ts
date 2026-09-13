@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { COOLDOWN_METADATA } from '@discord-ts/common';
+import { COOLDOWN_METADATA } from '@discord.ts/common';
 
 // ponytail: bounded in-memory map, FIFO evict on overflow, per-key expiry
 const MAX_ENTRIES = 5000;

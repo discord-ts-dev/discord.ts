@@ -1,5 +1,5 @@
 import { Max, Min } from 'class-validator';
-import { IntegerOption, StringOption } from '@discord-ts/common';
+import { IntegerOption, StringOption } from '@discord.ts/common';
 
 export class RollDto {
   @StringOption({

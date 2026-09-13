@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'node:url';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { DiscordLogger, type DiscordModuleOptions } from '@discord-ts/common';
+import { DiscordLogger, type DiscordModuleOptions } from '@discord.ts/common';
 
 // ponytail: file may omit secrets, env fills them. Flat like forRoot opts.
 export type DiscordConfigInput = Partial<DiscordModuleOptions>;

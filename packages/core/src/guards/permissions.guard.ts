@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
-import { REQUIRED_PERMISSIONS_METADATA } from '@discord-ts/common';
+import { REQUIRED_PERMISSIONS_METADATA } from '@discord.ts/common';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {

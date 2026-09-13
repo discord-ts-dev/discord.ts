@@ -14,10 +14,10 @@ export class PingCommand {
 
 ## Packages
 
-- `packages/common` — `@discord-ts/common`: metadata keys, decorators, types, logger
-- `packages/core` — `@discord-ts/core`: module, discovery, routing, sync, guards, config
-- `packages/ux` — `@discord-ts/ux`: confirm dialogs, pagers
-- `packages/cli` — `@discord-ts/cli`: the `discord` runner
+- `packages/common` — `@discord.ts/common`: metadata keys, decorators, types, logger
+- `packages/core` — `@discord.ts/core`: module, discovery, routing, sync, guards, config
+- `packages/ux` — `@discord.ts/ux`: confirm dialogs, pagers
+- `packages/cli` — `@discord.ts/cli`: the `discord` runner
 - `apps/example` — runnable sample bot
 
 ## Quick start
