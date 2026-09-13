@@ -1,8 +1,7 @@
 import { pathToFileURL } from 'node:url';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import type { DiscordModuleOptions } from './types';
-import { DiscordLogger } from './logger';
+import { DiscordLogger, type DiscordModuleOptions } from '@discord-ts/common';
 
 // ponytail: file may omit secrets, env fills them. Flat like forRoot opts.
 export type DiscordConfigInput = Partial<DiscordModuleOptions>;
@@ -64,13 +63,8 @@ export async function loadDiscordConfig(
   const candidates = opts.configPath
     ? [path.resolve(cwd, opts.configPath)]
     : [path.resolve(cwd, 'discord.config.ts')];
-  let file: DiscordConfigInput = {};
-  for (const f of candidates) {
-    if (fs.existsSync(f)) {
-      file = await importFile(f);
-      break;
-    }
-  }
+  const found = candidates.find((f) => fs.existsSync(f));
+  const file: DiscordConfigInput = found ? await importFile(found) : {};
   // ponytail: soft warn, missing folders never block boot
   const structure = checkAppStructure(cwd);
   if (structure.missing.length)

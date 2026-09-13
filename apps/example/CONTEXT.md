@@ -4,7 +4,7 @@ Ubiquitous language. Glossary only. No implementation.
 
 ## Terms
 
-- **Example bot**: the runnable app in `apps/example`. Wires `core` providers into an `AppModule`.
+- **Example bot**: the runnable app in `apps/example`. Wires `common` decorators into the `core` module.
 - **Ping command**: the minimal `@SlashCommand()` sample. Proves discovery and routing.
 - **Roll command**: the validated-`@Options()` sample. Proves DTO parsing and checks.
 - **Echo prefix command**: the `@PrefixCommand()` sample. Proves text routing.

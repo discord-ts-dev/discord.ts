@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
+import type { Type } from '@nestjs/common';
 import { ShardingManager } from 'discord.js';
-import { DiscordLogger } from './logger';
+import { DiscordLogger } from '@discord-ts/common';
 import { loadShardingOptions } from './config';
 
 export interface ShardingOptions {
@@ -30,8 +31,10 @@ export async function runShards(opts: ShardingOptions): Promise<ShardingManager>
 }
 
 // ponytail: gate on argv, not env. Children inherit env, flag keeps them bots.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function bootstrapApp(appModule: any, opts: { argv?: string[] } = {}): Promise<void> {
+export async function bootstrapApp(
+  appModule: Type<unknown>,
+  opts: { argv?: string[] } = {},
+): Promise<void> {
   if ((opts.argv ?? process.argv).includes('--shards')) {
     await runShards(await loadShardingOptions());
     new DiscordLogger('Sharding').success('Shards spawned.');

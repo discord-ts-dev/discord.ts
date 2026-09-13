@@ -1,7 +1,16 @@
 import { OPTION_FIELD_METADATA } from '../constants';
 
 export interface OptionFieldMeta {
-  kind: 'string' | 'integer' | 'number' | 'boolean' | 'user' | 'channel' | 'role' | 'mentionable' | 'attachment';
+  kind:
+    | 'string'
+    | 'integer'
+    | 'number'
+    | 'boolean'
+    | 'user'
+    | 'channel'
+    | 'role'
+    | 'mentionable'
+    | 'attachment';
   name: string;
   description: string;
   required?: boolean;

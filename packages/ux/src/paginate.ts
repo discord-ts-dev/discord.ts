@@ -3,8 +3,9 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
+  type EmbedBuilder,
+  type RepliableInteraction,
 } from 'discord.js';
-import type { EmbedBuilder, RepliableInteraction } from 'discord.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
@@ -42,7 +43,10 @@ export async function paginate(
   const collector = (
     msg as unknown as {
       createMessageComponentCollector(o: unknown): {
-        on(e: string, fn: (c: { customId: string; update(m: unknown): Promise<unknown> }) => void): void;
+        on(
+          e: string,
+          fn: (c: { customId: string; update(m: unknown): Promise<unknown> }) => void,
+        ): void;
       };
     }
   ).createMessageComponentCollector({ componentType: ComponentType.Button, time: timeoutMs });

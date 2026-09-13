@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REST, Routes } from 'discord.js';
-import { DISCORD_MODULE_OPTIONS } from '../constants';
-import type { DiscordModuleOptions } from '../types';
+import { DISCORD_MODULE_OPTIONS, type DiscordModuleOptions } from '@discord-ts/common';
 
 @Injectable()
 export class DiscordSyncService {

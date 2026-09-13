@@ -1,8 +1,16 @@
 import { Max, Min } from 'class-validator';
-import { IntegerOption, StringOption } from 'discord.ts';
+import { IntegerOption, StringOption } from '@discord-ts/common';
 
 export class RollDto {
-  @StringOption({ name: 'sides', description: 'Dice type', required: true, choices: [{ name: 'd6', value: 'd6' }, { name: 'd20', value: 'd20' }] })
+  @StringOption({
+    name: 'sides',
+    description: 'Dice type',
+    required: true,
+    choices: [
+      { name: 'd6', value: 'd6' },
+      { name: 'd20', value: 'd20' },
+    ],
+  })
   sides!: string;
 
   @IntegerOption({ name: 'count', description: 'How many dice', required: false })

@@ -1,0 +1,22 @@
+{
+  "name": "@discord-ts/cli",
+  "version": "0.1.0",
+  "description": "discord.ts command runner: dev, shard, deploy, start",
+  "license": "MIT",
+  "bin": {
+    "discord": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/cli.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint .",
+    "format": "oxfmt --write src"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,10 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
 import { Client } from 'discord.js';
-import { DISCORD_CLIENT, DISCORD_MODULE_OPTIONS } from './constants';
-import type { DiscordModuleOptions } from './types';
+import {
+  DISCORD_CLIENT,
+  DISCORD_MODULE_OPTIONS,
+  type DiscordModuleOptions,
+} from '@discord-ts/common';
 import { loadDiscordConfig } from './config';
 import { DiscordDiscoveryService } from './discovery/discord-discovery.service';
+import { DiscordRoutingService } from './discovery/discord-routing.service';
 import { DiscordSyncService } from './discovery/discord-sync.service';
 import { CooldownGuard } from './guards/cooldown.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
@@ -30,6 +34,7 @@ export class DiscordModule {
         },
         DiscordSyncService,
         DiscordDiscoveryService,
+        DiscordRoutingService,
         CooldownGuard,
         PermissionsGuard,
       ],
@@ -74,6 +79,7 @@ export class DiscordModule {
         },
         DiscordSyncService,
         DiscordDiscoveryService,
+        DiscordRoutingService,
         CooldownGuard,
         PermissionsGuard,
       ],

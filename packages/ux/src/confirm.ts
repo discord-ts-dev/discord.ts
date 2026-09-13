@@ -3,8 +3,8 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
+  type RepliableInteraction,
 } from 'discord.js';
-import type { RepliableInteraction } from 'discord.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
@@ -40,7 +40,10 @@ export async function confirm(
     const collector = (
       msg as unknown as {
         createMessageComponentCollector(o: unknown): {
-          on(e: string, fn: (i: { customId: string; update(m: unknown): Promise<unknown> }) => void): void;
+          on(
+            e: string,
+            fn: (i: { customId: string; update(m: unknown): Promise<unknown> }) => void,
+          ): void;
           stop(): void;
         };
       }

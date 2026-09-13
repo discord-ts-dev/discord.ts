@@ -1,7 +1,7 @@
 {
-  "name": "@discord-ts/core",
+  "name": "@discord-ts/ux",
   "version": "0.1.0",
-  "description": "discord.ts runtime: module, discovery, sync, guards, config, sharding",
+  "description": "discord.ts message UX helpers: confirm dialogs, pagers",
   "license": "MIT",
   "files": [
     "dist"
@@ -11,18 +11,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsc -p tsconfig.json --watch",
     "lint": "oxlint .",
     "format": "oxfmt --write src"
   },
   "dependencies": {
-    "@discord-ts/common": "workspace:*",
-    "@nestjs/common": "^11.0.0",
-    "@nestjs/core": "^11.0.0",
-    "chalk": "^4.1.2",
-    "class-validator": "^0.14.0",
-    "discord.js": "^14.0.0",
-    "reflect-metadata": "^0.2.2"
+    "discord.js": "^14.0.0"
   },
   "devDependencies": {
     "typescript": "^5.6.3"
