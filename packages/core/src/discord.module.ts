@@ -19,11 +19,12 @@ export class DiscordModule {
         { provide: DISCORD_MODULE_OPTIONS, useValue: options },
         {
           provide: DISCORD_CLIENT,
+          // ponytail: omit unset keys, discord.js rejects explicit undefined
           useFactory: (opts: DiscordModuleOptions) =>
             new Client({
               intents: opts.intents,
-              shards: opts.shards,
-              shardCount: opts.shardCount,
+              ...(opts.shards !== undefined ? { shards: opts.shards } : {}),
+              ...(opts.shardCount !== undefined ? { shardCount: opts.shardCount } : {}),
             }),
           inject: [DISCORD_MODULE_OPTIONS],
         },
@@ -62,8 +63,13 @@ export class DiscordModule {
         },
         {
           provide: DISCORD_CLIENT,
+          // ponytail: omit unset keys, discord.js rejects explicit undefined
           useFactory: (o: DiscordModuleOptions) =>
-            new Client({ intents: o.intents, shards: o.shards, shardCount: o.shardCount }),
+            new Client({
+              intents: o.intents,
+              ...(o.shards !== undefined ? { shards: o.shards } : {}),
+              ...(o.shardCount !== undefined ? { shardCount: o.shardCount } : {}),
+            }),
           inject: [DISCORD_MODULE_OPTIONS],
         },
         DiscordSyncService,

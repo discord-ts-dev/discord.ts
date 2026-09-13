@@ -7,6 +7,9 @@
   "files": ["dist"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "discord": "dist/cli.js"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",

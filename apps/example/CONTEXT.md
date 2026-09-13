@@ -9,4 +9,4 @@ Ubiquitous language. Glossary only. No implementation.
 - **Roll command**: the validated-`@Options()` sample. Proves DTO parsing and checks.
 - **Echo prefix command**: the `@PrefixCommand()` sample. Proves text routing.
 - **Deploy run**: `bun run deploy` in this app. Syncs slash JSON without login.
-- **Shard run**: `bun src/main.ts --shards` in this app. Hits the shard gate, spawns one process per shard via `runShards()`.
+- **Shard run**: `bun run dev:shard` in this app. Hits the shard gate, spawns one process per shard via `runShards()`.

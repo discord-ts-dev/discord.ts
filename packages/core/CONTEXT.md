@@ -9,6 +9,7 @@ Ubiquitous language. Glossary only. No implementation.
 - **App**: the consumer Nest app that calls `forRootAsync()`. Example lives in `apps/example`.
 - **Standard structure**: soft App convention: `discord.config.ts`, `src/main.ts`, `src/commands/`, `src/events/`. Warn-only, never blocks boot.
 - **Logger**: scoped signale + chalk output via `DiscordLogger(context)`. Startup lists each Slash, Menu, Prefix, Event plus counts, like Nest routes.
+- **CLI**: the `discord` bin. `dev` / `dev:shard` run TS source via bun, `start` / `start:shard` run `dist` via node, `deploy` syncs without login.
 - **Command**: a slash invocation `/name`. Declared with `@SlashCommand()`. Method-level.
 - **Subcommand**: a child of a command or group. Declared with `@Subcommand()`. Group made with `createCommandGroupDecorator()`.
 - **Context menu**: right-click action on user or message. Declared with `@ContextMenu()`.

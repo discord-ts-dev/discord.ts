@@ -5,9 +5,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "bun src/main.ts",
-    "deploy": "bun src/deploy.ts",
-    "shards": "bun src/main.ts --shards",
+    "dev": "discord dev",
+    "dev:shard": "discord dev:shard",
+    "deploy": "discord deploy",
+    "start": "discord start",
+    "start:shard": "discord start:shard",
     "lint": "echo \"no lint yet\""
   },
   "dependencies": {
