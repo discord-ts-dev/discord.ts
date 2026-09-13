@@ -17,6 +17,21 @@ updates:
       prefix: chore
       include: scope
     open-pull-requests-limit: 5
+    # Pinned majors: each has a toolchain blocker, see reason per entry.
+    # Remove the entry (not the comment) once the blocker clears.
+    ignore:
+      # NestJS 12 ships ESM-only. Under Bun, require('@nestjs/common') fails:
+      # "require() async module ... is unsupported" (PR #4 CI). core@12 also
+      # needs common@12 internals, so the pair must move together or not at all.
+      # Stay on v11 until the ESM story works under Bun CJS output.
+      - dependency-name: '@nestjs/common'
+        versions: ['>= 12']
+      - dependency-name: '@nestjs/core'
+        versions: ['>= 12']
+      # chalk 5+ is ESM-only: TS2307 under our CJS moduleResolution (PR #5 CI).
+      # Only 4 call sites (discovery log colors); revisit on CVE or ESM move.
+      - dependency-name: chalk
+        versions: ['>= 5']
 
   - package-ecosystem: github-actions
     directory: /
