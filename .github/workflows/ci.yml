@@ -54,7 +54,8 @@ jobs:
   changeset-status:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name == 'pull_request'
+    # ponytail: bots can't write changesets; their bumps ship with the next release.
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
     permissions:
       contents: read
     steps:
