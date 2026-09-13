@@ -11,6 +11,7 @@
     "test": "turbo run test",
     "format": "turbo run format",
     "format:check": "oxfmt --check apps packages scripts",
+    "scripts:check": "oxlint scripts/github && oxfmt --check scripts/github && for f in scripts/github/*.sh; do bash -n \"$f\"; done",
     "release": "changeset publish",
     "codemod": "bun scripts/codemods/run.ts",
     "postinstall": "bash scripts/postinstall.sh"

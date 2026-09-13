@@ -30,6 +30,11 @@ jobs:
     with:
       run: bun run test
 
+  scripts:
+    uses: ./.github/workflows/_task.yml
+    with:
+      run: bun run scripts:check
+
   build:
     needs: [lint, typecheck, format, test]
     uses: ./.github/workflows/_task.yml
@@ -46,13 +51,4 @@ jobs:
         with:
           fetch-depth: 0
       - name: Changeset status
-        # ponytail: native git check, no extra action. Fails when packages change with no changeset.
-        run: |
-          base="origin/${{ github.base_ref }}"
-          if git diff --name-only "$base"...HEAD -- packages | grep -q .; then
-            if ! git diff --name-only "$base"...HEAD -- '.changeset/*.md' | grep -qv -e README.md; then
-              echo "::error::packages/* changed but no changeset added. Run 'bunx changeset'."
-              exit 1
-            fi
-          fi
-          echo "changeset check ok"
+        run: bash scripts/github/check-changeset.sh "origin/${{ github.base_ref }}"
