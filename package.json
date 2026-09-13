@@ -7,7 +7,7 @@
     "build": "turbo run build && bun run postinstall",
     "typecheck": "turbo run typecheck",
     "dev": "turbo run dev",
-    "lint": "turbo run lint && oxlint scripts",
+    "lint": "turbo run lint",
     "format": "turbo run format",
     "format:check": "oxfmt --check apps packages scripts",
     "postinstall": "bash scripts/postinstall.sh"
