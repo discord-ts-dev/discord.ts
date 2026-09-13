@@ -2,6 +2,7 @@ export const DISCORD_MODULE_OPTIONS = 'DISCORD_MODULE_OPTIONS';
 export const DISCORD_CLIENT = 'DISCORD_CLIENT';
 
 export const SLASH_COMMAND_METADATA = 'discord:slash-command';
+export const COMMAND_METADATA = 'discord:command';
 export const SUBCOMMAND_METADATA = 'discord:subcommand';
 export const COMMAND_GROUP_METADATA = 'discord:command-group';
 export const CONTEXT_MENU_METADATA = 'discord:context-menu';

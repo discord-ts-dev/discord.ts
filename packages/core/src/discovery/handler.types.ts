@@ -1,4 +1,5 @@
 import type { ApplicationCommandType } from 'discord.js';
+import type { ContextMenuMeta, SlashCommandMeta } from '@discord.ts/common';
 
 export interface Handler {
   instance: Record<string, (...args: never[]) => unknown>;
@@ -9,13 +10,16 @@ export interface SlashEntry extends Handler {
   top: string;
   topDescription: string;
   group?: string;
+  groupDescription?: string;
   sub?: string;
   subDescription?: string;
+  meta: SlashCommandMeta;
 }
 
 export interface MenuEntry extends Handler {
   name: string;
   type: ApplicationCommandType.User | ApplicationCommandType.Message;
+  meta: ContextMenuMeta;
 }
 
 export interface ButtonEntry extends Handler {

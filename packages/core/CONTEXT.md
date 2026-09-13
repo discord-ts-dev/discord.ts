@@ -10,6 +10,7 @@ Ubiquitous language. Glossary only. No implementation.
 - **Standard structure**: soft App convention: `discord.config.ts`, `src/main.ts`, `src/commands/`, `src/events/`. Warn-only, never blocks boot.
 - **Discovery**: scan of providers into handler state plus command JSON plus login. Owned by `DiscordDiscoveryService`.
 - **Routing**: dispatch of interactions to handlers with guards and validation. Owned by `DiscordRoutingService`, reads `Discovery` state.
+- **Validation**: boot check of every definition (names, limits, duplicates). Throws aggregated before any REST call.
 - **Guard**: a `CanActivate` check before a command. Used via stock `@UseGuards()`. Reads interaction via `DiscordExecutionContext`.
 - **Sync**: push of command JSON to Discord REST. Auto on bootstrap unless `skipRegistration`. Target is global or `development` guilds.
 - **Prefix command**: a text invocation `!name args`. Declared with `@PrefixCommand()`. Args injected with `@PrefixArgs()` as `string[]`. Needs `MessageContent` intent.

@@ -12,22 +12,24 @@ import {
   AUTOCOMPLETE_METADATA,
   BUTTON_METADATA,
   COMMAND_GROUP_METADATA,
+  COMMAND_METADATA,
   CONTEXT_MENU_METADATA,
   DISCORD_CLIENT,
   DISCORD_MODULE_OPTIONS,
   DiscordLogger,
   MODAL_METADATA,
   ON_EVENT_METADATA,
-  OPTION_FIELD_METADATA,
   PREFIX_COMMAND_METADATA,
   SELECT_METADATA,
   SLASH_COMMAND_METADATA,
   SUBCOMMAND_METADATA,
+  type CommandMeta,
   type DiscordModuleOptions,
-  type OptionFieldMeta,
+  type SlashCommandMeta,
 } from '@discord.ts/common';
 import { DiscordSyncService } from './discord-sync.service';
-import { optionsDto } from './discord-args';
+import { applyOptions, optionsDto } from './discord-args';
+import { validateDiscoveryState } from './discord-validate';
 import type {
   AutocompleteEntry,
   ButtonEntry,
@@ -67,6 +69,7 @@ export class DiscordDiscoveryService
 
   onModuleInit(): void {
     this.scan();
+    validateDiscoveryState(this);
     this.logRoutes();
   }
 
@@ -82,29 +85,82 @@ export class DiscordDiscoveryService
 
   buildJson(): unknown[] {
     const tops = new Map<string, SlashCommandBuilder>();
-    for (const s of this.slash) {
+    const groups = new Map<string, Map<string, { desc: string; subs: SlashEntry[] }>>();
+    const topOf = (s: SlashEntry): SlashCommandBuilder => {
       let b = tops.get(s.top);
       if (!b) {
         b = new SlashCommandBuilder().setName(s.top).setDescription(s.topDescription);
+        this.applyCommandFlags(b, s.meta);
         tops.set(s.top, b);
       }
-      if (s.sub) {
+      return b;
+    };
+    for (const s of this.slash) {
+      const b = topOf(s);
+      if (!s.sub) {
+        applyOptions(b, optionsDto(s));
+        continue;
+      }
+      if (!s.group) {
         const dto = optionsDto(s);
-        const desc = s.subDescription ?? s.sub;
+        const desc = s.subDescription ?? s.sub ?? '';
         b.addSubcommand((sub) => {
           sub.setName(s.sub as string).setDescription(desc);
-          this.applyOptions(sub as unknown as SlashCommandBuilder, dto);
+          applyOptions(sub as unknown as SlashCommandBuilder, dto);
           return sub;
         });
-      } else {
-        this.applyOptions(b, optionsDto(s));
+        continue;
+      }
+      let byGroup = groups.get(s.top);
+      if (!byGroup) {
+        byGroup = new Map();
+        groups.set(s.top, byGroup);
+      }
+      const g = byGroup.get(s.group) ?? {
+        desc: s.groupDescription ?? s.group,
+        subs: [] as SlashEntry[],
+      };
+      g.subs.push(s);
+      byGroup.set(s.group, g);
+    }
+    for (const [top, byGroup] of groups) {
+      const b = tops.get(top);
+      if (!b) continue;
+      for (const [group, g] of byGroup) {
+        b.addSubcommandGroup((grp) => {
+          grp.setName(group).setDescription(g.desc);
+          for (const s of g.subs) {
+            const dto = optionsDto(s);
+            const desc = s.subDescription ?? s.sub ?? '';
+            grp.addSubcommand((sub) => {
+              sub.setName(s.sub as string).setDescription(desc);
+              applyOptions(sub as unknown as SlashCommandBuilder, dto);
+              return sub;
+            });
+          }
+          return grp;
+        });
       }
     }
     const out: unknown[] = [...tops.values()].map((b) => b.toJSON());
     for (const m of this.menus) {
-      out.push(new ContextMenuCommandBuilder().setName(m.name).setType(m.type).toJSON());
+      const mb = new ContextMenuCommandBuilder().setName(m.name).setType(m.type);
+      if (m.meta.defaultMemberPermissions !== undefined)
+        mb.setDefaultMemberPermissions(m.meta.defaultMemberPermissions);
+      if (m.meta.contexts !== undefined) mb.setContexts(...m.meta.contexts);
+      out.push(mb.toJSON());
     }
     return out;
+  }
+
+  private applyCommandFlags(
+    b: Pick<SlashCommandBuilder, 'setNSFW' | 'setDefaultMemberPermissions' | 'setContexts'>,
+    meta: SlashCommandMeta,
+  ): void {
+    if (meta.nsfw !== undefined) b.setNSFW(meta.nsfw);
+    if (meta.defaultMemberPermissions !== undefined)
+      b.setDefaultMemberPermissions(meta.defaultMemberPermissions);
+    if (meta.contexts !== undefined) b.setContexts(...meta.contexts);
   }
 
   // ponytail: Nest RoutesResolver style, one line per route plus summary
@@ -146,6 +202,26 @@ export class DiscordDiscoveryService
         if (typeof fn !== 'function') continue;
         const base = { instance, method: name } as Handler;
 
+        const cmd = this.reflect<CommandMeta>(COMMAND_METADATA, fn);
+        if (cmd && !cmd.slash && !cmd.prefix)
+          throw new Error(
+            `[discord.ts] @Command ${instance.constructor.name}.${name}: set slash or prefix to true.`,
+          );
+        if (cmd?.slash)
+          this.slash.push({
+            ...base,
+            top: cmd.name,
+            topDescription: cmd.description,
+            meta: {
+              name: cmd.name,
+              description: cmd.description,
+              nsfw: cmd.nsfw,
+              defaultMemberPermissions: cmd.defaultMemberPermissions,
+              contexts: cmd.contexts,
+            },
+          });
+        if (cmd?.prefix) this.prefix.push({ ...base, name: cmd.name, aliases: cmd.aliases ?? [] });
+
         const slash = this.reflect<{ name: string; description: string }>(
           SLASH_COMMAND_METADATA,
           fn,
@@ -153,15 +229,24 @@ export class DiscordDiscoveryService
         const sub = this.reflect<{ name: string; description: string }>(SUBCOMMAND_METADATA, fn);
         const methodGroup = this.reflect<{ name: string }>(COMMAND_GROUP_METADATA, fn);
         if (slash && !sub) {
-          this.slash.push({ ...base, top: slash.name, topDescription: slash.description });
-        } else if (sub && (group ?? methodGroup)) {
           this.slash.push({
             ...base,
-            top: group?.name ?? slash?.name ?? methodGroup?.name ?? sub.name,
-            topDescription: group?.description ?? slash?.description ?? sub.description,
+            top: slash.name,
+            topDescription: slash.description,
+            meta: slash,
+          });
+        } else if (sub && (group ?? methodGroup)) {
+          const top = group?.name ?? slash?.name ?? methodGroup?.name ?? sub.name;
+          const topDescription = group?.description ?? slash?.description ?? sub.description;
+          this.slash.push({
+            ...base,
+            top,
+            topDescription,
             group: group && methodGroup ? methodGroup.name : undefined,
+            groupDescription: group?.description,
             sub: sub.name,
             subDescription: sub.description,
+            meta: slash ?? { name: top, description: topDescription },
           });
         } else if (sub && slash) {
           this.slash.push({
@@ -170,6 +255,7 @@ export class DiscordDiscoveryService
             topDescription: slash.description,
             sub: sub.name,
             subDescription: sub.description,
+            meta: slash,
           });
         }
 
@@ -177,7 +263,7 @@ export class DiscordDiscoveryService
           name: string;
           type: MenuEntry['type'];
         }>(CONTEXT_MENU_METADATA, fn);
-        if (menu) this.menus.push({ ...base, ...menu });
+        if (menu) this.menus.push({ ...base, ...menu, meta: menu });
 
         const btn = this.reflect<{ customId: string | RegExp }>(BUTTON_METADATA, fn);
         if (btn) this.buttons.push({ ...base, ...btn });
@@ -202,46 +288,5 @@ export class DiscordDiscoveryService
 
   private reflect<T>(key: string, fn: unknown): T | undefined {
     return this.reflector.get<T, unknown>(key, fn as never) as T | undefined;
-  }
-
-  private applyOptions(
-    b: Pick<
-      SlashCommandBuilder,
-      | 'addStringOption'
-      | 'addIntegerOption'
-      | 'addNumberOption'
-      | 'addBooleanOption'
-      | 'addUserOption'
-      | 'addChannelOption'
-      | 'addRoleOption'
-      | 'addMentionableOption'
-      | 'addAttachmentOption'
-    >,
-    dto?: (new () => Record<string, unknown>) | undefined,
-  ): void {
-    if (!dto) return;
-    const fields: Record<string, OptionFieldMeta> =
-      Reflect.getMetadata(OPTION_FIELD_METADATA, dto) ?? {};
-    for (const f of Object.values(fields)) {
-      const setup = (o: {
-        setName(n: string): unknown;
-        setDescription(d: string): unknown;
-        setRequired(r: boolean): unknown;
-      }) => {
-        o.setName(f.name);
-        o.setDescription(f.description);
-        o.setRequired(!!f.required);
-        return o;
-      };
-      if (f.kind === 'string') b.addStringOption((o) => setup(o) as never);
-      else if (f.kind === 'integer') b.addIntegerOption((o) => setup(o) as never);
-      else if (f.kind === 'number') b.addNumberOption((o) => setup(o) as never);
-      else if (f.kind === 'boolean') b.addBooleanOption((o) => setup(o) as never);
-      else if (f.kind === 'user') b.addUserOption((o) => setup(o) as never);
-      else if (f.kind === 'channel') b.addChannelOption((o) => setup(o) as never);
-      else if (f.kind === 'role') b.addRoleOption((o) => setup(o) as never);
-      else if (f.kind === 'mentionable') b.addMentionableOption((o) => setup(o) as never);
-      else b.addAttachmentOption((o) => setup(o) as never);
-    }
   }
 }

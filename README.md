@@ -50,3 +50,17 @@ Glossary map at `CONTEXT-MAP.md`. Skills config in `AGENTS.md`.
 
 Changesets on `main` open a Version PR. Merge publishes to npm with provenance.
 Touch `packages/*`? Run `bunx changeset`. Tags like `@discord.ts/core@0.2.0` are publish output.
+
+Remote cache is Vercel-backed and inert until secrets exist: create a token at
+vercel.com (Storage → Remote Cache), then
+`gh secret set TURBO_TOKEN --body ...` and `gh secret set TURBO_TEAM --body ...`.
+Without them Turbo falls back to the local `actions/cache` silently.
+
+## Docker
+
+```bash
+docker build -f apps/example/Dockerfile -t discord-ts-example .
+docker run -e DISCORD_TOKEN=... -e DISCORD_CLIENT_ID=... discord-ts-example
+```
+
+Single-stage `oven/bun`, runs TS source direct via `bun run start:bun`. No secrets baked in.

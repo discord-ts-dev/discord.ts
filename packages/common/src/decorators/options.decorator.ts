@@ -1,4 +1,11 @@
+import type { ChannelType } from 'discord.js';
 import { OPTION_FIELD_METADATA } from '../constants';
+
+/** Channel kinds Discord accepts on channel options (no DMs, groups, directories). */
+export type GuildChannelType = Exclude<
+  ChannelType,
+  ChannelType.DM | ChannelType.GroupDM | ChannelType.GuildDirectory
+>;
 
 export interface OptionFieldMeta {
   kind:
@@ -16,6 +23,11 @@ export interface OptionFieldMeta {
   required?: boolean;
   autocomplete?: boolean;
   choices?: readonly { name: string; value: string | number }[];
+  minValue?: number;
+  maxValue?: number;
+  minLength?: number;
+  maxLength?: number;
+  channelTypes?: GuildChannelType[];
 }
 
 function field(kind: OptionFieldMeta['kind']) {
