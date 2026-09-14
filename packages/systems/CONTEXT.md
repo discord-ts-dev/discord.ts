@@ -26,6 +26,4 @@ Ubiquitous language. Glossary only. No implementation.
 - **Vote reward**: currency for a bot-list vote webhook. Parsed via
   `parseVotePayload()`, awarded via `awardVote()`.
 - **Help entries**: grouped command metadata. Built via `buildHelp()`.
-- **Sub-route**: a prefix arg split into route plus rest. Split via
-  `splitSubroute()`.
 - **Amount**: a bet or transfer size. Parsed via `parseAmount()`.

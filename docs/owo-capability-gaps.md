@@ -30,7 +30,6 @@ never a forced bot style. Targets below: `→ utils` is a pure helper in
 
 ## P2 — nice to have
 
-- Prefix sub-route splitter (`quest rr 2`, `sell all`, `zoo display`).
 - Word-filter guard recipe (`censor` / `uncensor`).
 - Vote-webhook reward pattern (doc, top.gg → currency).
 - i18n pattern lifted from the template (doc, not a framework dep).

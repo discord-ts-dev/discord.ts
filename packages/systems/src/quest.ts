@@ -1,5 +1,5 @@
-import { dayIndex } from "./scheduler.js";
-import type { Store } from "./store.js";
+import { dayIndex } from './scheduler.js';
+import type { Store } from './store.js';
 
 export interface QuestState {
   id: string;
@@ -25,7 +25,7 @@ async function read(store: Store, userId: string, w: QuestWindow): Promise<Quest
   const raw = await store.get(questKey(userId));
   if (!raw) return null;
   const state = JSON.parse(raw) as QuestState;
-  const today = dayIndex(w.now ?? new Date(), w.timeZone ?? "UTC");
+  const today = dayIndex(w.now ?? new Date(), w.timeZone ?? 'UTC');
   return state.day === today ? state : null;
 }
 
@@ -35,7 +35,11 @@ function pick(pool: string[], exclude?: string): string {
   return from[Math.floor(Math.random() * from.length)] as string;
 }
 
-export async function getQuest(store: Store, userId: string, w: QuestWindow = {}): Promise<QuestState | null> {
+export async function getQuest(
+  store: Store,
+  userId: string,
+  w: QuestWindow = {},
+): Promise<QuestState | null> {
   return read(store, userId, w);
 }
 
@@ -50,14 +54,19 @@ export async function assignQuest(
     progress: 0,
     goal: opts.goal ?? 1,
     done: false,
-    day: dayIndex(opts.now ?? new Date(), opts.timeZone ?? "UTC"),
+    day: dayIndex(opts.now ?? new Date(), opts.timeZone ?? 'UTC'),
     rerolled: false,
   };
   await save(store, userId, state);
   return state;
 }
 
-export async function addProgress(store: Store, userId: string, n: number, w: QuestWindow = {}): Promise<QuestState | null> {
+export async function addProgress(
+  store: Store,
+  userId: string,
+  n: number,
+  w: QuestWindow = {},
+): Promise<QuestState | null> {
   const state = await read(store, userId, w);
   if (!state) return null;
   state.progress += n;
@@ -71,10 +80,12 @@ export async function rerollQuest(
   userId: string,
   pool: string[],
   w: QuestWindow = {},
-): Promise<{ ok: true; quest: QuestState } | { ok: false; reason: "no-quest" | "already-rerolled" }> {
+): Promise<
+  { ok: true; quest: QuestState } | { ok: false; reason: 'no-quest' | 'already-rerolled' }
+> {
   const state = await read(store, userId, w);
-  if (!state) return { ok: false, reason: "no-quest" };
-  if (state.rerolled) return { ok: false, reason: "already-rerolled" };
+  if (!state) return { ok: false, reason: 'no-quest' };
+  if (state.rerolled) return { ok: false, reason: 'already-rerolled' };
   state.id = pick(pool, state.id);
   state.progress = 0;
   state.done = false;
@@ -83,7 +94,11 @@ export async function rerollQuest(
   return { ok: true, quest: state };
 }
 
-export async function completeQuest(store: Store, userId: string, w: QuestWindow = {}): Promise<QuestState | null> {
+export async function completeQuest(
+  store: Store,
+  userId: string,
+  w: QuestWindow = {},
+): Promise<QuestState | null> {
   const state = await read(store, userId, w);
   if (!state?.done) return null;
   await store.del(questKey(userId));

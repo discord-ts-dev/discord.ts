@@ -35,7 +35,10 @@ export class MemoryStore implements Store {
   }
 
   async set(key: string, value: string, ttlMs?: number): Promise<void> {
-    this.strings.set(key, ttlMs === undefined ? { value } : { value, expiresAt: Date.now() + ttlMs });
+    this.strings.set(
+      key,
+      ttlMs === undefined ? { value } : { value, expiresAt: Date.now() + ttlMs },
+    );
   }
 
   async incrBy(key: string, amount: number): Promise<number> {
@@ -51,7 +54,10 @@ export class MemoryStore implements Store {
   }
 
   private ordered(key: string, reverse: boolean): SortedEntry[] {
-    const entries = [...(this.sorted.get(key)?.entries() ?? [])].map(([member, score]) => ({ member, score }));
+    const entries = [...(this.sorted.get(key)?.entries() ?? [])].map(([member, score]) => ({
+      member,
+      score,
+    }));
     entries.sort((a, b) => (reverse ? b.score - a.score : a.score - b.score));
     return entries;
   }

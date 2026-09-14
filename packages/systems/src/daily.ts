@@ -1,5 +1,5 @@
-import { dayIndex } from "./scheduler.js";
-import type { Store } from "./store.js";
+import { dayIndex } from './scheduler.js';
+import type { Store } from './store.js';
 
 export interface ClaimOptions {
   amount: number;
@@ -20,8 +20,12 @@ export interface ClaimResult {
 const dayKey = (userId: string) => `daily:${userId}:idx`;
 const streakKey = (userId: string) => `daily:${userId}:streak`;
 
-export async function claimDaily(store: Store, userId: string, opts: ClaimOptions): Promise<ClaimResult> {
-  const timeZone = opts.timeZone ?? "UTC";
+export async function claimDaily(
+  store: Store,
+  userId: string,
+  opts: ClaimOptions,
+): Promise<ClaimResult> {
+  const timeZone = opts.timeZone ?? 'UTC';
   const today = dayIndex(opts.now ?? new Date(), timeZone);
   const lastRaw = await store.get(dayKey(userId));
   const last = lastRaw === null ? null : Number(lastRaw);

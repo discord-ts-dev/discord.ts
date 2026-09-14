@@ -17,30 +17,30 @@ export function defineTask(def: TaskDef): TaskDef {
 }
 
 function tzOffsetMs(date: Date, timeZone: string): number {
-  const dtf = new Intl.DateTimeFormat("en-US", {
+  const dtf = new Intl.DateTimeFormat('en-US', {
     timeZone,
     hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
   });
   const parts = Object.fromEntries(dtf.formatToParts(date).map((p) => [p.type, p.value]));
   const asUtc = Date.UTC(
-    Number(parts["year"]),
-    Number(parts["month"]) - 1,
-    Number(parts["day"]),
-    Number(parts["hour"]) === 24 ? 0 : Number(parts["hour"]),
-    Number(parts["minute"]),
-    Number(parts["second"]),
+    Number(parts['year']),
+    Number(parts['month']) - 1,
+    Number(parts['day']),
+    Number(parts['hour']) === 24 ? 0 : Number(parts['hour']),
+    Number(parts['minute']),
+    Number(parts['second']),
   );
   return asUtc - Math.floor(date.getTime() / 1000) * 1000;
 }
 
 export function msUntilDaily(now: Date, at: DailyAt): number {
-  const timeZone = at.timeZone ?? "UTC";
+  const timeZone = at.timeZone ?? 'UTC';
   const minute = at.minute ?? 0;
   const tzNow = now.getTime() + tzOffsetMs(now, timeZone);
   const dayStart = Math.floor(tzNow / 86_400_000) * 86_400_000;
@@ -113,9 +113,7 @@ export class TaskRunner {
   private schedule(task: TaskDef): void {
     // ponytail: setTimeout chains, no cron parser. One tick schedules the next.
     const delay =
-      task.everyMs !== undefined
-        ? task.everyMs
-        : msUntilDaily(new Date(), task.dailyAt as DailyAt);
+      task.everyMs !== undefined ? task.everyMs : msUntilDaily(new Date(), task.dailyAt as DailyAt);
     const jitter = task.jitterMs ? Math.random() * task.jitterMs : 0;
     const timer = setTimeout(() => {
       if (!this.running) return;
@@ -123,7 +121,9 @@ export class TaskRunner {
         if (this.running) this.schedule(task);
       });
     }, delay + jitter);
-    if (typeof timer === "object" && "unref" in timer && typeof timer.unref === "function") timer.unref();
+    // ponytail: unref without node types. Lets a started runner die with
+    // the process; stop() still clears timers explicitly.
+    (timer as unknown as { unref?: () => void }).unref?.();
     this.timers.push(timer);
   }
 }
