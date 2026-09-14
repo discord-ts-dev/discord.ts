@@ -6,6 +6,7 @@ import {
   PARAM_PREFIX_ARGS_METADATA,
   type OptionFieldMeta,
 } from '@discord.ts/common';
+import { parseMentionId } from '@discord.ts/utils';
 import type { Handler } from './handler.types.js';
 
 // ponytail: pure arg building, no DI. Shared by routing; optionsDto by discovery JSON.
@@ -84,6 +85,8 @@ export function buildEventArgs(h: Handler, raw: unknown[]): unknown[] {
 }
 
 // ponytail: prefix surface fills DTO positionally, then the same validate pipeline runs.
+// Trailing free text joins into a final string field, so `!warn @u spamming links` works unquoted.
+// Mention syntax coerces to ids for user/role/channel kinds; full User fetch stays in handlers.
 export function buildDtoFromArgs(
   Dto: new () => Record<string, unknown>,
   args: string[],
@@ -91,8 +94,11 @@ export function buildDtoFromArgs(
   const dto = new Dto();
   const fields: Record<string, OptionFieldMeta> =
     Reflect.getMetadata(OPTION_FIELD_METADATA, Dto) ?? {};
-  Object.entries(fields).forEach(([key, f], i) => {
-    dto[key] = coerceArg(f, args[i]);
+  const entries = Object.entries(fields);
+  entries.forEach(([key, f], i) => {
+    if (i === entries.length - 1 && f.kind === 'string' && args.length > entries.length)
+      dto[key] = args.slice(i).join(' ');
+    else dto[key] = coerceArg(f, args[i]);
   });
   return dto;
 }
@@ -105,6 +111,8 @@ function coerceArg(f: OptionFieldMeta, raw: string | undefined): unknown {
     return raw.trim() !== '' && Number.isFinite(n) ? n : raw;
   }
   if (f.kind === 'boolean') return raw === 'true' ? true : raw === 'false' ? false : raw;
+  if (f.kind === 'user' || f.kind === 'mentionable' || f.kind === 'role' || f.kind === 'channel')
+    return parseMentionId(raw) ?? raw;
   return raw;
 }
 

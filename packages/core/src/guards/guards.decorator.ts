@@ -1,11 +1,13 @@
 import {
   COOLDOWN_METADATA,
+  REQUIRED_BOT_PERMISSIONS_METADATA,
   REQUIRED_PERMISSIONS_METADATA,
   SetMetadata,
   UseGuards,
   applyDecorators,
 } from '@discord.ts/common';
 import type { PermissionResolvable } from 'discord.js';
+import { BotPermissionsGuard } from './bot-permissions.guard.js';
 import { CooldownGuard } from './cooldown.guard.js';
 import { PermissionsGuard } from './permissions.guard.js';
 
@@ -23,4 +25,13 @@ export const RequirePermissions = (
   applyDecorators(
     SetMetadata(REQUIRED_PERMISSIONS_METADATA, perms),
     UseGuards(PermissionsGuard),
+  ) as unknown as MethodDecorator & ClassDecorator;
+
+/** Require the bot member to hold Discord permissions. Replies ephemeral listing missing ones. */
+export const RequireBotPermissions = (
+  ...perms: PermissionResolvable[]
+): MethodDecorator & ClassDecorator =>
+  applyDecorators(
+    SetMetadata(REQUIRED_BOT_PERMISSIONS_METADATA, perms),
+    UseGuards(BotPermissionsGuard),
   ) as unknown as MethodDecorator & ClassDecorator;

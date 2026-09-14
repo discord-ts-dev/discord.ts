@@ -4,6 +4,7 @@ import { loadDiscordConfig } from './config.js';
 import { DiscordDiscoveryService } from './discovery/discord-discovery.service.js';
 import { DiscordRoutingService } from './discovery/discord-routing.service.js';
 import { DiscordSyncService } from './discovery/discord-sync.service.js';
+import { BotPermissionsGuard } from './guards/bot-permissions.guard.js';
 import { CooldownGuard } from './guards/cooldown.guard.js';
 import { PermissionsGuard } from './guards/permissions.guard.js';
 
@@ -94,9 +95,11 @@ export async function createRuntime(
   const discovery = new DiscordDiscoveryService(client, options, sync);
   const cooldown = new CooldownGuard();
   const permissions = new PermissionsGuard();
+  const botPermissions = new BotPermissionsGuard();
   const guards = new Map<unknown, { canActivate(ctx: unknown): unknown }>([
     [CooldownGuard, cooldown as unknown as { canActivate(ctx: unknown): unknown }],
     [PermissionsGuard, permissions as unknown as { canActivate(ctx: unknown): unknown }],
+    [BotPermissionsGuard, botPermissions as unknown as { canActivate(ctx: unknown): unknown }],
   ]);
   const instances: object[] = [...providers.map((P) => new (P as Type<object>)() as object)];
   discovery.init(instances);

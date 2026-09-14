@@ -1,0 +1,40 @@
+import { REQUIRED_BOT_PERMISSIONS_METADATA, type CanActivate } from '@discord.ts/common';
+import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
+import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
+
+// ponytail: mirrors PermissionsGuard but checks the bot member, not the caller.
+export class BotPermissionsGuard implements CanActivate {
+  async canActivate(context: DiscordExecutionContext): Promise<boolean> {
+    const fn = context.getHandler() as object;
+    const cls = context.getClass() as object;
+    const required =
+      (Reflect.getMetadata(REQUIRED_BOT_PERMISSIONS_METADATA, fn) as
+        | PermissionResolvable[]
+        | undefined) ??
+      (Reflect.getMetadata(REQUIRED_BOT_PERMISSIONS_METADATA, cls) as
+        | PermissionResolvable[]
+        | undefined) ??
+      [];
+    if (!required.length) return true;
+    const ix = context.getArgByIndex<Record<string, unknown>>(0);
+    const guild = ix['guild'] as
+      | { members?: { me?: { permissions?: { has(p: unknown): boolean } } | null } | null }
+      | null
+      | undefined;
+    const perms = guild?.members?.me?.permissions;
+    const missing = required.filter((p) => !perms || !perms.has(p));
+    if (!missing.length) return true;
+    const names = new PermissionsBitField(missing).toArray().join(', ');
+    try {
+      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
+      if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
+        await (reply as (m: unknown) => Promise<unknown>).call(ix, {
+          content: `Bot is missing permissions: ${names || 'unknown'}.`,
+          ephemeral: true,
+        });
+    } catch {
+      // ignore, handler already blocked
+    }
+    return false;
+  }
+}

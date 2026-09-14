@@ -9,3 +9,4 @@ export * from './deploy.js';
 export * from './guards/guards.decorator.js';
 export * from './guards/cooldown.guard.js';
 export * from './guards/permissions.guard.js';
+export * from './guards/bot-permissions.guard.js';

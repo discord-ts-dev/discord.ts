@@ -7,6 +7,8 @@ export default defineConfig({
   clientId: 'test-client',
   intents: [
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildModeration,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
   ],
