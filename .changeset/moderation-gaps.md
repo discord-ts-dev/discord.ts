@@ -2,6 +2,7 @@
 '@discord.ts/common': minor
 '@discord.ts/core': minor
 '@discord.ts/utils': minor
+'@discord.ts/systems': minor
 '@discord.ts/ux': minor
 ---
 
