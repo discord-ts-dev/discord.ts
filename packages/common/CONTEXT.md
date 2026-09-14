@@ -14,4 +14,4 @@ Ubiquitous language. Glossary only. No implementation.
 - **Listener**: method that runs on a gateway event. Declared with `@OnEvent()` / `@OnceEvent()`. Event is a Discord `Events` value.
 - **Context**: the interaction object for current call. Injected with `@Context()`.
 - **Options**: validated DTO for slash options. Injected with `@Options()`. Fields use `@StringOption()` etc.
-- **Logger**: scoped signale output via `DiscordLogger(context)`. Color accents via chalk at call sites.
+- **Logger**: scoped signale output via `DiscordLogger(context)`. Color accents via `styleText` at call sites.

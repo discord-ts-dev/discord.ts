@@ -1,0 +1,23 @@
+name: Label sync
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/labels.yml'
+
+permissions:
+  issues: write
+
+jobs:
+  label-sync:
+    if: github.repository_owner == 'discord-ts-dev'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: crazy-max/ghaction-github-labeler@24d110aa46a59976b8a7f35518cb7f14f434c916 # v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

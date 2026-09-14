@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { Client, ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import {
   AUTOCOMPLETE_METADATA,
   BUTTON_METADATA,
@@ -167,19 +167,21 @@ export class DiscordDiscoveryService
   private logRoutes(): void {
     for (const s of this.slash) {
       const name = s.sub ? `/${s.top} ${s.sub}` : `/${s.top}`;
-      this.logger.route(`Slash ${chalk.green(name)} -> ${s.instance.constructor.name}.${s.method}`);
+      this.logger.route(
+        `Slash ${styleText('green', name)} -> ${s.instance.constructor.name}.${s.method}`,
+      );
     }
     for (const m of this.menus)
       this.logger.route(
-        `Menu ${chalk.green(m.name)} -> ${m.instance.constructor.name}.${m.method}`,
+        `Menu ${styleText('green', m.name)} -> ${m.instance.constructor.name}.${m.method}`,
       );
     for (const p of this.prefix)
       this.logger.route(
-        `Prefix ${chalk.green(`!${p.name}`)} -> ${p.instance.constructor.name}.${p.method}`,
+        `Prefix ${styleText('green', `!${p.name}`)} -> ${p.instance.constructor.name}.${p.method}`,
       );
     for (const e of this.events)
       this.logger.route(
-        `Event ${chalk.yellow(e.event)} -> ${e.instance.constructor.name}.${e.method}`,
+        `Event ${styleText('yellow', e.event)} -> ${e.instance.constructor.name}.${e.method}`,
       );
     this.logger.log(
       `Discovered ${this.slash.length} slash, ${this.menus.length} menus, ${this.buttons.length} buttons, ${this.selects.length} selects, ${this.modals.length} modals, ${this.events.length} events, ${this.prefix.length} prefix`,

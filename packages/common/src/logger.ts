@@ -1,6 +1,6 @@
 import { Signale } from 'signale';
 
-// ponytail: signale scope = Nest context, chalk stays at call sites.
+// ponytail: signale scope = Nest context, styleText stays at call sites.
 const base = new Signale({
   scope: 'discord.ts',
   types: {
