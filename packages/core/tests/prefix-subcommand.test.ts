@@ -6,6 +6,8 @@ import {
   Module,
   PARAM_PREFIX_ARGS_METADATA,
   PrefixCommand,
+  SLASH_COMMAND_METADATA,
+  SetMetadata,
   Subcommand,
 } from '@discord.ts/common';
 import { DiscordModule, createRuntime } from '../src/index.js';
@@ -50,6 +52,70 @@ describe('prefix subcommand scan', () => {
         discovery.slash.map((s) => s.top),
         [],
       );
+    } finally {
+      await discovery.stop();
+    }
+  });
+});
+
+describe('unified command with subcommand scan', () => {
+  test('nests sub on slash and prefix surfaces', async () => {
+    class ShopProbe {
+      buy(): void {}
+    }
+    apply(
+      Command({ name: 'shop', description: 'Shop', slash: true, prefix: true }),
+      ShopProbe.prototype,
+      'buy',
+    );
+    apply(Subcommand({ name: 'buy', description: 'Buy item' }), ShopProbe.prototype, 'buy');
+    class ShopApp {}
+    Module({
+      imports: [
+        DiscordModule.forRoot({ token: 'test-token', clientId: 'test-client', intents: [] }),
+      ],
+      providers: [ShopProbe],
+    })(ShopApp);
+    const { discovery } = await createRuntime(ShopApp);
+    try {
+      assert.deepStrictEqual(
+        discovery.slash.map((s) => `${s.top} ${s.sub ?? ''}`),
+        ['shop buy'],
+      );
+      assert.deepStrictEqual(
+        discovery.prefix.map((p) => `${p.name} ${p.sub ?? ''}`),
+        ['shop buy'],
+      );
+    } finally {
+      await discovery.stop();
+    }
+  });
+});
+
+describe('legacy slash metadata fallback', () => {
+  test('raw SLASH_COMMAND_METADATA still discovers as slash-only', async () => {
+    class LegacyProbe {
+      run(): void {}
+    }
+    apply(
+      SetMetadata(SLASH_COMMAND_METADATA, { name: 'ping', description: 'Reply with pong' }),
+      LegacyProbe.prototype,
+      'run',
+    );
+    class LegacyApp {}
+    Module({
+      imports: [
+        DiscordModule.forRoot({ token: 'test-token', clientId: 'test-client', intents: [] }),
+      ],
+      providers: [LegacyProbe],
+    })(LegacyApp);
+    const { discovery } = await createRuntime(LegacyApp);
+    try {
+      assert.deepStrictEqual(
+        discovery.slash.map((s) => s.top),
+        ['ping'],
+      );
+      assert.deepStrictEqual(discovery.prefix, []);
     } finally {
       await discovery.stop();
     }

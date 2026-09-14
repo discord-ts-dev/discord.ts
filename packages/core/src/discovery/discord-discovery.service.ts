@@ -187,7 +187,13 @@ export class DiscordDiscoveryService {
         if (typeof fn !== 'function') continue;
         const base = { instance, method: name } as Handler;
 
-        const cmd = Reflect.getMetadata(COMMAND_METADATA, fn) as CommandMeta | undefined;
+        const unified = Reflect.getMetadata(COMMAND_METADATA, fn) as CommandMeta | undefined;
+        const legacy = Reflect.getMetadata(SLASH_COMMAND_METADATA, fn) as
+          | SlashCommandMeta
+          | undefined;
+        // ponytail: legacy SLASH key fallback, remove next major
+        const cmd: CommandMeta | undefined =
+          unified ?? (legacy ? { ...legacy, slash: true, prefix: false } : undefined);
         if (cmd && !cmd.slash && !cmd.prefix)
           throw new Error(
             `[discord.ts] @Command ${instance.constructor.name}.${name}: set slash or prefix to true.`,
@@ -195,43 +201,27 @@ export class DiscordDiscoveryService {
         const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as
           | { name: string; description: string }
           | undefined;
-        if (cmd?.slash)
+        const methodGroup = Reflect.getMetadata(COMMAND_GROUP_METADATA, fn) as
+          | { name: string }
+          | undefined;
+        // SlashCommandMeta carries no slash/prefix/aliases surface flags.
+        const toSlashMeta = (c: CommandMeta): SlashCommandMeta => ({
+          name: c.name,
+          description: c.description,
+          nsfw: c.nsfw,
+          defaultMemberPermissions: c.defaultMemberPermissions,
+          contexts: c.contexts,
+        });
+        if (cmd?.slash && !sub) {
           this.slash.push({
             ...base,
             top: cmd.name,
             topDescription: cmd.description,
-            meta: {
-              name: cmd.name,
-              description: cmd.description,
-              nsfw: cmd.nsfw,
-              defaultMemberPermissions: cmd.defaultMemberPermissions,
-              contexts: cmd.contexts,
-            },
-          });
-        if (cmd?.prefix)
-          this.prefix.push({
-            ...base,
-            name: cmd.name,
-            aliases: cmd.aliases ?? [],
-            sub: sub?.name,
-          });
-
-        const slash = Reflect.getMetadata(SLASH_COMMAND_METADATA, fn) as
-          | { name: string; description: string }
-          | undefined;
-        const methodGroup = Reflect.getMetadata(COMMAND_GROUP_METADATA, fn) as
-          | { name: string }
-          | undefined;
-        if (slash && !sub) {
-          this.slash.push({
-            ...base,
-            top: slash.name,
-            topDescription: slash.description,
-            meta: slash,
+            meta: toSlashMeta(cmd),
           });
         } else if (sub && (group ?? methodGroup)) {
-          const top = group?.name ?? slash?.name ?? methodGroup?.name ?? sub.name;
-          const topDescription = group?.description ?? slash?.description ?? sub.description;
+          const top = group?.name ?? cmd?.name ?? methodGroup?.name ?? sub.name;
+          const topDescription = group?.description ?? cmd?.description ?? sub.description;
           // ponytail: class group owns both surfaces. Prefix has no nesting,
           // so only the class flag (not method subgroups) feeds prefix routes.
           if (group?.slash !== false)
@@ -243,20 +233,27 @@ export class DiscordDiscoveryService {
               groupDescription: group?.description,
               sub: sub.name,
               subDescription: sub.description,
-              meta: slash ?? { name: top, description: topDescription },
+              meta: cmd ? toSlashMeta(cmd) : { name: top, description: topDescription },
             });
           if (group?.prefix === true)
             this.prefix.push({ ...base, name: group.name, aliases: [], sub: sub.name });
-        } else if (sub && slash) {
+        } else if (sub && cmd?.slash) {
           this.slash.push({
             ...base,
-            top: slash.name,
-            topDescription: slash.description,
+            top: cmd.name,
+            topDescription: cmd.description,
             sub: sub.name,
             subDescription: sub.description,
-            meta: slash,
+            meta: toSlashMeta(cmd),
           });
         }
+        if (cmd?.prefix)
+          this.prefix.push({
+            ...base,
+            name: cmd.name,
+            aliases: cmd.aliases ?? [],
+            sub: sub?.name,
+          });
 
         const menu = Reflect.getMetadata(CONTEXT_MENU_METADATA, fn) as
           | { name: string; type: MenuEntry['type'] }
