@@ -20,7 +20,6 @@ Ubiquitous language. Glossary only. No implementation.
 - **Required permissions**: Discord permissions a caller must hold. Declared with `@RequirePermissions(...)`. Missing replies ephemeral and blocks.
 - **Required bot permissions**: Discord permissions the bot member must hold. Declared with `@RequireBotPermissions(...)`. Missing replies ephemeral and blocks.
 - **Prefix DTO fill**: positional map of prefix args into the DTO. Trailing words join into a final string field. Mentions coerce to ids via `parseMentionId`.
-- **Mod log channel**: the guild channel id for moderation logs. Option `modLogChannelId`, env `MOD_LOG_CHANNEL_ID` wins. Sent via `sendModLog()`.
 - **Audit entries**: simplified Discord audit log rows. Read via `getAuditEntries()`.
 - **Bulk clear**: bounded delete of messages with optional author filter. Done via `bulkClear()`.
 - **Applied timeout**: validated member timeout within the Discord 28-day limit. Done via `applyTimeout()`.

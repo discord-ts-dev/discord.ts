@@ -19,10 +19,9 @@ helper, error embed. Each could grow its own abstraction.
   branched by property checks.
 - New `@RequireBotPermissions()` plus `BotPermissionsGuard`, registered next
   to the existing guards. Checks the bot member, not the caller.
-- `modLogChannelId` joins `DiscordModuleOptions`; env `MOD_LOG_CHANNEL_ID`
-  wins. `sendModLog()`, `getAuditEntries()`, `bulkClear()`, `applyTimeout()`,
-  `errorEmbed()` are thin wrappers. Example keeps bounded in-memory warn/audit
-  stores, FIFO evict, no DB.
+- `getAuditEntries()`, `bulkClear()`, `applyTimeout()`, `errorEmbed()` are
+  thin wrappers. No mod log channel send: the example keeps bounded in-memory
+  warn/audit stores, FIFO evict, no DB, with a Discord native audit fallback.
 
 ## Consequences
 
@@ -34,5 +33,5 @@ helper, error embed. Each could grow its own abstraction.
 ## Skipped
 
 - Async User fetch inside DTO fill (needs guild at parse time; stays manual).
-- Per-guild log channel store (env plus option covers the example; DB later).
+- Mod log channel send (dropped; in-memory audit plus native audit fallback cover the example).
 - Automod wrappers (out of moderation V1 scope).

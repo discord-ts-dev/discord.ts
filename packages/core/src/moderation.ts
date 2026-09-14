@@ -1,33 +1,7 @@
-import { AuditLogEvent, type EmbedBuilder, type Guild } from 'discord.js';
+import { AuditLogEvent, type Guild } from 'discord.js';
 import { parseMentionId } from './discovery/discord-args.js';
 
 export { parseMentionId };
-
-// ponytail: env wins, explicit override for tests. Commands cannot inject options (see discord.module).
-export function resolveModLogChannelId(override?: string): string | undefined {
-  return override ?? process.env.MOD_LOG_CHANNEL_ID ?? undefined;
-}
-
-type SendableChannel = { send(m: unknown): Promise<unknown> };
-
-/** Send an embed to the mod log channel. False when unconfigured or undeliverable. Never throws. */
-export async function sendModLog(
-  guild: Guild | null | undefined,
-  embed: EmbedBuilder,
-  channelId?: string,
-): Promise<boolean> {
-  const id = resolveModLogChannelId(channelId);
-  if (!id || !guild) return false;
-  try {
-    const ch = await guild.channels.fetch(id);
-    if (ch?.isTextBased() && 'send' in (ch as object))
-      await (ch as unknown as SendableChannel).send({ embeds: [embed] });
-    else return false;
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 export interface AuditEntry {
   action: string;

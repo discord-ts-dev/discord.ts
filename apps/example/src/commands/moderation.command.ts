@@ -46,7 +46,7 @@ export class ModerationCommand {
       .setDescription(`Warned <@${userId}>`)
       .addFields({ name: 'Reason', value: reason.slice(0, 1000) });
     await replyEmbed(ctx, embed);
-    await auditAndLog(ctx, 'warn', userId, reason, 0xfee75c);
+    auditAndLog(ctx, 'warn', userId, reason);
   }
 
   @Command({
@@ -107,7 +107,7 @@ export class ModerationCommand {
         .setDescription(`Kicked <@${userId}>`)
         .addFields({ name: 'Reason', value: reason.slice(0, 1000) }),
     );
-    await auditAndLog(ctx, 'kick', userId, reason, 0xe67e22);
+    auditAndLog(ctx, 'kick', userId, reason);
   }
 
   @Command({ name: 'ban', description: 'Ban a member (asks confirm)', slash: true, prefix: true })
@@ -135,7 +135,7 @@ export class ModerationCommand {
         .setDescription(`Banned <@${userId}>`)
         .addFields({ name: 'Reason', value: reason.slice(0, 1000) }),
     );
-    await auditAndLog(ctx, 'ban', userId, reason, 0xed4245);
+    auditAndLog(ctx, 'ban', userId, reason);
   }
 
   @Command({ name: 'unban', description: 'Unban a user id', slash: true, prefix: true })
@@ -151,7 +151,7 @@ export class ModerationCommand {
       return replyError(ctx, 'Unban failed. Check id and bot permissions.');
     }
     await replyEmbed(ctx, modEmbed('unban', 0x57f287).setDescription(`Unbanned \`${dto.userId}\``));
-    await auditAndLog(ctx, 'unban', dto.userId, reason, 0x57f287);
+    auditAndLog(ctx, 'unban', dto.userId, reason);
   }
 
   @Command({
@@ -179,7 +179,7 @@ export class ModerationCommand {
         .setDescription(`Timed out <@${userId}> for ${dto.minutes}m`)
         .addFields({ name: 'Reason', value: reason.slice(0, 1000) }),
     );
-    await auditAndLog(ctx, 'timeout', userId, `${dto.minutes}m: ${reason}`, 0x9b59b6);
+    auditAndLog(ctx, 'timeout', userId, `${dto.minutes}m: ${reason}`);
   }
 
   @Command({

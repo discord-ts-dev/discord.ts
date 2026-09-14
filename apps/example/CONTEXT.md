@@ -12,5 +12,4 @@ Ubiquitous language. Glossary only. No implementation.
 - **Shard run**: `bun run dev:shard` in this app. Hits the shard gate, spawns one process per shard via `runShards()`.
 - **Moderation bot**: unified slash-plus-prefix commands for `warn`, `warnings`, `kick`, `ban`, `unban`, `timeout`, `clear`, `logs` in one guild.
 - **Warn record**: in-memory warning for a user with reason, moderator, time. Keyed by guild plus user.
-- **Audit log**: in-memory list of moderation actions. Shown by `logs`, capped FIFO.
-- **Log channel**: guild text channel from option `modLogChannelId`, env `MOD_LOG_CHANNEL_ID` wins. Sent via `sendModLog()`. Silent fallback when empty.
+- **Audit log**: in-memory list of moderation actions. Shown by `logs`, capped FIFO, with a Discord native audit fallback when empty.

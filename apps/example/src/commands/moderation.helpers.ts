@@ -1,4 +1,4 @@
-import { parseMentionId, sendModLog } from '@discord.ts/core';
+import { parseMentionId } from '@discord.ts/core';
 import { errorEmbed } from '@discord.ts/ux';
 import {
   EmbedBuilder,
@@ -87,22 +87,8 @@ export async function replyError(ctx: Ctx, text: string): Promise<void> {
   await replyEmbed(ctx, errorEmbed(text), true);
 }
 
-export async function auditAndLog(
-  ctx: Ctx,
-  action: string,
-  userId: string,
-  reason: string,
-  color: number,
-): Promise<void> {
+export function auditAndLog(ctx: Ctx, action: string, userId: string, reason: string): void {
   const guild = guildOf(ctx);
   if (!guild) return;
   pushAudit({ action, guildId: guild.id, userId, moderatorId: modId(ctx), reason, at: Date.now() });
-  const embed = modEmbed(action, color)
-    .setDescription(`<@${userId}>`)
-    .addFields(
-      { name: 'User', value: `<@${userId}> (${userId})`, inline: true },
-      { name: 'Moderator', value: `<@${modId(ctx)}>`, inline: true },
-      { name: 'Reason', value: reason.slice(0, 1000) || 'No reason' },
-    );
-  await sendModLog(guild, embed);
 }
