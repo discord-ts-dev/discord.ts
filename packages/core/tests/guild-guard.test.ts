@@ -31,7 +31,11 @@ describe('RequireGuild', () => {
     );
     assert.equal(await guard.canActivate(inside), true);
     const seen: unknown[] = [];
-    const outside = DiscordExecutionContext.create([fakeSource(null, seen)], Cmd.prototype.run, Cmd);
+    const outside = DiscordExecutionContext.create(
+      [fakeSource(null, seen)],
+      Cmd.prototype.run,
+      Cmd,
+    );
     assert.equal(await guard.canActivate(outside), false);
     assert.match((seen[0] as { content: string }).content, /server/);
     assert.equal((seen[0] as { ephemeral: boolean }).ephemeral, true);
