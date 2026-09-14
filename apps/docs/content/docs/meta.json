@@ -1,0 +1,15 @@
+{
+  "title": "discord.ts",
+  "pages": [
+    "index",
+    "quickstart",
+    "---Core---",
+    "core",
+    "---Surfaces---",
+    "cli",
+    "utils",
+    "systems",
+    "ux",
+    "example"
+  ]
+}

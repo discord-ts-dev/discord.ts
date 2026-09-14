@@ -1,0 +1,75 @@
+---
+title: Options and validation
+description: Type-safe slash options with DTOs. Required check, class-validator, pipes.
+---
+
+## Context and Options
+
+```ts
+@SlashCommand({ name: 'roll', description: 'Roll dice' })
+async handle(
+  @Context() interaction: ChatInputCommandInteraction,
+  @Options() dto: RollDto,
+) {
+  await interaction.reply(`Rolled ${dto.sides} x${dto.count ?? 1}`);
+}
+```
+
+| Param           | Use                                               |
+| --------------- | ------------------------------------------------- |
+| `@Context()`    | The interaction or message for the current call.  |
+| `@Options()`    | Validated slash-options DTO.                      |
+| `@PrefixArgs()` | Raw `string[]` for prefix calls. See prefix page. |
+
+## DTO fields
+
+One decorator per kind. Metadata lives on the DTO constructor.
+
+```ts
+import { StringOption, IntegerOption } from '@discord.ts/common';
+import { Min, Max } from 'class-validator';
+
+export class RollDto {
+  @StringOption({
+    name: 'sides',
+    description: 'Dice type',
+    required: true,
+    choices: [
+      { name: 'd6', value: 'd6' },
+      { name: 'd20', value: 'd20' },
+    ],
+  })
+  sides!: string;
+
+  @IntegerOption({ name: 'count', description: 'How many dice', required: false })
+  @Min(1)
+  @Max(10)
+  count?: number;
+}
+```
+
+| Decorator              | Kind        |
+| ---------------------- | ----------- |
+| `@StringOption()`      | string      |
+| `@IntegerOption()`     | integer     |
+| `@NumberOption()`      | number      |
+| `@BooleanOption()`     | boolean     |
+| `@UserOption()`        | user        |
+| `@ChannelOption()`     | channel     |
+| `@RoleOption()`        | role        |
+| `@MentionableOption()` | mentionable |
+| `@AttachmentOption()`  | attachment  |
+
+Each field accepts `name`, `description`, `required`, plus `autocomplete`, `choices`, `minValue` / `maxValue`, `minLength` / `maxLength`, and `channelTypes` where they apply. `applyOptions()` maps the DTO to a `SlashCommandBuilder` automatically.
+
+## Validation
+
+Required fields plus `class-validator` rules plus `@UsePipes()` run on each call. Fail replies ephemeral and blocks the handler. Prefix calls fill the same DTO positionally: trailing words join into the final string field, mentions coerce to ids.
+
+```ts
+import { UsePipes } from '@discord.ts/common';
+
+@SlashCommand({ name: 'ban', description: 'Ban a member' })
+@UsePipes(/* your ValidationPipe */)
+async handle(@Context() ix: Ctx, @Options() dto: BanDto) {}
+```

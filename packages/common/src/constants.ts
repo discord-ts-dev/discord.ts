@@ -1,6 +1,7 @@
 export const DISCORD_MODULE_OPTIONS = 'DISCORD_MODULE_OPTIONS';
 export const DISCORD_CLIENT = 'DISCORD_CLIENT';
 
+/** @deprecated Internal. SlashCommand now writes COMMAND_METADATA. Remove next major. */
 export const SLASH_COMMAND_METADATA = 'discord:slash-command';
 export const COMMAND_METADATA = 'discord:command';
 export const SUBCOMMAND_METADATA = 'discord:subcommand';

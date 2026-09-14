@@ -18,7 +18,8 @@ RUN bun install --frozen-lockfile
 
 # Full source for the one-time CLI build, then run the bot from source.
 COPY . .
-RUN bun run build
+# ponytail: bot image builds only the example closure (docs ships separately).
+RUN bunx turbo run build --filter=...example && bun run postinstall
 
 WORKDIR /app/apps/example
 ENV NODE_ENV=production

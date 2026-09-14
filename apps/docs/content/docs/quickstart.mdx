@@ -1,0 +1,94 @@
+---
+title: Quickstart
+description: Boot a bot in five minutes. Install, declare, sync, run.
+---
+
+## 1. Install
+
+```bash
+bun install
+bun run build
+```
+
+Requires Node `>=20`. The repo uses `bun` workspaces.
+
+## 2. Configure
+
+Create `discord.config.ts` at the app root. Secrets come from env.
+
+```ts
+import { GatewayIntentBits } from 'discord.js';
+import { defineConfig } from '@discord.ts/core';
+
+export default defineConfig({
+  token: 'test-token',
+  clientId: 'test-client',
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  prefix: '!',
+});
+```
+
+Env wins over file: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`, `SKIP_REGISTRATION`, `SHARD_COUNT`.
+
+## 3. Declare
+
+```ts
+import { Injectable, Command, Context } from '@discord.ts/common';
+import type { ChatInputCommandInteraction, Message } from 'discord.js';
+
+@Injectable()
+export class PingCommand {
+  @Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
+  async handle(@Context() interaction: ChatInputCommandInteraction | Message) {
+    await interaction.reply('pong');
+  }
+}
+```
+
+Register the provider in your module:
+
+```ts
+import { Module } from '@discord.ts/common';
+import { DiscordModule } from '@discord.ts/core';
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [PingCommand],
+})
+export class AppModule {}
+```
+
+## 4. Sync
+
+Sync without login. Use it in CI.
+
+```bash
+bun run deploy
+```
+
+```ts
+import 'reflect-metadata';
+import { deployWithModule } from '@discord.ts/core';
+
+const { count } = await deployWithModule(AppModule);
+console.log(`Deployed ${count} commands.`);
+```
+
+## 5. Run
+
+```ts
+import 'reflect-metadata';
+import { bootstrapApp } from '@discord.ts/core';
+
+void bootstrapApp(AppModule);
+```
+
+```bash
+bun run dev      # TS source via bun
+bun run deploy   # sync only
+bun run start    # dist via node, after build
+```

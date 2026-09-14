@@ -1,0 +1,39 @@
+---
+title: CLI
+description: The discord runner. Five commands, no arg parser.
+---
+
+The `discord` bin. No arg-parser dep, table-driven.
+
+```bash
+discord dev           # boot bot from TS source
+discord dev:shard     # boot shards from TS source
+discord deploy        # sync commands without login
+discord start         # boot bot from build output
+discord start:shard   # boot shards from build output
+discord --help        # usage table
+```
+
+| Command       | Runs                    | Runtime |
+| ------------- | ----------------------- | ------- |
+| `dev`         | `src/main.ts`           | `bun`   |
+| `dev:shard`   | `src/main.ts --shards`  | `bun`   |
+| `deploy`      | `src/deploy.ts`         | `bun`   |
+| `start`       | `dist/main.js`          | `node`  |
+| `start:shard` | `dist/main.js --shards` | `node`  |
+
+Wire in your app `package.json`:
+
+```json
+{
+  "scripts": {
+    "dev": "discord dev",
+    "dev:shard": "discord dev:shard",
+    "deploy": "discord deploy",
+    "start": "discord start",
+    "start:shard": "discord start:shard"
+  }
+}
+```
+
+Missing entry file exits `1` with a hint. Run inside the bot app (`start` needs a build first).

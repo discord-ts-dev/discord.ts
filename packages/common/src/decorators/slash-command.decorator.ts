@@ -1,6 +1,6 @@
 import { SetMetadata } from '../di.js';
 import type { InteractionContextType } from 'discord.js';
-import { SLASH_COMMAND_METADATA } from '../constants.js';
+import { COMMAND_METADATA } from '../constants.js';
 
 export interface SlashCommandMeta {
   name: string;
@@ -11,5 +11,6 @@ export interface SlashCommandMeta {
 }
 
 // ponytail: method-level only, class stays plain @Injectable()
+// Writes the unified command key as slash-only; discovery owns the single branch.
 export const SlashCommand = (meta: SlashCommandMeta): MethodDecorator =>
-  SetMetadata(SLASH_COMMAND_METADATA, meta);
+  SetMetadata(COMMAND_METADATA, { ...meta, slash: true, prefix: false });

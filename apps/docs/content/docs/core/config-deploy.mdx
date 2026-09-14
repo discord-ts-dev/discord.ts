@@ -1,0 +1,60 @@
+---
+title: Config and deploy
+description: One config file, env overlay, sync without login.
+---
+
+## Config file
+
+`discord.config.ts` at the app root. Non-secrets in file, secrets in env.
+
+```ts
+import { GatewayIntentBits } from 'discord.js';
+import { defineConfig } from '@discord.ts/core';
+
+export default defineConfig({
+  token: 'test-token',
+  clientId: 'test-client',
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildModeration,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  development: [],
+  skipRegistration: true,
+  prefix: '!',
+  shardFile: './src/main.ts',
+  respawn: true,
+});
+```
+
+| Option                  | Default           | Notes                                                                            |
+| ----------------------- | ----------------- | -------------------------------------------------------------------------------- |
+| `token`                 | —                 | `DISCORD_TOKEN` wins.                                                            |
+| `clientId`              | —                 | `DISCORD_CLIENT_ID` wins.                                                        |
+| `intents`               | —                 | Passed to `discord.js` Client.                                                   |
+| `development`           | `[]`              | Guild ids for instant dev sync. Empty means global. `DISCORD_GUILD_ID` sets one. |
+| `skipRegistration`      | `false`           | Skip REST sync on boot. `SKIP_REGISTRATION` toggles.                             |
+| `prefix`                | `'!'`             | String or array.                                                                 |
+| `shards` / `shardCount` | —                 | Passed to Client. `SHARD_COUNT` sets count, `'auto'` sets auto.                  |
+| `shardFile`             | `'./src/main.ts'` | Entry each shard boots.                                                          |
+| `respawn`               | `true`            | Respawn dead shards.                                                             |
+
+`loadDiscordConfig()` merges file then env then `overrides`. Missing `token` / `clientId` throws unless `skipValidation`. `checkAppStructure()` warns (never throws) when `discord.config.ts`, `src/main.ts`, `src/commands`, `src/events` are missing.
+
+## Sync and deploy
+
+Auto sync runs on bootstrap unless `skipRegistration`. Target is global or `development` guilds via `DiscordSyncService.sync()` full PUT.
+
+Sync without login for CI:
+
+```ts
+import 'reflect-metadata';
+import { deployWithModule } from '@discord.ts/core';
+
+const { count } = await deployWithModule(AppModule);
+console.log(`Deployed ${count} commands.`);
+```
+
+`validateDiscoveryState()` runs first: names, limits, duplicates, mixed flags. It throws one aggregated error before any REST call.

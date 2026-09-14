@@ -1,0 +1,27 @@
+---
+title: Tasks
+description: Interval and daily jobs. No queue, no cron parser.
+---
+
+```ts
+import { defineTask, TaskRunner } from '@discord.ts/systems';
+
+const runner = new TaskRunner([
+  defineTask({ name: 'tick', everyMs: 60_000, run: () => console.log('tick') }),
+  defineTask({ name: 'reset', dailyAt: { hour: 0, timeZone: 'UTC' }, run: resetBoards }),
+]);
+
+runner.start();
+// runner.runNow('tick');
+// runner.stop();
+```
+
+| Field      | Notes                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| `name`     | Unique. Duplicate throws.                                                                   |
+| `everyMs`  | Interval. Chains `setTimeout`, one tick schedules the next.                                 |
+| `dailyAt`  | `{ hour, minute?, timeZone? }`. Next fire via `msUntilDaily()`.                             |
+| `jitterMs` | Random extra delay to spread load.                                                          |
+| `run`      | Sync or async work. Single-flight per name. Errors go to `getLastError(name)`, never throw. |
+
+Helpers: `msUntilDaily(now, at)` for ms to next run, `dayIndex(now, timeZone)` for whole reset windows since epoch (streak math). Timers `unref` so a started runner dies with the process.

@@ -1,0 +1,59 @@
+---
+title: Guards and pipes
+description: Cooldown, permissions, and custom guards. Block with an ephemeral reply.
+---
+
+Attach with `@UseGuards()` (custom) or the built-ins below. Guards read the interaction via `DiscordExecutionContext`. A `false` return blocks the handler.
+
+## Cooldown
+
+Per-user rate limit. Hit replies ephemeral with seconds left and blocks.
+
+```ts
+import { Cooldown } from '@discord.ts/core';
+
+@SlashCommand({ name: 'daily', description: 'Claim daily' })
+@Cooldown(60)
+async handle(@Context() ix: Ctx) {}
+```
+
+Bounded in-memory map (`MAX_ENTRIES` 5000, FIFO evict on overflow). Key is `userId:Class.method`.
+
+## Permissions
+
+```ts
+import { RequirePermissions, RequireBotPermissions } from '@discord.ts/core';
+import { PermissionFlagsBits } from 'discord.js';
+
+@RequirePermissions(PermissionFlagsBits.KickMembers)
+@RequireBotPermissions(PermissionFlagsBits.ModerateMembers)
+@SlashCommand({ name: 'kick', description: 'Kick a member' })
+async handle(@Context() ix: Ctx) {}
+```
+
+| Decorator                          | Checks                                              | On missing                                         |
+| ---------------------------------- | --------------------------------------------------- | -------------------------------------------------- |
+| `@RequirePermissions(...perms)`    | Caller `memberPermissions` or `member.permissions`. | Ephemeral `Missing permissions: X`. Blocks.        |
+| `@RequireBotPermissions(...perms)` | Bot `guild.members.me.permissions`.                 | Ephemeral `Bot is missing permissions: X`. Blocks. |
+
+Method metadata wins over class metadata via `Reflector.getAllAndOverride()`.
+
+## Custom guard
+
+```ts
+import { UseGuards, type CanActivate } from '@discord.ts/common';
+
+class OwnerOnly implements CanActivate {
+  async canActivate(ctx: unknown) {
+    return true;
+  }
+}
+
+@UseGuards(OwnerOnly)
+@SlashCommand({ name: 'secret', description: 'Owner only' })
+async handle(@Context() ix: Ctx) {}
+```
+
+## Pipes
+
+`@UsePipes(...pipes)` attaches transform and validation pipes. Runs with the options DTO before guards dispatch to the handler.

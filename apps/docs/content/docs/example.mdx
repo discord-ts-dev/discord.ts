@@ -1,0 +1,70 @@
+---
+title: Example bot
+description: Runnable sample. Copy the wiring, keep the layout.
+---
+
+`apps/example`. Standard structure the config checker expects: `discord.config.ts`, `src/main.ts`, `src/commands/`, `src/events/`.
+
+<Cards>
+  <Card title="App module" href="/docs/core/module" />
+  <Card title="Quickstart" href="/docs/quickstart" />
+</Cards>
+
+## Wiring
+
+```ts
+// src/app.module.ts
+import { Module } from '@discord.ts/common';
+import { DiscordModule } from '@discord.ts/core';
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [
+    PingCommand,
+    QuestCommand,
+    RollCommand,
+    EchoPrefixCommand,
+    ModerationCommand,
+    ReadyListener,
+  ],
+})
+export class AppModule {}
+```
+
+```ts
+// src/main.ts
+import 'reflect-metadata';
+import { bootstrapApp } from '@discord.ts/core';
+
+void bootstrapApp(AppModule);
+```
+
+```ts
+// src/deploy.ts
+import 'reflect-metadata';
+import { deployWithModule } from '@discord.ts/core';
+
+const { count } = await deployWithModule(AppModule);
+console.log(`Deployed ${count} commands.`);
+```
+
+## What it shows
+
+| File                              | Shows                                                                 |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `commands/ping.command.ts`        | `@Command({ slash: true, prefix: true })` dual surface.               |
+| `commands/roll.command.ts`        | `@SlashCommand` + `@Options()` DTO with choices and `@Min` / `@Max`.  |
+| `commands/quest.command.ts`       | Group factory + `@Subcommand()` on slash and prefix.                  |
+| `commands/echo-prefix.command.ts` | `@PrefixCommand` + `@PrefixArgs()`.                                   |
+| `commands/moderation.command.ts`  | 8 unified moderation commands with guards, `confirm()`, `paginate()`. |
+| `events/ready.listener.ts`        | `@OnEvent(ClientReady)` log.                                          |
+
+Run it:
+
+```bash
+cd apps/example
+DISCORD_TOKEN=... DISCORD_CLIENT_ID=... DISCORD_GUILD_ID=... SKIP_REGISTRATION=false bun run deploy
+DISCORD_TOKEN=... bun run dev
+```
+
+Docker builds `apps/example/Dockerfile` on `oven/bun` and runs TS direct via `bun run start:bun`. No secrets baked in.

@@ -1,0 +1,51 @@
+---
+title: Components and modals
+description: Buttons, selects, modals, and autocomplete. Matched by customId.
+---
+
+## Buttons and selects
+
+```ts
+@Button('shop:buy')
+async onBuy(@Context() ix: ButtonInteraction) {
+  await ix.reply('bought');
+}
+
+@StringSelect(/^shop:select:.+/)
+async onSelect(@Context() ix: StringSelectMenuInteraction) {
+  await ix.reply('picked');
+}
+```
+
+| Decorator                      | Matches                  |
+| ------------------------------ | ------------------------ |
+| `@Button(customId)`            | Button press.            |
+| `@StringSelect(customId)`      | String select menu.      |
+| `@UserSelect(customId)`        | User select menu.        |
+| `@RoleSelect(customId)`        | Role select menu.        |
+| `@ChannelSelect(customId)`     | Channel select menu.     |
+| `@MentionableSelect(customId)` | Mentionable select menu. |
+
+`customId` is a string for exact match or a `RegExp` for prefix and parametric ids. `matches()` tests exact or regex.
+
+## Modals
+
+```ts
+@Modal('feedback:submit')
+async onSubmit(@Context() ix: ModalSubmitInteraction) {
+  await ix.reply('thanks');
+}
+```
+
+## Autocomplete
+
+Suggestion handler for a slash option. Scope to one command or handle all.
+
+```ts
+@Autocomplete('roll')
+async suggest(@Context() ix: AutocompleteInteraction) {
+  await ix.respond([{ name: 'd6', value: 'd6' }]);
+}
+```
+
+Pass no name to receive every autocomplete interaction and branch inside.
