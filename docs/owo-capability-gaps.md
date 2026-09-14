@@ -31,6 +31,13 @@ never a forced bot style. Targets below: `→ utils` is a pure helper in
 ## P2 — nice to have
 
 - Word-filter guard recipe (`censor` / `uncensor`).
+- `@Command({ slash, prefix })` + `@Subcommand()`: today the sub is
+  silently dropped on both surfaces. Either wire it or fail boot.
+  Blessed path until then is a group class with `prefix: true`.
+- Per-surface sub names (prefix `rr` vs slash `reroll`): one
+  `@Subcommand({ name })` serves both today. Needs a prefix alias map
+  to fix; Discord has no subcommand aliases, so this stays a
+  documented tradeoff until real pain.
 - Vote-webhook reward pattern (doc, top.gg → currency).
 - i18n pattern lifted from the template (doc, not a framework dep).
 
