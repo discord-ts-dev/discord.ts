@@ -37,6 +37,7 @@ function envOverlay(): DiscordConfigInput {
   if (process.env.DISCORD_GUILD_ID) out.development = [process.env.DISCORD_GUILD_ID];
   if (process.env.SKIP_REGISTRATION !== undefined)
     out.skipRegistration = process.env.SKIP_REGISTRATION !== 'false';
+  if (process.env.MOD_LOG_CHANNEL_ID) out.modLogChannelId = process.env.MOD_LOG_CHANNEL_ID;
   // ponytail: numeric SHARD_COUNT -> shardCount, 'auto' -> shards auto
   if (process.env.SHARD_COUNT !== undefined) {
     const n = Number(process.env.SHARD_COUNT);

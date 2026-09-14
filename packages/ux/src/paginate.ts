@@ -9,22 +9,37 @@ import {
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
-/** Prev/Next embed pager. No-op for a single page. Resolves when it times out. */
+type PageTarget =
+  | (RepliableInteraction & {
+      editReply(msg: unknown): Promise<unknown>;
+      reply(msg: unknown): Promise<unknown>;
+      replied?: boolean;
+      deferred?: boolean;
+    })
+  | {
+      reply(msg: unknown): Promise<unknown>;
+    };
+
+const isMessage = (t: PageTarget): boolean =>
+  'content' in (t as object) && 'author' in (t as object);
+
+/** Prev/Next embed pager. Works on interactions and prefix messages. Resolves when it times out. */
 export async function paginate(
-  interaction: RepliableInteraction & {
-    editReply(msg: unknown): Promise<unknown>;
-    reply(msg: unknown): Promise<unknown>;
-    replied?: boolean;
-    deferred?: boolean;
-  },
+  target: PageTarget,
   pages: EmbedBuilder[],
   timeoutMs = 60_000,
 ): Promise<void> {
   if (!pages.length) return;
+  const ix = target as {
+    replied?: boolean;
+    deferred?: boolean;
+    editReply(m: unknown): Promise<unknown>;
+    reply(m: unknown): Promise<unknown>;
+  };
   if (pages.length === 1) {
     const payload = { embeds: [pages[0]] };
-    if (interaction.replied || interaction.deferred) await interaction.editReply(payload);
-    else await interaction.reply(payload);
+    if (!isMessage(target) && (ix.replied || ix.deferred)) await ix.editReply(payload);
+    else await ix.reply(payload);
     return;
   }
   const tag = uid();
@@ -37,9 +52,9 @@ export async function paginate(
   let i = 0;
   const payload = () => ({ embeds: [pages[i]], components: [row] });
   const msg =
-    interaction.replied || interaction.deferred
-      ? await interaction.editReply(payload())
-      : ((await interaction.reply({ ...payload(), fetchReply: true })) as unknown);
+    !isMessage(target) && (ix.replied || ix.deferred)
+      ? await ix.editReply(payload())
+      : await ix.reply(isMessage(target) ? payload() : { ...payload(), fetchReply: true });
   const collector = (
     msg as unknown as {
       createMessageComponentCollector(o: unknown): {

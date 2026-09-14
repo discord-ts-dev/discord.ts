@@ -10,6 +10,8 @@ export interface DiscordModuleOptions {
   skipRegistration?: boolean;
   /** Prefix for text commands. Default '!'. Prefix routing only active if a @PrefixCommand exists. */
   prefix?: string | string[];
+  /** Moderation log channel id. Env MOD_LOG_CHANNEL_ID wins over file. */
+  modLogChannelId?: string;
   /** Shard ids for this process (large bots). Passed to discord.js Client. */
   shards?: number[] | 'auto';
   /** Total shard count. Passed to discord.js Client. Also total for --shards gate. */

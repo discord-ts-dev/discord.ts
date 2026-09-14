@@ -3,20 +3,35 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
+  type EmbedBuilder,
   type RepliableInteraction,
 } from 'discord.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
-/** Yes/No dialog. Returns true on confirm, false on cancel or timeout. */
+type ConfirmTarget =
+  | (RepliableInteraction & {
+      editReply(msg: unknown): Promise<{ createMessageComponentCollector(o: unknown): unknown }>;
+      reply(msg: unknown): Promise<unknown>;
+      replied?: boolean;
+      deferred?: boolean;
+    })
+  | {
+      reply(msg: unknown): Promise<{
+        createMessageComponentCollector(o: unknown): {
+          on(e: string, fn: (i: unknown) => void): void;
+          stop(): void;
+        };
+      }>;
+    };
+
+const isMessage = (t: ConfirmTarget): boolean =>
+  'content' in (t as object) && 'author' in (t as object);
+
+/** Yes/No dialog. Accepts text or an embed payload, interaction or prefix message. True on confirm. */
 export async function confirm(
-  interaction: RepliableInteraction & {
-    editReply(msg: unknown): Promise<{ createMessageComponentCollector(o: unknown): unknown }>;
-    reply(msg: unknown): Promise<unknown>;
-    replied?: boolean;
-    deferred?: boolean;
-  },
-  question: string,
+  target: ConfirmTarget,
+  question: string | { content?: string; embeds?: EmbedBuilder[] },
   timeoutMs = 15_000,
 ): Promise<boolean> {
   const tag = uid();
@@ -26,16 +41,19 @@ export async function confirm(
     new ButtonBuilder().setCustomId(yes).setLabel('Confirm').setStyle(ButtonStyle.Danger),
     new ButtonBuilder().setCustomId(no).setLabel('Cancel').setStyle(ButtonStyle.Secondary),
   );
-  const payload = { content: question, components: [row] };
-  const msg =
-    interaction.replied || interaction.deferred
-      ? await interaction.editReply(payload)
-      : ((await interaction.reply({ ...payload, fetchReply: true })) as {
-          createMessageComponentCollector(o: unknown): {
-            on(e: string, fn: (i: unknown) => void): void;
-            stop(): void;
-          };
-        });
+  const body = typeof question === 'string' ? { content: question } : question;
+  const payload = { ...body, components: [row] };
+  const ix = target as {
+    replied?: boolean;
+    deferred?: boolean;
+    editReply(m: unknown): Promise<{ createMessageComponentCollector(o: unknown): unknown }>;
+    reply(m: unknown): Promise<unknown>;
+  };
+  const msg = isMessage(target)
+    ? await ix.reply(payload)
+    : ix.replied || ix.deferred
+      ? await ix.editReply(payload)
+      : await ix.reply({ ...payload, fetchReply: true });
   return new Promise((resolve) => {
     const collector = (
       msg as unknown as {
@@ -48,12 +66,16 @@ export async function confirm(
         };
       }
     ).createMessageComponentCollector({ componentType: ComponentType.Button, time: timeoutMs });
+    let done = false;
     collector.on('collect', (i) => {
       if (i.customId !== yes && i.customId !== no) return;
+      done = true;
       collector.stop();
       void i.update({ content: i.customId === yes ? 'Confirmed.' : 'Cancelled.', components: [] });
       resolve(i.customId === yes);
     });
-    collector.on('end', () => resolve(false));
+    collector.on('end', () => {
+      if (!done) resolve(false);
+    });
   });
 }
