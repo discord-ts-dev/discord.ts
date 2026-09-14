@@ -1,12 +1,5 @@
 import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import {
-  Cooldown,
-  RequireBotPermissions,
-  RequirePermissions,
-  applyTimeout,
-  bulkClear,
-  getAuditEntries,
-} from '@discord.ts/core';
+import { Cooldown, RequireBotPermissions, RequirePermissions } from '@discord.ts/core';
 import { confirm, paginate } from '@discord.ts/ux';
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import type {
@@ -18,8 +11,11 @@ import type {
 } from './dto/moderation.dto.js';
 import {
   type Ctx,
+  applyTimeout,
   audit,
   auditAndLog,
+  bulkClear,
+  getAuditEntries,
   guildOf,
   modEmbed,
   modId,

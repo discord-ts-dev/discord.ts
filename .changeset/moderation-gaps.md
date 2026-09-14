@@ -4,4 +4,4 @@
 '@discord.ts/ux': minor
 ---
 
-Resolve moderation framework gaps: prefix DTO mention coerce plus trailing-text join, RequireBotPermissions guard, getAuditEntries/bulkClear/applyTimeout helpers, Message-capable confirm/paginate, errorEmbed
+Resolve moderation framework gaps: prefix DTO mention coerce plus trailing-text join, RequireBotPermissions guard, Message-capable confirm/paginate, errorEmbed

@@ -19,8 +19,5 @@ Ubiquitous language. Glossary only. No implementation.
 - **Cooldown**: per-user rate limit. Declared with `@Cooldown(seconds)`. Hit replies ephemeral and blocks.
 - **Required permissions**: Discord permissions a caller must hold. Declared with `@RequirePermissions(...)`. Missing replies ephemeral and blocks.
 - **Required bot permissions**: Discord permissions the bot member must hold. Declared with `@RequireBotPermissions(...)`. Missing replies ephemeral and blocks.
-- **Prefix DTO fill**: positional map of prefix args into the DTO. Trailing words join into a final string field. Mentions coerce to ids via `parseMentionId`.
-- **Audit entries**: simplified Discord audit log rows. Read via `getAuditEntries()`.
-- **Bulk clear**: bounded delete of messages with optional author filter. Done via `bulkClear()`.
-- **Applied timeout**: validated member timeout within the Discord 28-day limit. Done via `applyTimeout()`.
+- **Prefix DTO fill**: positional map of prefix args into the DTO. Trailing words join into a final string field. Mentions coerce to ids.
 - **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `bootstrapApp()`, spawned with `runShards()`.
