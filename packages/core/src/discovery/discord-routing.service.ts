@@ -155,7 +155,8 @@ export class DiscordRoutingService {
     }
   }
 
-  /** Prefix text routing. Ignores bots, matches prefix + name/alias. */
+  /** Prefix text routing. Ignores bots, matches prefix + name/alias,
+   * then first token to a @Subcommand() method, else the bare handler. */
   private async routePrefix(message: {
     author?: { bot?: boolean };
     content?: string;
@@ -168,10 +169,20 @@ export class DiscordRoutingService {
     if (!hit) return;
     const [name, ...rest] = content.slice(hit.length).trim().split(/\s+/);
     if (!name) return;
-    const found = this.discovery.prefix.find((p) => p.name === name || p.aliases.includes(name));
-    if (!found) return;
+    const candidates = this.discovery.prefix.filter(
+      (p) => p.name === name || p.aliases.includes(name),
+    );
+    if (!candidates.length) return;
     const args = splitArgs(rest.join(' '));
-    await this.invoke(found, message, [message], args);
+    const sub =
+      args.length > 0
+        ? candidates.find(
+            (c) => c.sub !== undefined && c.sub.toLowerCase() === args[0]?.toLowerCase(),
+          )
+        : undefined;
+    const target = sub ?? candidates.find((c) => c.sub === undefined);
+    if (!target) return;
+    await this.invoke(target, message, [message], sub ? args.slice(1) : args);
   }
 
   /** @UsePipes() + required check + class-validator (if installed). False = blocked. */

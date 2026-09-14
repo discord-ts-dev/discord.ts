@@ -47,6 +47,8 @@ export interface EventEntry extends Handler {
 export interface PrefixEntry extends Handler {
   name: string;
   aliases: string[];
+  /** First-token sub-route. Set when the method also carries @Subcommand(). */
+  sub?: string;
 }
 
 export function matches(id: string | RegExp, value: string): boolean {

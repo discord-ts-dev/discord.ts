@@ -191,6 +191,9 @@ export class DiscordDiscoveryService {
           throw new Error(
             `[discord.ts] @Command ${instance.constructor.name}.${name}: set slash or prefix to true.`,
           );
+        const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as
+          | { name: string; description: string }
+          | undefined;
         if (cmd?.slash)
           this.slash.push({
             ...base,
@@ -204,12 +207,15 @@ export class DiscordDiscoveryService {
               contexts: cmd.contexts,
             },
           });
-        if (cmd?.prefix) this.prefix.push({ ...base, name: cmd.name, aliases: cmd.aliases ?? [] });
+        if (cmd?.prefix)
+          this.prefix.push({
+            ...base,
+            name: cmd.name,
+            aliases: cmd.aliases ?? [],
+            sub: sub?.name,
+          });
 
         const slash = Reflect.getMetadata(SLASH_COMMAND_METADATA, fn) as
-          | { name: string; description: string }
-          | undefined;
-        const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as
           | { name: string; description: string }
           | undefined;
         const methodGroup = Reflect.getMetadata(COMMAND_GROUP_METADATA, fn) as
@@ -279,7 +285,8 @@ export class DiscordDiscoveryService {
         const pre = Reflect.getMetadata(PREFIX_COMMAND_METADATA, fn) as
           | { name: string; aliases?: string[] }
           | undefined;
-        if (pre) this.prefix.push({ ...base, name: pre.name, aliases: pre.aliases ?? [] });
+        if (pre)
+          this.prefix.push({ ...base, name: pre.name, aliases: pre.aliases ?? [], sub: sub?.name });
       }
     }
   }

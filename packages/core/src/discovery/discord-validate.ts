@@ -165,8 +165,10 @@ export function validateDiscoveryState(s: DiscoveryState): void {
   for (const p of s.prefix) {
     const w = who(p);
     if (!p.name || /\s/.test(p.name)) errs.push(`${w}: prefix name must be one word`);
-    claim(w, p.name);
-    for (const a of p.aliases) claim(w, a);
+    if (p.sub !== undefined && /\s/.test(p.sub))
+      errs.push(`${w}: prefix sub-route "${p.sub}" must be one word`);
+    claim(w, `${p.name} ${p.sub ?? ''}`);
+    for (const a of p.aliases) claim(w, `${a} ${p.sub ?? ''}`);
   }
   for (const e of s.events) if (!e.event) errs.push(`${who(e)}: event is empty`);
   const topNames = new Set(s.slash.map((e) => e.top));
