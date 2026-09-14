@@ -76,6 +76,13 @@
         "discord.js": "^14.0.0",
       },
     },
+    "packages/systems": {
+      "name": "@discord.ts/systems",
+      "version": "0.1.0",
+      "devDependencies": {
+        "typescript": "^5.6.3",
+      },
+    },
     "packages/utils": {
       "name": "@discord.ts/utils",
       "version": "0.1.0",
@@ -145,6 +152,8 @@
     "@discord.ts/common": ["@discord.ts/common@workspace:packages/common"],
 
     "@discord.ts/core": ["@discord.ts/core@workspace:packages/core"],
+
+    "@discord.ts/systems": ["@discord.ts/systems@workspace:packages/systems"],
 
     "@discord.ts/utils": ["@discord.ts/utils@workspace:packages/utils"],
 

@@ -103,6 +103,20 @@ export function buildDtoFromArgs(
   return dto;
 }
 
+export interface Subroute {
+  route: string;
+  rest: string[];
+}
+
+// ponytail: first-token route split. `quest rr 2` with routes [rr, lock]
+// becomes { route: rr, rest: [2] }; handlers switch on route, DTO on rest.
+export function splitSubroute(args: string[], routes: string[]): Subroute | null {
+  if (args.length === 0) return null;
+  const first = (args[0] as string).toLowerCase();
+  const route = routes.find((r) => r.toLowerCase() === first);
+  return route === undefined ? null : { route, rest: args.slice(1) };
+}
+
 function coerceArg(f: OptionFieldMeta, raw: string | undefined): unknown {
   if (raw === undefined) return undefined;
   if (f.kind === 'integer') return /^-?\d+$/.test(raw) ? Number.parseInt(raw, 10) : raw;

@@ -20,6 +20,7 @@ export class PingCommand {
 - `packages/common` — `@discord.ts/common`: metadata keys, decorators, types, logger
 - `packages/core` — `@discord.ts/core`: module, discovery, routing, sync, guards, config
 - `packages/utils` — `@discord.ts/utils`: pure helpers, mentions, ids, message guards
+- `packages/systems` — `@discord.ts/systems`: store, scheduler, daily, quests, leaderboard, shop
 - `packages/ux` — `@discord.ts/ux`: confirm dialogs, pagers
 - `packages/cli` — `@discord.ts/cli`: the `discord` runner
 - `apps/example` — runnable sample bot

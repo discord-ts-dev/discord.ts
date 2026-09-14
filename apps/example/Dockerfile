@@ -10,6 +10,7 @@ COPY apps/example/package.json ./apps/example/
 COPY packages/cli/package.json ./packages/cli/
 COPY packages/common/package.json ./packages/common/
 COPY packages/core/package.json ./packages/core/
+COPY packages/systems/package.json ./packages/systems/
 COPY packages/utils/package.json ./packages/utils/
 COPY packages/ux/package.json ./packages/ux/
 COPY scripts/postinstall.sh ./scripts/

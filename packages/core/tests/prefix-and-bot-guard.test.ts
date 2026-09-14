@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import { StringOption, UserOption } from '@discord.ts/common';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
-import { buildDtoFromArgs } from '../src/discovery/discord-args.js';
+import { buildDtoFromArgs, splitSubroute } from '../src/discovery/discord-args.js';
 import { RequireBotPermissions } from '../src/guards/guards.decorator.js';
 import { BotPermissionsGuard } from '../src/guards/bot-permissions.guard.js';
 
@@ -46,5 +46,17 @@ describe('prefix DTO and bot guard', () => {
     const ctx = DiscordExecutionContext.create([ix], Cmd.prototype.run, Cmd);
     assert.equal(await guard.canActivate(ctx), false);
     assert.match((seen[0] as { content: string }).content, /Bot is missing permissions/);
+  });
+});
+
+describe('splitSubroute', () => {
+  test('matches first token case-insensitively', () => {
+    assert.deepEqual(splitSubroute(['rr', '2'], ['rr', 'lock']), { route: 'rr', rest: ['2'] });
+    assert.deepEqual(splitSubroute(['LOCK'], ['rr', 'lock']), { route: 'lock', rest: [] });
+  });
+
+  test('no match or no args is null', () => {
+    assert.equal(splitSubroute(['x'], ['rr']), null);
+    assert.equal(splitSubroute([], ['rr']), null);
   });
 });
