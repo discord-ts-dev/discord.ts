@@ -122,9 +122,22 @@ export class MusicService {
   async hydratePlaylists(): Promise<void> {
     const client = await db();
     if (!client) return;
-    const rows = await client.playlist
-      .findMany({ include: { tracks: true, user: true } })
-      .catch(() => null);
+    // ponytail: explicit rows, the generated client is absent in CI typecheck.
+    interface HydrateTrack {
+      uri: string;
+      name: string;
+      duration: number;
+      encode: string;
+    }
+    interface HydratePlaylist {
+      userId: string;
+      name: string;
+      private: boolean;
+      tracks: HydrateTrack[];
+    }
+    const rows = (await client.playlist
+      .findMany({ include: { tracks: true } })
+      .catch(() => null)) as HydratePlaylist[] | null;
     if (!rows) return;
     for (const row of rows) {
       const list = this.playlists.get(row.userId) ?? [];

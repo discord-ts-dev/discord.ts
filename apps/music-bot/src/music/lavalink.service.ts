@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@discord.ts/common';
-import { EQList, LavalinkManager, type Player, type Track as LavTrack } from 'lavalink-client';
+import { LavalinkManager, type Player, type Track as LavTrack } from 'lavalink-client';
 import type { Client } from 'discord.js';
+import { applyLiveFilter, describeLiveFilter, resetLiveFilters } from './lavalink-filters.js';
 import type { Track } from './music.service.js';
 
 export interface LiveMirrors {
@@ -220,67 +221,24 @@ export class LavalinkService {
     const player = this.playerOf(guildId);
     if (!player) return;
     try {
-      const filters = player.filterManager;
-      switch (name) {
-        case 'bassboost':
-          if (enabled) await filters.setEQ(EQList.BassboostHigh);
-          else await filters.clearEQ();
-          break;
-        case 'nightcore':
-          await filters.toggleNightcore(enabled ? 1.25 : undefined);
-          break;
-        case 'karaoke':
-          await filters.toggleKaraoke(enabled ? 1 : undefined);
-          break;
-        case '8d':
-        case 'rotation':
-          await filters.toggleRotation(enabled ? 0.2 : undefined);
-          break;
-        case 'pitch':
-          await filters.setPitch(enabled ? 1.2 : 1);
-          break;
-        case 'speed':
-          await filters.setSpeed(enabled ? 1.25 : 1);
-          break;
-        case 'tremolo':
-          await filters.toggleTremolo(enabled ? 4 : undefined);
-          break;
-        case 'vibrato':
-          await filters.toggleVibrato(enabled ? 4 : undefined);
-          break;
-        case 'lowpass':
-          await filters.toggleLowPass(enabled ? 500 : undefined);
-          break;
-        default:
-          break;
-      }
+      await applyLiveFilter(player, name, enabled);
     } catch (error) {
       this.log.warn(`Filter ${name} failed: ${(error as Error).message}`);
     }
   }
 
   async resetFiltersLive(guildId: string): Promise<void> {
+    const player = this.playerOf(guildId);
+    if (!player) return;
     try {
-      await this.playerOf(guildId)?.filterManager.resetFilters();
+      await resetLiveFilters(player);
     } catch {
       // ignore
     }
   }
 
   describeFilter(name: string): string {
-    const payloads: Record<string, string> = {
-      bassboost: 'EQ bassboost-high',
-      nightcore: 'timescale 1.25x',
-      karaoke: 'karaoke level 1',
-      '8d': 'rotation 0.2Hz',
-      pitch: 'pitch 1.2',
-      speed: 'speed 1.25x',
-      tremolo: 'tremolo 4Hz',
-      vibrato: 'vibrato 4Hz',
-      lowpass: 'lowpass 500Hz',
-      rotation: 'rotation 0.2Hz',
-    };
-    return payloads[name] ?? name;
+    return describeLiveFilter(name);
   }
 
   private async autoplay(player: Player): Promise<void> {

@@ -7,6 +7,30 @@ export interface LyricsResult {
   pages: string[];
 }
 
+/**
+ * Strip Genius lyric markup to plain text. Tag removal runs to a fixpoint so
+ * no `<tag` fragment survives, and `&amp;` decodes last so entities are
+ * decoded exactly once (output goes to Discord embeds, never a browser).
+ */
+export function stripLyricsHtml(html: string): string {
+  const withBreaks = html.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div)>/gi, '\n');
+  let prev = '';
+  let text = withBreaks;
+  while (text !== prev) {
+    prev = text;
+    text = text.replace(/<[^<>]*>?/g, '');
+  }
+  return text
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_match, digits: string) => String.fromCharCode(Number(digits)))
+    .replace(/&amp;/g, '&')
+    .trim();
+}
+
 // ponytail: Genius search + container scrape without cheerio (regex strip).
 // Add cheerio when selectors need to track Genius markup changes.
 @Injectable()
@@ -50,16 +74,7 @@ export class LyricService {
       ...html.matchAll(/<div[^>]*data-lyrics-container="true"[^>]*>(.*?)<\/div>/gs),
     ].map((m) => m[1] ?? '');
     const text = containers
-      .map((part) =>
-        part
-          .replace(/<br\s*\/?>/gi, '\n')
-          .replace(/<\/(p|div)>/gi, '\n')
-          .replace(/<[^>]+>/g, '')
-          .replace(/&amp;/g, '&')
-          .replace(/&quot;/g, '"')
-          .replace(/&#x27;|&#39;/g, "'")
-          .trim(),
-      )
+      .map((part) => stripLyricsHtml(part))
       .join('\n')
       .trim();
     if (!text) return [];
