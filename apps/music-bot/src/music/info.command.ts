@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
+import { Cooldown, RequireGuild } from '@discord.ts/core';
 import {
   EmbedBuilder,
   type ChatInputCommandInteraction,
@@ -70,6 +70,7 @@ const HELP: { category: string; lines: string[] }[] = [
 ];
 
 @Injectable()
+@RequireGuild()
 export class InfoCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly locale: LocaleService = localeService;
@@ -143,10 +144,7 @@ export class InfoCommand {
   ): Promise<void> {
     const lang = this.premium.languageOf(guild?.id ?? null);
     if (dto.scope === 'guild') {
-      if (!guild) {
-        await ctx.reply('Use in a guild.');
-        return;
-      }
+      if (!guild) return;
       const d = this.premium.describeGuild(guild.id);
       await ctx.reply(
         this.locale.t(lang, 'premium.message', {

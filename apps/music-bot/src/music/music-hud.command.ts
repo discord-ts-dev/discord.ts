@@ -8,7 +8,7 @@ import {
   Options,
   StringSelect,
 } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions } from '@discord.ts/core';
+import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
 import { paginate } from '@discord.ts/ux';
 import {
   ActionRowBuilder,
@@ -33,6 +33,7 @@ import { formatTime, progressBar } from './format.js';
 import { NON_PREMIUM_QUEUE_CAP, trackLine, voiceChannelIdOf, type Ctx } from './music-helpers.js';
 
 @Injectable()
+@RequireGuild()
 export class MusicHudCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;
@@ -68,10 +69,7 @@ export class MusicHudCommand {
   @Command({ name: 'nowplaying', description: 'Show current track', slash: true, prefix: true })
   @Cooldown(5)
   async nowplaying(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const q = this.music.queueOf(guild.id);
     if (!q.current) {
       await ctx.reply(this.locale.t(this.lang(guild), 'error.player.no_track_playing'));
@@ -95,10 +93,7 @@ export class MusicHudCommand {
     @Guild() guild: DiscordGuild | null,
     @Options() dto: ToggleDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const q = this.music.queueOf(guild.id);
     q.autoplay = dto.on ?? !q.autoplay;
     this.lavalink.setAutoplay(guild.id, q.autoplay);
@@ -112,10 +107,7 @@ export class MusicHudCommand {
     @Guild() guild: DiscordGuild | null,
     @Options() dto: LoopDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const mode = dto.mode === 'track' || dto.mode === 'queue' ? dto.mode : 'off';
     this.music.queueOf(guild.id).loop = mode;
     void this.lavalink.repeatLive(guild.id, mode);

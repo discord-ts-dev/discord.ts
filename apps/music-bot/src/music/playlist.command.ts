@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
+import { Cooldown, RequireGuild } from '@discord.ts/core';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, Message, User } from 'discord.js';
 import { PlaylistAddDto, PlaylistNameDto, PlaylistStealDto } from './dto/music.dto.js';
 import { LocaleService, localeService } from './locale.service.js';
@@ -13,6 +13,7 @@ async function reply(ctx: Ctx, text: string): Promise<void> {
 }
 
 @Injectable()
+@RequireGuild()
 export class PlaylistCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;

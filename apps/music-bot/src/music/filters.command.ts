@@ -5,7 +5,7 @@ import {
   Subcommand,
   createCommandGroupDecorator,
 } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
+import { Cooldown, RequireGuild } from '@discord.ts/core';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, Message } from 'discord.js';
 import { LavalinkService, lavalinkService } from './lavalink.service.js';
 import { MusicService, musicService } from './music.service.js';
@@ -16,16 +16,14 @@ type Ctx = ChatInputCommandInteraction | Message;
 
 @Injectable()
 @Filters({ prefix: true })
+@RequireGuild()
 export class FiltersCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;
   private readonly lavalink: LavalinkService = lavalinkService;
 
   private async toggle(ctx: Ctx, guild: DiscordGuild | null, name: string): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const q = this.music.queueOf(guild.id);
     const i = q.filters.indexOf(name);
     if (i >= 0) q.filters.splice(i, 1);
@@ -101,10 +99,7 @@ export class FiltersCommand {
   @Subcommand({ name: 'reset', description: 'Reset all filters' })
   @Cooldown(5)
   async reset(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.queueOf(guild.id).filters = [];
     void this.lavalink.resetFiltersLive(guild.id);
     await ctx.reply('Filters reset.');

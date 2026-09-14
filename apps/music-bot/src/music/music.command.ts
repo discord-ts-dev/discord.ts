@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions } from '@discord.ts/core';
+import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
 import { paginate } from '@discord.ts/ux';
 import {
   EmbedBuilder,
@@ -17,6 +17,7 @@ import { chunk, formatTime, parseSeek } from './format.js';
 import { NON_PREMIUM_QUEUE_CAP, trackLine, voiceChannelIdOf, type Ctx } from './music-helpers.js';
 
 @Injectable()
+@RequireGuild()
 export class MusicCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;
@@ -54,10 +55,7 @@ export class MusicCommand {
   @Command({ name: 'leave', description: 'Leave voice channel', slash: true, prefix: true })
   @Cooldown(5)
   async leave(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.clear(guild.id);
     this.music.queueOf(guild.id).current = null;
     void this.lavalink.leave(guild.id);
@@ -73,10 +71,7 @@ export class MusicCommand {
     @Author() author: User,
     @Options() dto: PlayDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     if (!voiceChannelIdOf(ctx)) {
       await ctx.reply(this.locale.t(this.lang(guild), 'error.voice.not_in_voice'));
       return;
@@ -106,10 +101,7 @@ export class MusicCommand {
     @Author() author: User,
     @Options() dto: PlayDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     if (!voiceChannelIdOf(ctx)) {
       await ctx.reply(this.locale.t(this.lang(guild), 'error.voice.not_in_voice'));
       return;
@@ -127,10 +119,7 @@ export class MusicCommand {
   @Command({ name: 'pause', description: 'Pause playback', slash: true, prefix: true })
   @Cooldown(5)
   async pause(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.queueOf(guild.id).paused = true;
     void this.lavalink.pauseLive(guild.id, true);
     await ctx.reply('Paused.');
@@ -139,10 +128,7 @@ export class MusicCommand {
   @Command({ name: 'resume', description: 'Resume playback', slash: true, prefix: true })
   @Cooldown(5)
   async resume(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.queueOf(guild.id).paused = false;
     void this.lavalink.pauseLive(guild.id, false);
     await ctx.reply('Resumed.');
@@ -151,10 +137,7 @@ export class MusicCommand {
   @Command({ name: 'skip', description: 'Skip current track', slash: true, prefix: true })
   @Cooldown(5)
   async skip(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const next = this.music.skip(guild.id);
     void this.lavalink.skipLive(guild.id);
     await ctx.reply(next ? `Skipped. Now: ${trackLine(next)}` : 'Skipped. Queue empty.');
@@ -163,10 +146,7 @@ export class MusicCommand {
   @Command({ name: 'replay', description: 'Replay current track', slash: true, prefix: true })
   @Cooldown(5)
   async replay(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const current = this.music.queueOf(guild.id).current;
     await ctx.reply(current ? `Replaying: ${trackLine(current)}` : 'Nothing to replay.');
   }
@@ -178,10 +158,7 @@ export class MusicCommand {
     @Guild() guild: DiscordGuild | null,
     @Options() dto: SeekDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const ms = parseSeek(dto.time);
     if (ms === null) {
       await ctx.reply('Bad time. Use seconds or 1m30s.');
@@ -199,10 +176,7 @@ export class MusicCommand {
     @Guild() guild: DiscordGuild | null,
     @Options() dto: VolumeDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.queueOf(guild.id).volume = dto.level;
     void this.lavalink.volumeLive(guild.id, dto.level);
     await ctx.reply(`Volume: ${dto.level}.`);
@@ -211,10 +185,7 @@ export class MusicCommand {
   @Command({ name: 'queue', description: 'Show current queue', slash: true, prefix: true })
   @Cooldown(5)
   async queue(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const q = this.music.queueOf(guild.id);
     if (!q.current && !q.tracks.length) {
       await ctx.reply(this.locale.t(this.lang(guild), 'error.common.no_player'));
@@ -235,10 +206,7 @@ export class MusicCommand {
   @Command({ name: 'clearqueue', description: 'Clear the queue', slash: true, prefix: true })
   @Cooldown(5)
   async clearqueue(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.clear(guild.id);
     await ctx.reply('Queue cleared.');
   }
@@ -246,10 +214,7 @@ export class MusicCommand {
   @Command({ name: 'shuffle', description: 'Shuffle the queue', slash: true, prefix: true })
   @Cooldown(5)
   async shuffle(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     this.music.shuffle(guild.id);
     await ctx.reply('Shuffled.');
   }
@@ -261,10 +226,7 @@ export class MusicCommand {
     @Guild() guild: DiscordGuild | null,
     @Options() dto: RemoveDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const removed = this.music.remove(guild.id, dto.index);
     await ctx.reply(removed ? `Removed: ${trackLine(removed)}` : 'Bad index.');
   }

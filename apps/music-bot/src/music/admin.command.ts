@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequirePermissions } from '@discord.ts/core';
+import { Cooldown, RequireGuild, RequirePermissions } from '@discord.ts/core';
 import { confirm } from '@discord.ts/ux';
 import { runInNewContext } from 'node:vm';
 import { inspect } from 'node:util';
@@ -23,6 +23,7 @@ function cleanId(raw: string): string {
 }
 
 @Injectable()
+@RequireGuild()
 export class AdminCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly locale: LocaleService = localeService;
@@ -40,10 +41,7 @@ export class AdminCommand {
     @Guild() guild: DiscordGuild | null,
     @Options() dto: LanguageDto,
   ): Promise<void> {
-    if (!guild) {
-      await ctx.reply('Use in a guild.');
-      return;
-    }
+    if (!guild) return;
     const current = this.premium.languageOf(guild.id);
     if (!dto.lang) {
       await ctx.reply(this.locale.t(current, 'success.language', { lang: current }));

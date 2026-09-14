@@ -9,6 +9,7 @@ import {
 import type { PermissionResolvable } from 'discord.js';
 import { BotPermissionsGuard } from './bot-permissions.guard.js';
 import { CooldownGuard } from './cooldown.guard.js';
+import { GuildGuard } from './guild.guard.js';
 import { PermissionsGuard } from './permissions.guard.js';
 
 /** Block repeat calls per user for N seconds. Replies ephemeral on hit. */
@@ -35,3 +36,7 @@ export const RequireBotPermissions = (
     SetMetadata(REQUIRED_BOT_PERMISSIONS_METADATA, perms),
     UseGuards(BotPermissionsGuard),
   ) as unknown as MethodDecorator & ClassDecorator;
+
+/** Require the command to run in a guild. Replies ephemeral in DMs. */
+export const RequireGuild = (): MethodDecorator & ClassDecorator =>
+  applyDecorators(UseGuards(GuildGuard)) as unknown as MethodDecorator & ClassDecorator;
