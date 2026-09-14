@@ -1,17 +1,18 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
 import { Cooldown } from '@discord.ts/core';
-import { EmbedBuilder, type ChatInputCommandInteraction, type Message } from 'discord.js';
+import {
+  EmbedBuilder,
+  type ChatInputCommandInteraction,
+  type Guild as DiscordGuild,
+  type Message,
+  type User,
+} from 'discord.js';
 import { HelpDto, PremiumScopeDto } from './dto/admin.dto.js';
 import { LocaleService, localeService } from './locale.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 
 type Ctx = ChatInputCommandInteraction | Message;
-
-function guildIdOf(ctx: Ctx): string | null {
-  const guild = 'guild' in ctx ? ctx.guild : null;
-  return guild?.id ?? null;
-}
 
 const HELP: { category: string; lines: string[] }[] = [
   {
@@ -81,8 +82,12 @@ export class InfoCommand {
     prefix: true,
   })
   @Cooldown(5)
-  async help(@Context() ctx: Ctx, @Options() dto: HelpDto): Promise<void> {
-    const lang = this.premium.languageOf(guildIdOf(ctx));
+  async help(
+    @Context() ctx: Ctx,
+    @Guild() guild: DiscordGuild | null,
+    @Options() dto: HelpDto,
+  ): Promise<void> {
+    const lang = this.premium.languageOf(guild?.id ?? null);
     if (dto.command) {
       const found = HELP.flatMap((h) => h.lines).find((n) => n === dto.command);
       const embed = new EmbedBuilder()
@@ -109,8 +114,8 @@ export class InfoCommand {
 
   @Command({ name: 'ping', description: 'Check bot latency', slash: true, prefix: true })
   @Cooldown(5)
-  async ping(@Context() ctx: Ctx): Promise<void> {
-    const lang = this.premium.languageOf(guildIdOf(ctx));
+  async ping(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
+    const lang = this.premium.languageOf(guild?.id ?? null);
     const t0 = Date.now();
     await ctx.reply(this.locale.t(lang, 'ping.checking'));
     const botLatency = Date.now() - t0;
@@ -130,16 +135,19 @@ export class InfoCommand {
 
   @Command({ name: 'premium', description: 'Check premium status', slash: true, prefix: true })
   @Cooldown(5)
-  async premiumStatus(@Context() ctx: Ctx, @Options() dto: PremiumScopeDto): Promise<void> {
-    const lang = this.premium.languageOf(guildIdOf(ctx));
-    const userId = 'author' in ctx ? ctx.author.id : ctx.user.id;
+  async premiumStatus(
+    @Context() ctx: Ctx,
+    @Guild() guild: DiscordGuild | null,
+    @Author() author: User,
+    @Options() dto: PremiumScopeDto,
+  ): Promise<void> {
+    const lang = this.premium.languageOf(guild?.id ?? null);
     if (dto.scope === 'guild') {
-      const guildId = guildIdOf(ctx);
-      if (!guildId) {
+      if (!guild) {
         await ctx.reply('Use in a guild.');
         return;
       }
-      const d = this.premium.describeGuild(guildId);
+      const d = this.premium.describeGuild(guild.id);
       await ctx.reply(
         this.locale.t(lang, 'premium.message', {
           status: d.active ? 'active' : 'inactive',
@@ -149,7 +157,7 @@ export class InfoCommand {
       );
       return;
     }
-    const d = this.premium.describeUser(userId);
+    const d = this.premium.describeUser(author.id);
     await ctx.reply(
       this.locale.t(lang, 'premium.message', {
         status: d.active ? 'active' : 'inactive',

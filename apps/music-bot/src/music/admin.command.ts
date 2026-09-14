@@ -1,4 +1,4 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequirePermissions } from '@discord.ts/core';
 import { confirm } from '@discord.ts/ux';
 import { runInNewContext } from 'node:vm';
@@ -7,7 +7,9 @@ import {
   EmbedBuilder,
   PermissionFlagsBits,
   type ChatInputCommandInteraction,
+  type Guild as DiscordGuild,
   type Message,
+  type User,
 } from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
 import { LocaleService, localeService } from './locale.service.js';
@@ -15,16 +17,6 @@ import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig, isOwner } from './bot-config.js';
 
 type Ctx = ChatInputCommandInteraction | Message;
-
-function guildIdOf(ctx: Ctx): string | null {
-  const guild = 'guild' in ctx ? ctx.guild : null;
-  return guild?.id ?? null;
-}
-
-function userIdOf(ctx: Ctx): string {
-  if ('author' in ctx) return ctx.author.id;
-  return ctx.user.id;
-}
 
 function cleanId(raw: string): string {
   return raw.replace(/[<@!>]/g, '');
@@ -43,13 +35,16 @@ export class AdminCommand {
     prefix: true,
   })
   @RequirePermissions(PermissionFlagsBits.Administrator)
-  async language(@Context() ctx: Ctx, @Options() dto: LanguageDto): Promise<void> {
-    const guildId = guildIdOf(ctx);
-    if (!guildId) {
+  async language(
+    @Context() ctx: Ctx,
+    @Guild() guild: DiscordGuild | null,
+    @Options() dto: LanguageDto,
+  ): Promise<void> {
+    if (!guild) {
       await ctx.reply('Use in a guild.');
       return;
     }
-    const current = this.premium.languageOf(guildId);
+    const current = this.premium.languageOf(guild.id);
     if (!dto.lang) {
       await ctx.reply(this.locale.t(current, 'success.language', { lang: current }));
       return;
@@ -61,13 +56,17 @@ export class AdminCommand {
       );
       return;
     }
-    this.premium.setLanguage(guildId, match);
+    this.premium.setLanguage(guild.id, match);
     await ctx.reply(this.locale.t(match, 'success.language_change'));
   }
 
   @Command({ name: 'addpremium', description: 'Grant premium (owner)', slash: true, prefix: true })
-  async addpremium(@Context() ctx: Ctx, @Options() dto: GrantPremiumDto): Promise<void> {
-    if (!isOwner(userIdOf(ctx))) {
+  async addpremium(
+    @Context() ctx: Ctx,
+    @Author() author: User,
+    @Options() dto: GrantPremiumDto,
+  ): Promise<void> {
+    if (!isOwner(author.id)) {
       await ctx.reply('Owner only.');
       return;
     }
@@ -82,8 +81,12 @@ export class AdminCommand {
     slash: true,
     prefix: true,
   })
-  async revokepremium(@Context() ctx: Ctx, @Options() dto: ScopeTargetDto): Promise<void> {
-    if (!isOwner(userIdOf(ctx))) {
+  async revokepremium(
+    @Context() ctx: Ctx,
+    @Author() author: User,
+    @Options() dto: ScopeTargetDto,
+  ): Promise<void> {
+    if (!isOwner(author.id)) {
       await ctx.reply('Owner only.');
       return;
     }
@@ -97,8 +100,12 @@ export class AdminCommand {
     slash: true,
     prefix: true,
   })
-  async register(@Context() ctx: Ctx, @Options() dto: ScopeTargetDto): Promise<void> {
-    if (!isOwner(userIdOf(ctx))) {
+  async register(
+    @Context() ctx: Ctx,
+    @Author() author: User,
+    @Options() dto: ScopeTargetDto,
+  ): Promise<void> {
+    if (!isOwner(author.id)) {
       await ctx.reply('Owner only.');
       return;
     }
@@ -107,8 +114,12 @@ export class AdminCommand {
   }
 
   @Command({ name: 'data', description: 'Show stored row (dev)', slash: true, prefix: true })
-  async data(@Context() ctx: Ctx, @Options() dto: ScopeTargetDto): Promise<void> {
-    if (!isOwner(userIdOf(ctx))) {
+  async data(
+    @Context() ctx: Ctx,
+    @Author() author: User,
+    @Options() dto: ScopeTargetDto,
+  ): Promise<void> {
+    if (!isOwner(author.id)) {
       await ctx.reply('Owner only.');
       return;
     }
@@ -117,8 +128,12 @@ export class AdminCommand {
   }
 
   @Command({ name: 'eval', description: 'Evaluate code (owner)', slash: true, prefix: true })
-  async evalJs(@Context() ctx: Ctx, @Options() dto: EvalDto): Promise<void> {
-    if (!isOwner(userIdOf(ctx))) {
+  async evalJs(
+    @Context() ctx: Ctx,
+    @Author() author: User,
+    @Options() dto: EvalDto,
+  ): Promise<void> {
+    if (!isOwner(author.id)) {
       await ctx.reply('Owner only.');
       return;
     }
@@ -148,8 +163,8 @@ export class AdminCommand {
 
   @Command({ name: 'restart', description: 'Restart bot (owner)', slash: true, prefix: true })
   @Cooldown(30)
-  async restart(@Context() ctx: Ctx): Promise<void> {
-    if (!isOwner(userIdOf(ctx))) {
+  async restart(@Context() ctx: Ctx, @Author() author: User): Promise<void> {
+    if (!isOwner(author.id)) {
       await ctx.reply('Owner only.');
       return;
     }

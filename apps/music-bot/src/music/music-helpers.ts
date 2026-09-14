@@ -5,16 +5,6 @@ export type Ctx = ChatInputCommandInteraction | Message;
 
 export const NON_PREMIUM_QUEUE_CAP = 25;
 
-export function guildIdOf(ctx: Ctx): string | null {
-  const guild = 'guild' in ctx ? ctx.guild : null;
-  return guild?.id ?? null;
-}
-
-export function userIdOf(ctx: Ctx): string {
-  if ('author' in ctx) return ctx.author.id;
-  return ctx.user.id;
-}
-
 export function voiceChannelIdOf(ctx: Ctx): string | null {
   const member = ctx.member as GuildMember | null;
   return member?.voice?.channelId ?? null;

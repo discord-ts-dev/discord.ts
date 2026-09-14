@@ -1,7 +1,9 @@
 import type { SlashCommandBuilder } from 'discord.js';
 import {
   OPTION_FIELD_METADATA,
+  PARAM_AUTHOR_METADATA,
   PARAM_CONTEXT_METADATA,
+  PARAM_GUILD_METADATA,
   PARAM_OPTIONS_METADATA,
   PARAM_PREFIX_ARGS_METADATA,
   type OptionFieldMeta,
@@ -26,6 +28,8 @@ export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[
   const ctxIdx: number[] = Reflect.getMetadata(PARAM_CONTEXT_METADATA, fn) ?? [];
   const optIdx: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, fn) ?? [];
   const argIdx: number[] = Reflect.getMetadata(PARAM_PREFIX_ARGS_METADATA, fn) ?? [];
+  const guildIdx: number[] = Reflect.getMetadata(PARAM_GUILD_METADATA, fn) ?? [];
+  const authorIdx: number[] = Reflect.getMetadata(PARAM_AUTHOR_METADATA, fn) ?? [];
   for (const i of ctxIdx) args[i] = interaction;
   for (const i of optIdx) {
     const Dto = (types[i] ?? Object) as new () => Record<string, unknown>;
@@ -33,9 +37,29 @@ export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[
       prefixArgs !== undefined ? buildDtoFromArgs(Dto, prefixArgs) : buildDto(Dto, interaction);
   }
   for (const i of argIdx) args[i] = prefixArgs ?? [];
+  for (const i of guildIdx) args[i] = resolveGuild(interaction);
+  for (const i of authorIdx) args[i] = resolveAuthor(interaction);
   // No decorators: pass interaction as single arg (lazy default)
-  if (!ctxIdx.length && !optIdx.length && !argIdx.length && types.length) args[0] = interaction;
+  if (
+    !ctxIdx.length &&
+    !optIdx.length &&
+    !argIdx.length &&
+    !guildIdx.length &&
+    !authorIdx.length &&
+    types.length
+  )
+    args[0] = interaction;
   return args;
+}
+
+// ponytail: structural reads, works for interactions, messages, and selects.
+export function resolveGuild(source: unknown): unknown {
+  return (source as { guild?: unknown }).guild ?? null;
+}
+
+export function resolveAuthor(source: unknown): unknown {
+  const rec = source as { author?: unknown; user?: unknown };
+  return rec.author ?? rec.user ?? null;
 }
 
 export function buildDto(
@@ -76,11 +100,16 @@ export function buildEventArgs(h: Handler, raw: unknown[]): unknown[] {
   const fn = h.instance[h.method] as (...a: never[]) => unknown;
   const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
   const ctxIdx: number[] = Reflect.getMetadata(PARAM_CONTEXT_METADATA, fn) ?? [];
+  const guildIdx: number[] = Reflect.getMetadata(PARAM_GUILD_METADATA, fn) ?? [];
+  const authorIdx: number[] = Reflect.getMetadata(PARAM_AUTHOR_METADATA, fn) ?? [];
   const args: unknown[] = new Array(Math.max(types.length, raw.length)).fill(undefined);
   raw.forEach((v, i) => {
     args[i] = v;
   });
   for (const i of ctxIdx) args[i] = raw[0];
+  const head = raw[0];
+  for (const i of guildIdx) if (args[i] === undefined) args[i] = resolveGuild(head);
+  for (const i of authorIdx) if (args[i] === undefined) args[i] = resolveAuthor(head);
   return args;
 }
 
