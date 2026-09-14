@@ -1,18 +1,19 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { REQUIRED_PERMISSIONS_METADATA, type CanActivate } from '@discord.ts/common';
 import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
-import { REQUIRED_PERMISSIONS_METADATA } from '@discord.ts/common';
+import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
-@Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: DiscordExecutionContext): Promise<boolean> {
+    const fn = context.getHandler() as object;
+    const cls = context.getClass() as object;
     const required =
-      this.reflector.getAllAndOverride<PermissionResolvable[]>(REQUIRED_PERMISSIONS_METADATA, [
-        context.getHandler(),
-        context.getClass(),
-      ]) ?? [];
+      (Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA, fn) as
+        | PermissionResolvable[]
+        | undefined) ??
+      (Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA, cls) as
+        | PermissionResolvable[]
+        | undefined) ??
+      [];
     if (!required.length) return true;
     const ix = context.getArgByIndex<Record<string, unknown>>(0);
     const perms =

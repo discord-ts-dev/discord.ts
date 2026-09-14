@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { PARAM_CONTEXT_METADATA, PARAM_OPTIONS_METADATA } from '../constants';
+import { PARAM_CONTEXT_METADATA, PARAM_OPTIONS_METADATA } from '../constants.js';
 
 type R = {
   getMetadata(key: string, target: object): number[] | undefined;

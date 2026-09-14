@@ -6,7 +6,7 @@ import {
   PARAM_PREFIX_ARGS_METADATA,
   type OptionFieldMeta,
 } from '@discord.ts/common';
-import type { Handler } from './handler.types';
+import type { Handler } from './handler.types.js';
 
 // ponytail: pure arg building, no DI. Shared by routing; optionsDto by discovery JSON.
 export function optionsDto(h: Handler): (new () => Record<string, unknown>) | undefined {

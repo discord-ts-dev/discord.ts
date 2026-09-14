@@ -1,7 +1,7 @@
 // ponytail: smoke test only, proves bun test wiring
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import * as ux from '../src/index';
+import * as ux from '../src/index.js';
 
 describe('@discord.ts/ux', () => {
   test('exports module surface', () => {

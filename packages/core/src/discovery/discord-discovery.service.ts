@@ -1,11 +1,3 @@
-import {
-  Inject,
-  Injectable,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-  OnModuleInit,
-} from '@nestjs/common';
-import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { Client, ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
 import { styleText } from 'node:util';
 import {
@@ -14,8 +6,8 @@ import {
   COMMAND_GROUP_METADATA,
   COMMAND_METADATA,
   CONTEXT_MENU_METADATA,
-  DISCORD_CLIENT,
-  DISCORD_MODULE_OPTIONS,
+  type CommandMeta,
+  type DiscordModuleOptions,
   DiscordLogger,
   MODAL_METADATA,
   ON_EVENT_METADATA,
@@ -23,13 +15,11 @@ import {
   SELECT_METADATA,
   SLASH_COMMAND_METADATA,
   SUBCOMMAND_METADATA,
-  type CommandMeta,
-  type DiscordModuleOptions,
   type SlashCommandMeta,
 } from '@discord.ts/common';
-import { DiscordSyncService } from './discord-sync.service';
-import { applyOptions, optionsDto } from './discord-args';
-import { validateDiscoveryState } from './discord-validate';
+import { DiscordSyncService } from './discord-sync.service.js';
+import { applyOptions, optionsDto } from './discord-args.js';
+import { validateDiscoveryState } from './discord-validate.js';
 import type {
   AutocompleteEntry,
   ButtonEntry,
@@ -40,14 +30,11 @@ import type {
   PrefixEntry,
   SelectEntry,
   SlashEntry,
-} from './handler.types';
+} from './handler.types.js';
 
-// Nest discovery reference: providers -> methods -> metadata (@nestjs/core DiscoveryService).
+// Standalone scan: instances -> methods -> metadata. No Nest dep.
 // Routing lives in DiscordRoutingService; this service owns scan state, JSON, login.
-@Injectable()
-export class DiscordDiscoveryService
-  implements OnModuleInit, OnApplicationBootstrap, OnApplicationShutdown
-{
+export class DiscordDiscoveryService {
   readonly slash: SlashEntry[] = [];
   readonly menus: MenuEntry[] = [];
   readonly buttons: ButtonEntry[] = [];
@@ -59,27 +46,24 @@ export class DiscordDiscoveryService
   private readonly logger = new DiscordLogger('Discovery');
 
   constructor(
-    private readonly discovery: DiscoveryService,
-    private readonly scanner: MetadataScanner,
-    private readonly reflector: Reflector,
-    @Inject(DISCORD_CLIENT) private readonly client: Client,
-    @Inject(DISCORD_MODULE_OPTIONS) private readonly opts: DiscordModuleOptions,
+    private readonly client: Client,
+    private readonly opts: DiscordModuleOptions,
     private readonly sync: DiscordSyncService,
   ) {}
 
-  onModuleInit(): void {
-    this.scan();
+  init(instances: object[]): void {
+    this.scan(instances);
     validateDiscoveryState(this);
     this.logRoutes();
   }
 
-  async onApplicationBootstrap(): Promise<void> {
+  async start(): Promise<void> {
     if (!this.opts.skipRegistration) await this.sync.sync(this.buildJson());
     await this.client.login(this.opts.token);
     this.logger.ready('Logged in to Discord gateway');
   }
 
-  async onApplicationShutdown(): Promise<void> {
+  async stop(): Promise<void> {
     await this.client.destroy();
   }
 
@@ -188,14 +172,12 @@ export class DiscordDiscoveryService
     );
   }
 
-  private scan(): void {
-    const providers = this.discovery.getProviders();
-    for (const w of providers) {
-      const instance = w.instance as Record<string, unknown> | null | undefined;
+  private scan(instances: object[]): void {
+    for (const instance of instances) {
       if (!instance || typeof instance !== 'object') continue;
       const proto = Object.getPrototypeOf(instance) as Record<string, unknown>;
       if (!proto) continue;
-      const names = this.scanner.getAllMethodNames(proto);
+      const names = Object.getOwnPropertyNames(proto).filter((n) => n !== 'constructor');
       const group = Reflect.getMetadata(COMMAND_GROUP_METADATA, instance.constructor) as
         | { name: string; description: string }
         | undefined;
@@ -204,7 +186,7 @@ export class DiscordDiscoveryService
         if (typeof fn !== 'function') continue;
         const base = { instance, method: name } as Handler;
 
-        const cmd = this.reflect<CommandMeta>(COMMAND_METADATA, fn);
+        const cmd = Reflect.getMetadata(COMMAND_METADATA, fn) as CommandMeta | undefined;
         if (cmd && !cmd.slash && !cmd.prefix)
           throw new Error(
             `[discord.ts] @Command ${instance.constructor.name}.${name}: set slash or prefix to true.`,
@@ -224,12 +206,15 @@ export class DiscordDiscoveryService
           });
         if (cmd?.prefix) this.prefix.push({ ...base, name: cmd.name, aliases: cmd.aliases ?? [] });
 
-        const slash = this.reflect<{ name: string; description: string }>(
-          SLASH_COMMAND_METADATA,
-          fn,
-        );
-        const sub = this.reflect<{ name: string; description: string }>(SUBCOMMAND_METADATA, fn);
-        const methodGroup = this.reflect<{ name: string }>(COMMAND_GROUP_METADATA, fn);
+        const slash = Reflect.getMetadata(SLASH_COMMAND_METADATA, fn) as
+          | { name: string; description: string }
+          | undefined;
+        const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as
+          | { name: string; description: string }
+          | undefined;
+        const methodGroup = Reflect.getMetadata(COMMAND_GROUP_METADATA, fn) as
+          | { name: string }
+          | undefined;
         if (slash && !sub) {
           this.slash.push({
             ...base,
@@ -261,34 +246,41 @@ export class DiscordDiscoveryService
           });
         }
 
-        const menu = this.reflect<{
-          name: string;
-          type: MenuEntry['type'];
-        }>(CONTEXT_MENU_METADATA, fn);
+        const menu = Reflect.getMetadata(CONTEXT_MENU_METADATA, fn) as
+          | { name: string; type: MenuEntry['type'] }
+          | undefined;
         if (menu) this.menus.push({ ...base, ...menu, meta: menu });
 
-        const btn = this.reflect<{ customId: string | RegExp }>(BUTTON_METADATA, fn);
+        const btn = Reflect.getMetadata(BUTTON_METADATA, fn) as
+          | { customId: string | RegExp }
+          | undefined;
         if (btn) this.buttons.push({ ...base, ...btn });
 
-        const sel = this.reflect<{ kind: string; customId: string | RegExp }>(SELECT_METADATA, fn);
+        const sel = Reflect.getMetadata(SELECT_METADATA, fn) as
+          | { kind: string; customId: string | RegExp }
+          | undefined;
         if (sel) this.selects.push({ ...base, ...sel });
 
-        const modal = this.reflect<{ customId: string | RegExp }>(MODAL_METADATA, fn);
+        const modal = Reflect.getMetadata(MODAL_METADATA, fn) as
+          | { customId: string | RegExp }
+          | undefined;
         if (modal) this.modals.push({ ...base, ...modal });
 
-        const ac = this.reflect<{ commandName?: string }>(AUTOCOMPLETE_METADATA, fn);
+        const ac = Reflect.getMetadata(AUTOCOMPLETE_METADATA, fn) as
+          | { commandName?: string }
+          | undefined;
         if (ac) this.autocompletes.push({ ...base, ...ac });
 
-        const ev = this.reflect<{ event: string; once: boolean }>(ON_EVENT_METADATA, fn);
+        const ev = Reflect.getMetadata(ON_EVENT_METADATA, fn) as
+          | { event: string; once: boolean }
+          | undefined;
         if (ev) this.events.push({ ...base, ...ev });
 
-        const pre = this.reflect<{ name: string; aliases?: string[] }>(PREFIX_COMMAND_METADATA, fn);
+        const pre = Reflect.getMetadata(PREFIX_COMMAND_METADATA, fn) as
+          | { name: string; aliases?: string[] }
+          | undefined;
         if (pre) this.prefix.push({ ...base, name: pre.name, aliases: pre.aliases ?? [] });
       }
     }
-  }
-
-  private reflect<T>(key: string, fn: unknown): T | undefined {
-    return this.reflector.get<T, unknown>(key, fn as never) as T | undefined;
   }
 }

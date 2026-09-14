@@ -1,5 +1,5 @@
 import { OPTION_FIELD_METADATA, type OptionFieldMeta } from '@discord.ts/common';
-import { optionsDto } from './discord-args';
+import { optionsDto } from './discord-args.js';
 import type {
   AutocompleteEntry,
   ButtonEntry,
@@ -10,7 +10,7 @@ import type {
   PrefixEntry,
   SelectEntry,
   SlashEntry,
-} from './handler.types';
+} from './handler.types.js';
 
 export interface DiscoveryState {
   slash: SlashEntry[];

@@ -1,36 +1,39 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { GUARDS_METADATA, PIPES_METADATA } from '@nestjs/common/constants';
-import { ModuleRef, Reflector } from '@nestjs/core';
 import { Client, Events } from 'discord.js';
 import {
   DISCORD_CLIENT,
   DISCORD_MODULE_OPTIONS,
   DiscordLogger,
+  GUARDS_METADATA,
   OPTION_FIELD_METADATA,
   PARAM_OPTIONS_METADATA,
+  PIPES_METADATA,
   type DiscordModuleOptions,
   type OptionFieldMeta,
 } from '@discord.ts/common';
-import { DiscordExecutionContext } from '../context/discord-execution-context';
-import { buildArgs, buildEventArgs } from './discord-args';
-import { DiscordDiscoveryService } from './discord-discovery.service';
-import { matches, splitArgs, type Handler } from './handler.types';
+import { DiscordExecutionContext } from '../context/discord-execution-context.js';
+import { buildArgs, buildEventArgs } from './discord-args.js';
+import { DiscordDiscoveryService } from './discord-discovery.service.js';
+import { matches, splitArgs, type Handler } from './handler.types.js';
 
-// Reads scan state from DiscordDiscoveryService. Listed after it in DiscordModule
-// so scan runs before subscriptions (Nest inits providers in registration order).
-@Injectable()
-export class DiscordRoutingService implements OnModuleInit {
+// Reads scan state from DiscordDiscoveryService. Subscribe after discovery init.
+export class DiscordRoutingService {
   private readonly logger = new DiscordLogger('Routing');
 
   constructor(
-    @Inject(DISCORD_CLIENT) private readonly client: Client,
-    @Inject(DISCORD_MODULE_OPTIONS) private readonly opts: DiscordModuleOptions,
-    private readonly reflector: Reflector,
-    private readonly moduleRef: ModuleRef,
+    private readonly client: Client,
+    private readonly opts: DiscordModuleOptions,
     private readonly discovery: DiscordDiscoveryService,
-  ) {}
+    private readonly guards: Map<unknown, { canActivate(ctx: unknown): unknown }>,
+    private readonly pipes: Map<
+      unknown,
+      { transform(v: unknown, m: unknown): unknown }
+    > = new Map(),
+  ) {
+    void DISCORD_CLIENT;
+    void DISCORD_MODULE_OPTIONS;
+  }
 
-  onModuleInit(): void {
+  subscribe(): void {
     this.client.on(Events.InteractionCreate, (i) => void this.route(i));
     // ponytail: warn/error always, debug only with DISCORD_DEBUG=true
     this.client.on(Events.Warn, (m) => this.logger.warn(m));
@@ -171,7 +174,7 @@ export class DiscordRoutingService implements OnModuleInit {
     await this.invoke(found, message, [message], args);
   }
 
-  /** Stock @UsePipes() + required check + class-validator (if installed). False = blocked. */
+  /** @UsePipes() + required check + class-validator (if installed). False = blocked. */
   private async runPipesAndValidate(
     h: Handler,
     args: unknown[],
@@ -181,11 +184,7 @@ export class DiscordRoutingService implements OnModuleInit {
     const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
     const optIdx: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, fn) ?? [];
     if (!optIdx.length) return true;
-    const pipes =
-      this.reflector.getAllAndOverride<unknown[]>(PIPES_METADATA, [
-        fn as never,
-        h.instance.constructor as never,
-      ]) ?? [];
+    const pipes = this.collectMeta<unknown>(PIPES_METADATA, h);
     for (const i of optIdx) {
       let value = args[i];
       const metatype = types[i] as new (...a: never[]) => unknown;
@@ -193,9 +192,7 @@ export class DiscordRoutingService implements OnModuleInit {
         const inst =
           typeof p === 'object' && p !== null && 'transform' in (p as object)
             ? (p as { transform(v: unknown, m: unknown): unknown })
-            : (this.moduleRef.get(p as never, { strict: false }) as {
-                transform(v: unknown, m: unknown): unknown;
-              });
+            : this.resolvePipe(p);
         value = await inst.transform(value, { type: 'custom', metatype, data: undefined });
       }
       args[i] = value;
@@ -206,6 +203,13 @@ export class DiscordRoutingService implements OnModuleInit {
       }
     }
     return true;
+  }
+
+  private resolvePipe(p: unknown): { transform(v: unknown, m: unknown): unknown } {
+    const found = this.pipes.get(p);
+    if (found) return found as { transform(v: unknown, m: unknown): unknown };
+    const Ctor = p as new () => { transform(v: unknown, m: unknown): unknown };
+    return new Ctor();
   }
 
   private async validateDto(dto: unknown): Promise<string | null> {
@@ -247,19 +251,32 @@ export class DiscordRoutingService implements OnModuleInit {
     }
   }
 
+  private collectMeta<T>(key: string, h: Handler): T[] {
+    const fn = h.instance[h.method] as object;
+    const cls = h.instance.constructor as object;
+    return [
+      ...((Reflect.getMetadata(key, cls) as T[] | undefined) ?? []),
+      ...((Reflect.getMetadata(key, fn) as T[] | undefined) ?? []),
+    ];
+  }
+
   private async canActivate(h: Handler, interaction: unknown): Promise<boolean> {
-    const guards = this.reflector.getAllAndOverride<unknown[]>(GUARDS_METADATA, [
-      h.instance[h.method] as never,
-      h.instance.constructor as never,
-    ]);
-    if (!guards?.length) return true;
+    const guards = this.collectMeta<unknown>(GUARDS_METADATA, h);
+    if (!guards.length) return true;
+    const fn = h.instance[h.method] as (...args: never[]) => unknown;
+    const cls = h.instance.constructor as new (...args: never[]) => unknown;
     for (const g of guards) {
-      const inst = this.moduleRef.get(g as never, { strict: false }) as {
-        canActivate(ctx: unknown): boolean | Promise<boolean>;
-      };
-      const can = await inst.canActivate(DiscordExecutionContext.create([interaction]));
+      const inst = this.resolveGuard(g);
+      const can = await inst.canActivate(DiscordExecutionContext.create([interaction], fn, cls));
       if (!can) return false;
     }
     return true;
+  }
+
+  private resolveGuard(g: unknown): { canActivate(ctx: unknown): unknown } {
+    const found = this.guards.get(g);
+    if (found) return found;
+    const Ctor = g as new () => { canActivate(ctx: unknown): unknown };
+    return new Ctor();
   }
 }

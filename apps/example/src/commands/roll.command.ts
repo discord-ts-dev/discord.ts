@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Context, Injectable, Options, SlashCommand } from '@discord.ts/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { Context, Options, SlashCommand } from '@discord.ts/common';
-import { RollDto } from './dto/roll.dto';
+import { RollDto } from './dto/roll.dto.js';
 
 @Injectable()
 export class RollCommand {

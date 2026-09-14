@@ -18,3 +18,5 @@ export const PARAM_PREFIX_ARGS_METADATA = 'discord:param:prefix-args';
 export const COOLDOWN_METADATA = 'discord:cooldown-seconds';
 export const REQUIRED_PERMISSIONS_METADATA = 'discord:required-permissions';
 export const OPTION_FIELD_METADATA = 'discord:option-field';
+export const GUARDS_METADATA = 'discord:guards';
+export const PIPES_METADATA = 'discord:pipes';

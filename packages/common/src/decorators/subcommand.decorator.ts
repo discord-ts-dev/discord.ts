@@ -1,5 +1,5 @@
-import { SetMetadata } from '@nestjs/common';
-import { COMMAND_GROUP_METADATA, SUBCOMMAND_METADATA } from '../constants';
+import { SetMetadata } from '../di.js';
+import { COMMAND_GROUP_METADATA, SUBCOMMAND_METADATA } from '../constants.js';
 
 export interface CommandGroupMeta {
   name: string;

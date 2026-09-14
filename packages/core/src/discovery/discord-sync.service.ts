@@ -1,10 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
 import { REST, Routes } from 'discord.js';
-import { DISCORD_MODULE_OPTIONS, type DiscordModuleOptions } from '@discord.ts/common';
+import { type DiscordModuleOptions } from '@discord.ts/common';
 
-@Injectable()
 export class DiscordSyncService {
-  constructor(@Inject(DISCORD_MODULE_OPTIONS) private readonly opts: DiscordModuleOptions) {}
+  constructor(private readonly opts: DiscordModuleOptions) {}
 
   // ponytail: full PUT each deploy, Discord has no diff endpoint
   async sync(body: unknown[]): Promise<void> {

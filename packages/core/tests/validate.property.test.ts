@@ -2,8 +2,8 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
 import * as fc from 'fast-check';
-import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate';
-import type { SlashEntry } from '../src/discovery/handler.types';
+import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate.js';
+import type { SlashEntry } from '../src/discovery/handler.types.js';
 
 const empty: DiscoveryState = {
   slash: [],

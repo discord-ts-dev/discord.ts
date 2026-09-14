@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Context, Injectable, PrefixArgs, PrefixCommand } from '@discord.ts/common';
 import type { Message } from 'discord.js';
-import { Context, PrefixArgs, PrefixCommand } from '@discord.ts/common';
 
 @Injectable()
 export class EchoPrefixCommand {
