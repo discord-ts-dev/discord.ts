@@ -1,6 +1,6 @@
 import { ApplicationCommandType, type InteractionContextType } from 'discord.js';
-import { SetMetadata } from '@nestjs/common';
-import { CONTEXT_MENU_METADATA } from '../constants';
+import { SetMetadata } from '../di.js';
+import { CONTEXT_MENU_METADATA } from '../constants.js';
 
 export interface ContextMenuMeta {
   name: string;

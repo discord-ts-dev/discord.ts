@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { SetMetadata } from '@nestjs/common';
-import { PARAM_PREFIX_ARGS_METADATA, PREFIX_COMMAND_METADATA } from '../constants';
+import { SetMetadata } from '../di.js';
+import { PARAM_PREFIX_ARGS_METADATA, PREFIX_COMMAND_METADATA } from '../constants.js';
 
 export interface PrefixCommandMeta {
   name: string;

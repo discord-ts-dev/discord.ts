@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { deployWithModule } from '@discord.ts/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app.module.js';
 
 async function main(): Promise<void> {
   const { count } = await deployWithModule(AppModule);

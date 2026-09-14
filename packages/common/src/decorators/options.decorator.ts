@@ -1,5 +1,5 @@
 import type { ChannelType } from 'discord.js';
-import { OPTION_FIELD_METADATA } from '../constants';
+import { OPTION_FIELD_METADATA } from '../constants.js';
 
 /** Channel kinds Discord accepts on channel options (no DMs, groups, directories). */
 export type GuildChannelType = Exclude<

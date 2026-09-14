@@ -1,22 +1,19 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { COOLDOWN_METADATA } from '@discord.ts/common';
+import { COOLDOWN_METADATA, type CanActivate } from '@discord.ts/common';
+import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: bounded in-memory map, FIFO evict on overflow, per-key expiry
 const MAX_ENTRIES = 5000;
 
-@Injectable()
 export class CooldownGuard implements CanActivate {
   private readonly hits = new Map<string, number>();
 
-  constructor(private readonly reflector: Reflector) {}
-
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: DiscordExecutionContext): Promise<boolean> {
+    const fn = context.getHandler() as object;
+    const cls = context.getClass() as object;
     const seconds =
-      this.reflector.getAllAndOverride<number>(COOLDOWN_METADATA, [
-        context.getHandler(),
-        context.getClass(),
-      ]) ?? 0;
+      (Reflect.getMetadata(COOLDOWN_METADATA, fn) as number | undefined) ??
+      (Reflect.getMetadata(COOLDOWN_METADATA, cls) as number | undefined) ??
+      0;
     if (!seconds) return true;
     const ix = context.getArgByIndex<Record<string, unknown>>(0);
     const userId =
@@ -24,7 +21,7 @@ export class CooldownGuard implements CanActivate {
       (ix['author'] as { id?: string } | undefined)?.id;
     if (!userId) return true;
     const handler = context.getHandler() as { name?: string };
-    const key = `${userId}:${context.getClass().name}.${handler.name}`;
+    const key = `${userId}:${(context.getClass() as { name?: string }).name}.${handler.name}`;
     const now = Date.now();
     const until = this.hits.get(key) ?? 0;
     if (now < until) {

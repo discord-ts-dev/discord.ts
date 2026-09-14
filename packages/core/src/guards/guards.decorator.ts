@@ -1,8 +1,13 @@
-import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
+import {
+  COOLDOWN_METADATA,
+  REQUIRED_PERMISSIONS_METADATA,
+  SetMetadata,
+  UseGuards,
+  applyDecorators,
+} from '@discord.ts/common';
 import type { PermissionResolvable } from 'discord.js';
-import { COOLDOWN_METADATA, REQUIRED_PERMISSIONS_METADATA } from '@discord.ts/common';
-import { CooldownGuard } from './cooldown.guard';
-import { PermissionsGuard } from './permissions.guard';
+import { CooldownGuard } from './cooldown.guard.js';
+import { PermissionsGuard } from './permissions.guard.js';
 
 /** Block repeat calls per user for N seconds. Replies ephemeral on hit. */
 export const Cooldown = (seconds: number): MethodDecorator & ClassDecorator =>

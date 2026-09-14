@@ -1,10 +1,10 @@
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from '../di.js';
 import {
   AUTOCOMPLETE_METADATA,
   BUTTON_METADATA,
   MODAL_METADATA,
   SELECT_METADATA,
-} from '../constants';
+} from '../constants.js';
 
 export interface CustomIdMeta {
   customId: string | RegExp;

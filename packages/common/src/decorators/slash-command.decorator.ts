@@ -1,6 +1,6 @@
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from '../di.js';
 import type { InteractionContextType } from 'discord.js';
-import { SLASH_COMMAND_METADATA } from '../constants';
+import { SLASH_COMMAND_METADATA } from '../constants.js';
 
 export interface SlashCommandMeta {
   name: string;

@@ -1,8 +1,7 @@
-import { NestFactory } from '@nestjs/core';
-import type { Type } from '@nestjs/common';
 import { ShardingManager } from 'discord.js';
-import { DiscordLogger } from '@discord.ts/common';
-import { loadShardingOptions } from './config';
+import { DiscordLogger, type Type } from '@discord.ts/common';
+import { loadShardingOptions } from './config.js';
+import { createRuntime } from './discord.module.js';
 
 export interface ShardingOptions {
   /** Entry file each shard boots, e.g. `./src/main.ts`. Relative to cwd. */
@@ -40,7 +39,9 @@ export async function bootstrapApp(
     new DiscordLogger('Sharding').success('Shards spawned.');
     return;
   }
-  const app = await NestFactory.createApplicationContext(appModule);
-  app.enableShutdownHooks();
-  await app.init();
+  const { discovery } = await createRuntime(appModule);
+  const shutdown = () => void discovery.stop();
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
+  await discovery.start();
 }
