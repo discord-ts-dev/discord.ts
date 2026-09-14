@@ -1,0 +1,11 @@
+# Issue Area labels. Consumed by the issue-label job in workflows/triage.yml.
+area:common:
+  - "### Area\\n\\ncommon"
+area:core:
+  - "### Area\\n\\ncore"
+area:ux:
+  - "### Area\\n\\nux"
+area:cli:
+  - "### Area\\n\\ncli"
+area:example:
+  - "### Area\\n\\nexample"

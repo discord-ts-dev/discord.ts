@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a reproducible bug
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? One paragraph.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro steps
+      description: Minimal bot snippet that triggers it.
+      value: |
+        ```ts
+        // ...
+        ```
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: Full error text or wrong behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      value: |
+        - `@discord.ts/*`:
+        - `discord.js`:
+        - bun / node:
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - common
+        - core
+        - ux
+        - cli
+        - example
+    validations:
+      required: true
