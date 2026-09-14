@@ -1,0 +1,6 @@
+{
+  "title": "🛠️ Help Menu",
+  "description": "Hi! I'm {displayName}, a music bot created by {owner}.\nYou can use `{prefix} help <command>` to learn more about commands.",
+  "footer": "Use {prefix} help <command> to learn more about a command",
+  "detail": "**Description:** {content}\n**Usage:** `{usage}`\n**Examples:** {examples}\n**Aliases:** {aliases}\n**Cooldown:** {cooldown}"
+}

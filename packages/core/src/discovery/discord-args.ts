@@ -4,10 +4,12 @@ import {
   PARAM_AUTHOR_METADATA,
   PARAM_CONTEXT_METADATA,
   PARAM_GUILD_METADATA,
+  PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
   PARAM_PREFIX_ARGS_METADATA,
   type OptionFieldMeta,
 } from '@discord.ts/common';
+import { resolveLocale } from '../i18n.js';
 import { parseMentionId } from '@discord.ts/utils';
 import type { Handler } from './handler.types.js';
 
@@ -21,7 +23,12 @@ export function optionsDto(h: Handler): (new () => Record<string, unknown>) | un
   return types[idxs[0]] as new () => Record<string, unknown>;
 }
 
-export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[]): unknown[] {
+export function buildArgs(
+  h: Handler,
+  interaction: unknown,
+  prefixArgs?: string[],
+  i18nDefault?: string,
+): unknown[] {
   const fn = h.instance[h.method] as (...a: never[]) => unknown;
   const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
   const args: unknown[] = new Array(types.length).fill(undefined);
@@ -30,6 +37,7 @@ export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[
   const argIdx: number[] = Reflect.getMetadata(PARAM_PREFIX_ARGS_METADATA, fn) ?? [];
   const guildIdx: number[] = Reflect.getMetadata(PARAM_GUILD_METADATA, fn) ?? [];
   const authorIdx: number[] = Reflect.getMetadata(PARAM_AUTHOR_METADATA, fn) ?? [];
+  const localeIdx: number[] = Reflect.getMetadata(PARAM_LOCALE_METADATA, fn) ?? [];
   for (const i of ctxIdx) args[i] = interaction;
   for (const i of optIdx) {
     const Dto = (types[i] ?? Object) as new () => Record<string, unknown>;
@@ -39,6 +47,7 @@ export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[
   for (const i of argIdx) args[i] = prefixArgs ?? [];
   for (const i of guildIdx) args[i] = resolveGuild(interaction);
   for (const i of authorIdx) args[i] = resolveAuthor(interaction);
+  for (const i of localeIdx) args[i] = resolveLocale(interaction, i18nDefault);
   // No decorators: pass interaction as single arg (lazy default)
   if (
     !ctxIdx.length &&
@@ -46,6 +55,7 @@ export function buildArgs(h: Handler, interaction: unknown, prefixArgs?: string[
     !argIdx.length &&
     !guildIdx.length &&
     !authorIdx.length &&
+    !localeIdx.length &&
     types.length
   )
     args[0] = interaction;
@@ -96,12 +106,13 @@ export function buildDto(
   return dto;
 }
 
-export function buildEventArgs(h: Handler, raw: unknown[]): unknown[] {
+export function buildEventArgs(h: Handler, raw: unknown[], i18nDefault?: string): unknown[] {
   const fn = h.instance[h.method] as (...a: never[]) => unknown;
   const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
   const ctxIdx: number[] = Reflect.getMetadata(PARAM_CONTEXT_METADATA, fn) ?? [];
   const guildIdx: number[] = Reflect.getMetadata(PARAM_GUILD_METADATA, fn) ?? [];
   const authorIdx: number[] = Reflect.getMetadata(PARAM_AUTHOR_METADATA, fn) ?? [];
+  const localeIdx: number[] = Reflect.getMetadata(PARAM_LOCALE_METADATA, fn) ?? [];
   const args: unknown[] = new Array(Math.max(types.length, raw.length)).fill(undefined);
   raw.forEach((v, i) => {
     args[i] = v;
@@ -110,6 +121,7 @@ export function buildEventArgs(h: Handler, raw: unknown[]): unknown[] {
   const head = raw[0];
   for (const i of guildIdx) if (args[i] === undefined) args[i] = resolveGuild(head);
   for (const i of authorIdx) if (args[i] === undefined) args[i] = resolveAuthor(head);
+  for (const i of localeIdx) if (args[i] === undefined) args[i] = resolveLocale(head, i18nDefault);
   return args;
 }
 

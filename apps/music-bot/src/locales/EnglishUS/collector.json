@@ -1,0 +1,13 @@
+{
+  "previous": "Previous by {user}",
+  "resume": "Resumed by {user}",
+  "stop": "Stopped by {user}",
+  "skip": "Skipped by {user}",
+  "no_previous_track": "No previous track.",
+  "loop": {
+    "track": "Track looped by {user}",
+    "queue": "Queue looped by {user}",
+    "off": "Loop disabled by {user}"
+  },
+  "shuffle": "Queue shuffled by {user}"
+}

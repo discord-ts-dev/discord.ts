@@ -1,0 +1,40 @@
+{
+  "filters": {
+    "8d_on": "`✅` | Filter 8D telah `DIAKTIFKAN`",
+    "8d_off": "`✅` | Filter 8D telah `DINONAKTIFKAN`",
+    "karaoke_on": "`✅` | Filter Karaoke telah `DIAKTIFKAN`",
+    "karaoke_off": "`✅` | Filter Karaoke telah `DINONAKTIFKAN`",
+    "lowpass_on": "`✅` | Filter Lowpass telah `DIAKTIFKAN`",
+    "lowpass_off": "`✅` | Filter Lowpass telah `DINONAKTIFKAN`",
+    "nightcore_on": "`✅` | Filter Nightcore telah `DIAKTIFKAN`",
+    "nightcore_off": "`✅` | Filter Nightcore telah `DINONAKTIFKAN`",
+    "rotation_on": "`✅` | Filter Rotation telah `DIAKTIFKAN`",
+    "rotation_off": "`✅` | Filter Rotation telah `DINONAKTIFKAN`",
+    "tremolo_on": "`✅` | Filter Tremolo telah `DIAKTIFKAN`",
+    "tremolo_off": "`✅` | Filter Tremolo telah `DINONAKTIFKAN`",
+    "vibrato_on": "`✅` | Filter Vibrato telah `DIAKTIFKAN`",
+    "vibrato_off": "`✅` | Filter Vibrato telah `DINONAKTIFKAN`"
+  },
+  "player": {
+    "autoplay_on": "`✅` | Putar otomatis telah `DIAKTIFKAN`",
+    "autoplay_off": "`✅` | Putar otomatis telah `DINONAKTIFKAN`",
+    "loop": {
+      "track": "**Sekarang mengulang lagu.**",
+      "queue": "**Sekarang mengulang antrian.**",
+      "off": "**Mode pengulangan dinonaktifkan.**"
+    },
+    "added": {
+      "track": "Menambahkan {amount} lagu ke antrian",
+      "queue": "Menambahkan [{title}]({uri}) ke antrian"
+    },
+    "skipped": "Melompat ke lagu nomor **{number}** dalam antrian"
+  },
+  "playlist": {
+    "add": "Menambahkan **{number}** lagu ke {playlist}",
+    "create": "Membuat playlist **{name}**",
+    "delete": "Menghapus playlist **${name}**",
+    "load": "Memuat playlist `{name}` dengan `{amount}` lagu",
+    "removesong": "Menghapus `{name}` dari `{playlist}`",
+    "steal": "Berhasil mencuri playlist `{playlist}` dari <@{userId}>"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "dont_have": "Không có",
+  "dont_have_data": "Không có dữ liệu",
+  "searching": "Đang tìm kiếm...",
+  "request_by": "Yêu cầu bởi",
+  "player": {
+    "playing": "Đang phát",
+    "description": "[{title}]({uri}) - Yêu cầu bởi: <@{requesterId}> - Thời lượng: `{duration}`",
+    "stream": "TRỰC TIẾP"
+  },
+  "queue": "Hàng chờ",
+  "page_of": "Trang {index} của {total}",
+  "song": "bài hát",
+  "duration": "Thời lượng",
+  "author": "Tác giả",
+  "playlist_of": "Playlist của @{username}",
+  "playlist_name_of": "Playlist {name} của @{username}",
+  "help_command": "Sử dụng lệnh {prefix} help để biết thêm chi tiết"
+}

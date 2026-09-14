@@ -1,0 +1,5 @@
+{
+  "message": "> - 상태: {status}\n> - 등록일: {from}\n> - 만료일: {to}\n> - 등록된 패랜: {plans}",
+  "active": "활성",
+  "inactive": "비활성"
+}

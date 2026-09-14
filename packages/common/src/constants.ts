@@ -18,6 +18,7 @@ export const PARAM_OPTIONS_METADATA = 'discord:param:options';
 export const PARAM_PREFIX_ARGS_METADATA = 'discord:param:prefix-args';
 export const PARAM_GUILD_METADATA = 'discord:param:guild';
 export const PARAM_AUTHOR_METADATA = 'discord:param:author';
+export const PARAM_LOCALE_METADATA = 'discord:param:locale';
 export const COOLDOWN_METADATA = 'discord:cooldown-seconds';
 export const REQUIRED_PERMISSIONS_METADATA = 'discord:required-permissions';
 export const REQUIRED_BOT_PERMISSIONS_METADATA = 'discord:required-bot-permissions';

@@ -1,0 +1,6 @@
+{
+  "title": "🛠️ ヘルプメニュー",
+  "description": "こんにちは！私は {owner} によって作られた音楽ボット {displayName} です。\n`{prefix} help <command>` でコマンドの詳細を確認できます。",
+  "footer": "{prefix} help <command> でコマンドの詳細を確認できます",
+  "detail": "**説明:** {content}\n**使用法:** `{usage}`\n**例:** {examples}\n**エイリアス:** {aliases}\n**クールダウン:** {cooldown}"
+}

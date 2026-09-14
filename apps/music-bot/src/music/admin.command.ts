@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild, RequirePermissions } from '@discord.ts/core';
+import { Cooldown, RequireGuild, RequirePermissions, t } from '@discord.ts/core';
 import { confirm } from '@discord.ts/ux';
 import { runInNewContext } from 'node:vm';
 import { inspect } from 'node:util';
@@ -12,7 +12,7 @@ import {
   type User,
 } from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
-import { LocaleService, localeService } from './locale.service.js';
+import { SUPPORTED_LANGUAGES, normalizeLanguage } from './languages.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig, isOwner } from './bot-config.js';
 
@@ -26,7 +26,6 @@ function cleanId(raw: string): string {
 @RequireGuild()
 export class AdminCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly locale: LocaleService = localeService;
   private readonly premium: PremiumService = premiumService;
 
   @Command({
@@ -44,18 +43,16 @@ export class AdminCommand {
     if (!guild) return;
     const current = this.premium.languageOf(guild.id);
     if (!dto.lang) {
-      await ctx.reply(this.locale.t(current, 'success.language', { lang: current }));
+      await ctx.reply(t('success.language', { lang: current }, current));
       return;
     }
-    const match = this.locale.supported().find((l) => l.toLowerCase() === dto.lang!.toLowerCase());
+    const match = dto.lang ? normalizeLanguage(dto.lang) : undefined;
     if (!match) {
-      await ctx.reply(
-        this.locale.t(current, 'error.language', { valid: this.locale.supported().join(', ') }),
-      );
+      await ctx.reply(t('error.language', { valid: SUPPORTED_LANGUAGES.join(', ') }, current));
       return;
     }
     this.premium.setLanguage(guild.id, match);
-    await ctx.reply(this.locale.t(match, 'success.language_change'));
+    await ctx.reply(t('success.language_change', undefined, match));
   }
 
   @Command({ name: 'addpremium', description: 'Grant premium (owner)', slash: true, prefix: true })

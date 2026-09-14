@@ -1,0 +1,6 @@
+{
+  "title": "🛠️ Menu trợ giúp",
+  "description": "Chào bạn! Tôi là {displayName}, một bot phát nhạc được tạo bởi {owner}.nBạn có thể sử dụng `{prefix} help <command>` để biết thêm thông tin về lệnh.",
+  "footer": "Sử dụng {prefix} help <command> để biết thêm thông tin về lệnh",
+  "detail": "**Mô tả:** {content}n**Cách sử dụng:** `{usage}`**Ví dụ:** {examples}n**Biệt danh:** {aliases}\n**Thời gian chờ:** {cooldown}"
+}

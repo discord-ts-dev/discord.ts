@@ -4,6 +4,7 @@ export * from './discovery/discord-routing.service.js';
 export * from './discovery/discord-sync.service.js';
 export * from './context/discord-execution-context.js';
 export * from './config.js';
+export * from './i18n.js';
 export * from './sharding.js';
 export * from './deploy.js';
 export * from './guards/guards.decorator.js';

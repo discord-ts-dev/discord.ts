@@ -1,0 +1,5 @@
+{
+  "message": "> - Tình trạng: {status}\n> - Đã đăng kí từ: {from}\n> - Ngày hết hạn: {to}\n> - Các gói đã đăng kí: {plans}",
+  "active": "Hoạt động",
+  "inactive": "Không hoạt động"
+}

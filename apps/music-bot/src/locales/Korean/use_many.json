@@ -1,0 +1,19 @@
+{
+  "dont_have": "없음",
+  "dont_have_data": "데이터 없음",
+  "searching": "검색 중...",
+  "request_by": "요청자",
+  "player": {
+    "playing": "재생 중",
+    "description": "[{title}]({uri}) - 요청자: <@{requesterId}> - 길이: `{duration}`",
+    "stream": "라이브"
+  },
+  "queue": "대기열",
+  "page_of": "페이지 {index}/{total}",
+  "song": "노래",
+  "duration": "길이",
+  "author": "작성자",
+  "playlist_of": "@{username}의 재생 목록",
+  "playlist_name_of": "@{username}의 재생 목록 {name}",
+  "help_command": "자세한 내용은 {prefix} help를 사용하세요"
+}

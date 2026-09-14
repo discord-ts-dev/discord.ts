@@ -1,0 +1,13 @@
+{
+  "owner_only": "❌ **|** Hanya pemilik bot yang dapat menggunakan perintah ini!",
+  "dev_only": "`❌ **|** Hanya pengembang bot yang dapat menggunakan perintah ini!`",
+  "voice_only": "❌ **|** Anda perlu bergabung dengan saluran suara untuk menggunakan perintah ini!",
+  "same_room": "❌ **|** Anda harus berada di ruangan yang sama dengan bot untuk menggunakan perintah ini.",
+  "nsfw_only": "❌ **|** Perintah ini hanya dapat digunakan di saluran nsfw!",
+  "no_permission": "❌ **|** Anda tidak memiliki izin untuk menggunakan perintah ini!",
+  "bot_no_permission": "❌ **|** Saya tidak memiliki izin untuk melakukan ini!",
+  "premium": "❌ **|** Anda tidak memiliki premium untuk menggunakan perintah ini!",
+  "cooldown": "❌ **|** Anda menggunakan perintah ini terlalu cepat! Coba lagi pada {time}!",
+  "duplicate_bot": "❌ **|** Anda tidak dapat menggunakan beberapa bot dalam satu ruangan!",
+  "run_out_of_track": "Antrian selesai diputar"
+}

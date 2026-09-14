@@ -1,0 +1,5 @@
+{
+  "message": "> - Status: {status}\n> - Terdaftar sejak: {from}\n> - Kedaluwarsa pada: {to}\n> - Paket terdaftar: {plans}",
+  "active": "Aktif",
+  "inactive": "Tidak aktif"
+}

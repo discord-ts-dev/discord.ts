@@ -1,0 +1,6 @@
+{
+  "title": "🛠️ Menu Bantuan",
+  "description": "Hai! Saya {displayName}, bot musik yang dibuat oleh {owner}.\nAnda dapat menggunakan `{prefix} help <command>` untuk mempelajari lebih lanjut tentang perintah.",
+  "footer": "Gunakan {prefix} help <command> untuk mempelajari lebih lanjut tentang perintah",
+  "detail": "**Deskripsi:** {content}\n**Penggunaan:** `{usage}`\n**Contoh:** {examples}\n**Alias:** {aliases}\n**Cooldown:** {cooldown}"
+}

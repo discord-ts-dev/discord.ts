@@ -3,6 +3,7 @@ import {
   PARAM_AUTHOR_METADATA,
   PARAM_CONTEXT_METADATA,
   PARAM_GUILD_METADATA,
+  PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
 } from '../constants.js';
 
@@ -41,4 +42,10 @@ export function Guild(): ParameterDecorator {
 
 export function Author(): ParameterDecorator {
   return (target, key, index) => pushParamMeta(PARAM_AUTHOR_METADATA, target, key, index);
+}
+
+// ponytail: Discord locale of the call (interaction.locale, else the guild
+// preferred locale). App catalogs map it to their own language names.
+export function Locale(): ParameterDecorator {
+  return (target, key, index) => pushParamMeta(PARAM_LOCALE_METADATA, target, key, index);
 }

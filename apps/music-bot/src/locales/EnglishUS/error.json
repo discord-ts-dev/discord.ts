@@ -1,0 +1,72 @@
+{
+  "cmd": {
+    "not_found": "Command `{cmd}` does not exist"
+  },
+  "common": {
+    "error": "An error occurred while executing the command",
+    "invalid_number": "Please provide a valid number.",
+    "invalid_duration": "Invalid time format. Example: `seek 1m`, `seek 1h 30m`",
+    "no_query": "Please provide a keyword or URL",
+    "no_keyword": "Please provide a keyword",
+    "no_result": "No results found",
+    "cant_use_button": "You cannot use this button"
+  },
+  "user": {
+    "invalid_user": "Invalid user",
+    "user_not_exist": "User does not exist",
+    "user_exist": "User already exists",
+    "user_dont_have_playlist": "User has no playlist"
+  },
+  "guild": {
+    "guild_not_exist": "Guild does not exist",
+    "guild_exist": "Guild already exists"
+  },
+  "voice": {
+    "connected": "I'm already connected to <#{voiceChannelId}>!",
+    "no_connect": "I'm not in any voice channel"
+  },
+  "player": {
+    "no_player": "No active player in this guild",
+    "no_track": "Please provide a song name",
+    "no_track_playing": "No song is currently playing",
+    "no_song_in_queue": "No songs in playlist.",
+    "no_track_in_queue": "No songs in queue",
+    "paused": "Song is already paused",
+    "resumed": "Song is not paused",
+    "maxium_seek": "Cannot seek beyond song duration {duration}",
+    "cant_load_playlist": "Cannot load songs from playlist",
+    "cant_replay": "Cannot replay this song as seeking is not possible",
+    "cant_seek": "Cannot seek in this song"
+  },
+  "playlist": {
+    "no_playlist": "Please provide a playlist name",
+    "playlist_not_found": "Playlist not found",
+    "exist_playlist": "Your playlist already exists",
+    "empty_playlist": "Playlist is empty"
+  },
+  "premium": {
+    "contact": "To activate premium bot, you can contact <@{ownerId}>!",
+    "limit_tracks": "You cannot add more than 25 songs without premium",
+    "limit_playlists": "You cannot create more than 2 playlists",
+    "limit_load_playlist": "You cannot use playlist number 3 onwards"
+  },
+  "volume": {
+    "minium": "Volume cannot be lower than 0",
+    "maxium": "Volume cannot exceed 200. Do you want to damage your ears or speakers? Hmm, I don't think that's a good idea."
+  },
+  "filters": {
+    "pitch": "Please provide a valid number between 0.5 and 5.0",
+    "speed": "Please provide a valid number between 0.5 and 5.0"
+  },
+  "create": {
+    "limit_length": "Playlist name cannot exceed 50 characters.",
+    "playlist_exist": "Playlist already exists"
+  },
+  "language": "Please provide a valid language: {lang}",
+  "scope": "Please provide a valid scope: {scope}",
+  "user_or_guild": "Please provide a user or guild",
+  "invalid_user_or_guild": "Invalid user or guild",
+  "bassboost_type": "Please provide a valid bassboost filter type: {type}",
+  "pitch": "Please provide a valid number between 0.5 and 5.0",
+  "speed": "Please provide a valid number between 0.5 and 5.0"
+}

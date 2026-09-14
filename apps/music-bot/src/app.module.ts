@@ -4,7 +4,6 @@ import { AdminCommand } from './music/admin.command.js';
 import { FiltersCommand } from './music/filters.command.js';
 import { InfoCommand } from './music/info.command.js';
 import { LavalinkService } from './music/lavalink.service.js';
-import { LocaleService } from './music/locale.service.js';
 import { LyricService } from './music/lyric.service.js';
 import { MusicCommand } from './music/music.command.js';
 import { MusicHudCommand } from './music/music-hud.command.js';
@@ -19,7 +18,6 @@ import { ReadyListener } from './events/ready.listener.js';
     MusicService,
     LavalinkService,
     LyricService,
-    LocaleService,
     PremiumService,
     MusicCommand,
     MusicHudCommand,

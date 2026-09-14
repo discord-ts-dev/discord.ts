@@ -18,4 +18,16 @@ export interface DiscordModuleOptions {
   shardFile?: string;
   /** Respawn dead shards. Read by --shards gate. Default true. */
   respawn?: boolean;
+  /** Native i18n. Presence enables loading `src/locales/<lang>/<namespace>.json`. */
+  i18n?: I18nOptions;
+}
+
+/** Native i18n options. Locales live under `localesDir` as `<lang>/<namespace>.json`. */
+export interface I18nOptions {
+  /** Fallback locale for missing keys. Default 'en-US'. */
+  defaultLocale?: string;
+  /** Locale dir relative to the app cwd. Default './src/locales'. */
+  localesDir?: string;
+  /** Namespace for bare keys. Default 'common'. */
+  defaultNamespace?: string;
 }

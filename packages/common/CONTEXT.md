@@ -15,5 +15,6 @@ Ubiquitous language. Glossary only. No implementation.
 - **Context**: the interaction object for current call. Injected with `@Context()`.
 - **Guild**: the guild of the current call, null in DMs. Injected with `@Guild()`.
 - **Author**: the calling user (`message.author` or `interaction.user`). Injected with `@Author()`.
+- **Locale**: the Discord locale of the current call. Injected with `@Locale()`.
 - **Options**: validated DTO for slash options. Injected with `@Options()`. Fields use `@StringOption()` etc.
 - **Logger**: scoped signale output via `DiscordLogger(context)`. Color accents via `styleText` at call sites.

@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild } from '@discord.ts/core';
+import { Cooldown, RequireGuild, t } from '@discord.ts/core';
 import {
   EmbedBuilder,
   type ChatInputCommandInteraction,
@@ -8,7 +8,6 @@ import {
   type User,
 } from 'discord.js';
 import { HelpDto, PremiumScopeDto } from './dto/admin.dto.js';
-import { LocaleService, localeService } from './locale.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 
@@ -73,7 +72,6 @@ const HELP: { category: string; lines: string[] }[] = [
 @RequireGuild()
 export class InfoCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly locale: LocaleService = localeService;
   private readonly premium: PremiumService = premiumService;
 
   @Command({
@@ -96,20 +94,20 @@ export class InfoCommand {
         .setTitle(dto.command)
         .setDescription(
           found
-            ? this.locale.t(lang, 'help.detail', { command: found })
-            : this.locale.t(lang, 'error.cmd.not_found'),
+            ? t('help.detail', { command: found }, lang)
+            : t('error.cmd.not_found', undefined, lang),
         );
       await ctx.reply({ embeds: [embed] });
       return;
     }
     const embed = new EmbedBuilder()
       .setColor(botConfig.color.main)
-      .setTitle(this.locale.t(lang, 'help.title'))
-      .setDescription(this.locale.t(lang, 'help.description'))
+      .setTitle(t('help.title', undefined, lang))
+      .setDescription(t('help.description', undefined, lang))
       .addFields(
         HELP.map((h) => ({ name: h.category, value: h.lines.map((l) => `\`${l}\``).join(' ') })),
       )
-      .setFooter({ text: this.locale.t(lang, 'help.footer') });
+      .setFooter({ text: t('help.footer', undefined, lang) });
     await ctx.reply({ embeds: [embed] });
   }
 
@@ -118,16 +116,16 @@ export class InfoCommand {
   async ping(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
     const lang = this.premium.languageOf(guild?.id ?? null);
     const t0 = Date.now();
-    await ctx.reply(this.locale.t(lang, 'ping.checking'));
+    await ctx.reply(t('ping.checking', undefined, lang));
     const botLatency = Date.now() - t0;
     const apiLatency = 'client' in ctx ? ctx.client.ws.ping : -1;
     const embed = new EmbedBuilder().setColor(botConfig.color.main).addFields(
       {
-        name: this.locale.t(lang, 'ping.bot_latency'),
+        name: t('ping.bot_latency', undefined, lang),
         value: `${botLatency >= 600 ? '' : '+'}${botLatency}ms`,
       },
       {
-        name: this.locale.t(lang, 'ping.api_latency'),
+        name: t('ping.api_latency', undefined, lang),
         value: `${apiLatency >= 500 || apiLatency < 0 ? '' : '+'}${apiLatency}ms`,
       },
     );
@@ -147,21 +145,29 @@ export class InfoCommand {
       if (!guild) return;
       const d = this.premium.describeGuild(guild.id);
       await ctx.reply(
-        this.locale.t(lang, 'premium.message', {
-          status: d.active ? 'active' : 'inactive',
-          from: d.from,
-          to: d.to,
-        }),
+        t(
+          'premium.message',
+          {
+            status: d.active ? 'active' : 'inactive',
+            from: d.from,
+            to: d.to,
+          },
+          lang,
+        ),
       );
       return;
     }
     const d = this.premium.describeUser(author.id);
     await ctx.reply(
-      this.locale.t(lang, 'premium.message', {
-        status: d.active ? 'active' : 'inactive',
-        from: d.from,
-        to: d.to,
-      }),
+      t(
+        'premium.message',
+        {
+          status: d.active ? 'active' : 'inactive',
+          from: d.from,
+          to: d.to,
+        },
+        lang,
+      ),
     );
   }
 }

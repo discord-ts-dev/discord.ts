@@ -1,0 +1,13 @@
+{
+  "previous": "{user}님이 이전 곡으로 이동했습니다",
+  "resume": "{user}님이 재개했습니다",
+  "stop": "{user}님이 정지했습니다",
+  "skip": "{user}님이 건너뛰었습니다",
+  "no_previous_track": "이전 트랙이 없습니다.",
+  "loop": {
+    "track": "{user}님이 트랙을 반복합니다",
+    "queue": "{user}님이 대기열을 반복합니다",
+    "off": "{user}님이 반복을 비활성화했습니다"
+  },
+  "shuffle": "{user}님이 대기열을 섞었습니다"
+}

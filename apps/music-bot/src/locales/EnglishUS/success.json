@@ -1,0 +1,42 @@
+{
+  "filters": {
+    "8d_on": "`✅` | 8D filter has been `ENABLED`.",
+    "8d_off": "`✅` | 8D filter has been `DISABLED`.",
+    "karaoke_on": "`✅` | Karaoke filter has been `ENABLED`.",
+    "karaoke_off": "`✅` | Karaoke filter has been `DISABLED`.",
+    "lowpass_on": "`✅` | Lowpass filter has been `ENABLED`.",
+    "lowpass_off": "`✅` | Lowpass filter has been `DISABLED`.",
+    "nightcore_on": "`✅` | Nightcore filter has been `ENABLED`.",
+    "nightcore_off": "`✅` | Nightcore filter has been `DISABLED`.",
+    "rotation_on": "`✅` | Rotation filter has been `ENABLED`.",
+    "rotation_off": "`✅` | Rotation filter has been `DISABLED`.",
+    "tremolo_on": "`✅` | Tremolo filter has been `ENABLED`.",
+    "tremolo_off": "`✅` | Tremolo filter has been `DISABLED`.",
+    "vibrato_on": "`✅` | Vibrato filter has been `ENABLED`.",
+    "vibrato_off": "`✅` | Vibrato filter has been `DISABLED`."
+  },
+  "player": {
+    "autoplay_on": "`✅` | Autoplay has been `ENABLED`.",
+    "autoplay_off": "`✅` | Autoplay has been `DISABLED`.",
+    "loop": {
+      "track": "**Now looping song.**",
+      "queue": "**Now looping queue.**",
+      "off": "**Loop mode disabled.**"
+    },
+    "added": {
+      "track": "Added {amount} songs to queue",
+      "queue": "Added [{title}]({uri}) to queue"
+    },
+    "skipped": "Skipped to song number **{number}** in queue"
+  },
+  "playlist": {
+    "add": "Added **{number}** songs to {playlist}",
+    "create": "Created playlist **{name}**",
+    "delete": "Deleted playlist **${name}**",
+    "load": "Loaded playlist `{name}` with `{amount}` songs",
+    "removesong": "Removed `{name}` from `{playlist}`",
+    "steal": "Successfully stole playlist `{playlist}` from <@{userId}>"
+  },
+  "language": "Current guild language is: `{lang}`",
+  "language_change": "Guild language has been changed to: `{lang}`"
+}

@@ -1,0 +1,19 @@
+{
+  "dont_have": "Tidak ada",
+  "dont_have_data": "Tidak ada data",
+  "searching": "Mencari...",
+  "request_by": "Diminta oleh",
+  "player": {
+    "playing": "Sedang Diputar",
+    "description": "[{title}]({uri}) - Diminta oleh: <@{requesterId}> - Durasi: `{duration}`",
+    "stream": "LANGSUNG"
+  },
+  "queue": "Antrian",
+  "page_of": "Halaman {index} dari {total}",
+  "song": "lagu",
+  "duration": "Durasi",
+  "author": "Penulis",
+  "playlist_of": "Playlist @{username}",
+  "playlist_name_of": "Playlist {name} @{username}",
+  "help_command": "Gunakan {prefix} help untuk detail lebih lanjut"
+}

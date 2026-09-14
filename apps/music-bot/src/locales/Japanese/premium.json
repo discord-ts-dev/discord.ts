@@ -1,0 +1,5 @@
+{
+  "message": "> - ステータス: {status}\n> - 登録日: {from}\n> - 有効期限: {to}\n> - 登録済みプラン: {plans}",
+  "active": "アクティブ",
+  "inactive": "非アクティブ"
+}

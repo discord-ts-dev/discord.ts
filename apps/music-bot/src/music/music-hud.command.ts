@@ -8,7 +8,7 @@ import {
   Options,
   StringSelect,
 } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
+import { Cooldown, RequireBotPermissions, RequireGuild, t } from '@discord.ts/core';
 import { paginate } from '@discord.ts/ux';
 import {
   ActionRowBuilder,
@@ -24,7 +24,6 @@ import {
 } from 'discord.js';
 import { LoopDto, LyricDto, SearchDto, ToggleDto } from './dto/music.dto.js';
 import { LavalinkService, lavalinkService } from './lavalink.service.js';
-import { LocaleService, localeService } from './locale.service.js';
 import { LyricService, lyricService } from './lyric.service.js';
 import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
@@ -39,7 +38,6 @@ export class MusicHudCommand {
   private readonly music: MusicService = musicService;
   private readonly lavalink: LavalinkService = lavalinkService;
   private readonly lyrics: LyricService = lyricService;
-  private readonly locale: LocaleService = localeService;
   private readonly premium: PremiumService = premiumService;
 
   private lang(guild: DiscordGuild | null): string {
@@ -72,7 +70,7 @@ export class MusicHudCommand {
     if (!guild) return;
     const q = this.music.queueOf(guild.id);
     if (!q.current) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.player.no_track_playing'));
+      await ctx.reply(t('error.player.no_track_playing', undefined, this.lang(guild)));
       return;
     }
     const total = q.current.duration > 0 ? formatTime(q.current.duration) : 'LIVE';
@@ -124,23 +122,23 @@ export class MusicHudCommand {
     @Options() dto: SearchDto,
   ): Promise<void> {
     if (!voiceChannelIdOf(ctx)) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.voice.not_in_voice'));
+      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
       return;
     }
     const tracks = (await this.lavalink.search(dto.query, author.id)).slice(0, 5);
     if (!tracks.length) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.no_result'));
+      await ctx.reply(t('error.no_result', undefined, this.lang(guild)));
       return;
     }
     this.music.rememberSearch(author.id, tracks);
     const menu = new StringSelectMenuBuilder()
       .setCustomId(`music:search:${author.id}`)
-      .setPlaceholder(this.locale.t(this.lang(guild), 'search.placeholder'))
+      .setPlaceholder(t('search.placeholder', undefined, this.lang(guild)))
       .addOptions(
-        tracks.map((t, i) => ({
-          label: t.name.slice(0, 100),
+        tracks.map((track, i) => ({
+          label: track.name.slice(0, 100),
           value: String(i),
-          description: t.uri.slice(0, 100),
+          description: track.uri.slice(0, 100),
         })),
       );
     await ctx.reply({
@@ -166,7 +164,7 @@ export class MusicHudCommand {
       !this.premium.isPremium(guildId, ix.user.id)
     ) {
       await ix.reply({
-        content: this.locale.t(this.premium.languageOf(guildId), 'error.premium.limit'),
+        content: t('error.premium.limit', undefined, this.premium.languageOf(guildId)),
         ephemeral: true,
       });
       return;
@@ -198,10 +196,10 @@ export class MusicHudCommand {
       await ctx.reply('Nothing playing. Name a song.');
       return;
     }
-    await ctx.reply(this.locale.t(this.lang(guild), 'use_many.searching'));
+    await ctx.reply(t('use_many.searching', undefined, this.lang(guild)));
     const found = await this.lyrics.find(title);
     if (!found || !found.pages.length) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.no_result'));
+      await ctx.reply(t('error.no_result', undefined, this.lang(guild)));
       return;
     }
     const pages = found.pages.map((page) =>

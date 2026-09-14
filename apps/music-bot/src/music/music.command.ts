@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
+import { Cooldown, RequireBotPermissions, RequireGuild, t } from '@discord.ts/core';
 import { paginate } from '@discord.ts/ux';
 import {
   EmbedBuilder,
@@ -9,7 +9,6 @@ import {
 } from 'discord.js';
 import { PlayDto, RemoveDto, SeekDto, VolumeDto } from './dto/music.dto.js';
 import { LavalinkService, lavalinkService } from './lavalink.service.js';
-import { LocaleService, localeService } from './locale.service.js';
 import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
@@ -22,7 +21,6 @@ export class MusicCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;
   private readonly lavalink: LavalinkService = lavalinkService;
-  private readonly locale: LocaleService = localeService;
   private readonly premium: PremiumService = premiumService;
 
   private lang(guild: DiscordGuild | null): string {
@@ -41,7 +39,7 @@ export class MusicCommand {
   async join(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
     const channelId = voiceChannelIdOf(ctx);
     if (!guild || !channelId) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.voice.not_in_voice'));
+      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
       return;
     }
     const live = await this.lavalink.join(guild.id, channelId, ctx.channelId);
@@ -73,11 +71,11 @@ export class MusicCommand {
   ): Promise<void> {
     if (!guild) return;
     if (!voiceChannelIdOf(ctx)) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.voice.not_in_voice'));
+      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
       return;
     }
     if (this.capped(guild, author)) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.premium.limit'));
+      await ctx.reply(t('error.premium.limit', undefined, this.lang(guild)));
       return;
     }
     const tracks = await this.lavalink.search(dto.query, author.id);
@@ -103,11 +101,11 @@ export class MusicCommand {
   ): Promise<void> {
     if (!guild) return;
     if (!voiceChannelIdOf(ctx)) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.voice.not_in_voice'));
+      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
       return;
     }
     if (this.capped(guild, author)) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.premium.limit'));
+      await ctx.reply(t('error.premium.limit', undefined, this.lang(guild)));
       return;
     }
     const [track] = await this.lavalink.search(dto.query, author.id);
@@ -188,10 +186,10 @@ export class MusicCommand {
     if (!guild) return;
     const q = this.music.queueOf(guild.id);
     if (!q.current && !q.tracks.length) {
-      await ctx.reply(this.locale.t(this.lang(guild), 'error.common.no_player'));
+      await ctx.reply(t('error.common.no_player', undefined, this.lang(guild)));
       return;
     }
-    const lines = q.tracks.map((t, i) => `${i + 1}. ${trackLine(t)}`);
+    const lines = q.tracks.map((track, i) => `${i + 1}. ${trackLine(track)}`);
     const pages = chunk(lines.length ? lines : ['(empty)'], 10).map((page, i, all) =>
       new EmbedBuilder()
         .setColor(botConfig.color.main)

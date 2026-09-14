@@ -17,4 +17,8 @@ export default defineConfig({
   prefix: '!',
   shardFile: './src/main.ts',
   respawn: true,
+  i18n: {
+    defaultLocale: 'EnglishUS',
+    localesDir: './src/locales',
+  },
 });

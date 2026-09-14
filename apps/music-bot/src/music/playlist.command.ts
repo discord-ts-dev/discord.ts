@@ -1,8 +1,7 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild } from '@discord.ts/core';
+import { Cooldown, RequireGuild, t } from '@discord.ts/core';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, Message, User } from 'discord.js';
 import { PlaylistAddDto, PlaylistNameDto, PlaylistStealDto } from './dto/music.dto.js';
-import { LocaleService, localeService } from './locale.service.js';
 import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 
@@ -18,7 +17,6 @@ export class PlaylistCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;
   private readonly premium: PremiumService = premiumService;
-  private readonly locale: LocaleService = localeService;
 
   @Command({ name: 'playlist', description: 'List your playlists', slash: true, prefix: true })
   @Cooldown(5)
@@ -40,10 +38,7 @@ export class PlaylistCommand {
   ): Promise<void> {
     const lang = this.premium.languageOf(guild?.id ?? null);
     const ok = this.music.createPlaylist(author.id, dto.name);
-    await reply(
-      ctx,
-      ok ? this.locale.t(lang, 'success.playlist.create', { name: dto.name }) : 'Name taken.',
-    );
+    await reply(ctx, ok ? t('success.playlist.create', { name: dto.name }, lang) : 'Name taken.');
   }
 
   @Command({

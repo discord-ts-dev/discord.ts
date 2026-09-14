@@ -8,6 +8,7 @@ import { BotPermissionsGuard } from './guards/bot-permissions.guard.js';
 import { CooldownGuard } from './guards/cooldown.guard.js';
 import { GuildGuard } from './guards/guild.guard.js';
 import { PermissionsGuard } from './guards/permissions.guard.js';
+import { initI18n } from './i18n.js';
 
 export interface DiscordModuleAsyncOpts {
   cwd?: string;
@@ -91,6 +92,7 @@ export async function createRuntime(
   opts: { skipValidation?: boolean } = {},
 ): Promise<DiscordRuntime> {
   const { options, providers } = await resolveDiscordOptions(appModule, opts);
+  if (options.i18n) initI18n(options.i18n);
   const client = buildClient(options);
   const sync = new DiscordSyncService(options);
   const discovery = new DiscordDiscoveryService(client, options, sync);

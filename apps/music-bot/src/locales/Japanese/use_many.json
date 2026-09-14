@@ -1,0 +1,19 @@
+{
+  "dont_have": "なし",
+  "dont_have_data": "データなし",
+  "searching": "検索中...",
+  "request_by": "リクエスト元",
+  "player": {
+    "playing": "再生中",
+    "description": "[{title}]({uri}) - リクエスト: <@{requesterId}> - 長さ: `{duration}`",
+    "stream": "ライブ"
+  },
+  "queue": "キュー",
+  "page_of": "ページ {index} / {total}",
+  "song": "曲",
+  "duration": "長さ",
+  "author": "作者",
+  "playlist_of": "@{username} のプレイリスト",
+  "playlist_name_of": "@{username} のプレイリスト {name}",
+  "help_command": "詳細は {prefix} help を使用してください"
+}

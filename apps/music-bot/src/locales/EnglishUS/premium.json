@@ -1,0 +1,5 @@
+{
+  "message": "> - Status: {status}\n> - Registered since: {from}\n> - Expires on: {to}\n> - Registered plans: {plans}",
+  "active": "Active",
+  "inactive": "Inactive"
+}

@@ -1,0 +1,61 @@
+{
+  "cmd": {
+    "not_found": "명령어 `{cmd}`가 존재하지 않습니다"
+  },
+  "common": {
+    "error": "명령어 실행 중 오류가 발생했습니다",
+    "invalid_number": "유효한 숫자를 입력해주세요",
+    "invalid_duration": "잘못된 시간 형식입니다. 예: `seek 1m`, `seek 1h 30m`",
+    "no_query": "키워드나 URL을 입력해주세요",
+    "no_keyword": "키워드를 입력해주세요",
+    "no_result": "결과를 찾을 수 없습니다",
+    "cant_use_button": "이 버튼을 사용할 수 없습니다"
+  },
+  "user": {
+    "invalid_user": "유효하지 않은 사용자입니다",
+    "user_not_exist": "사용자가 존재하지 않습니다",
+    "user_exist": "사용자가 이미 존재합니다",
+    "user_dont_have_playlist": "사용자에게 재생 목록이 없습니다"
+  },
+  "guild": {
+    "guild_not_exist": "길드가 존재하지 않습니다",
+    "guild_exist": "길드가 이미 존재합니다"
+  },
+  "voice": {
+    "connected": "이미 <#{voiceChannelId}>에 연결되어 있습니다!",
+    "no_connect": "음성 채널에 연결되어 있지 않습니다"
+  },
+  "player": {
+    "no_player": "이 길드에 활성화된 플레이어가 없습니다",
+    "no_track": "노래 제목을 입력해주세요",
+    "no_track_playing": "현재 재생 중인 노래가 없습니다",
+    "no_song_in_queue": "재생 목록에 노래가 없습니다",
+    "no_track_in_queue": "대기열에 노래가 없습니다",
+    "paused": "노래가 이미 일시 정지되었습니다",
+    "resumed": "노래가 일시 정지되지 않았습니다",
+    "maxium_seek": "노래 길이 {duration}을 초과하여 탐색할 수 없습니다",
+    "cant_load_playlist": "재생 목록에서 노래를 불러올 수 없습니다",
+    "cant_replay": "탐색이 불가능하여 이 노래를 다시 재생할 수 없습니다",
+    "cant_seek": "이 노래에서는 탐색할 수 없습니다"
+  },
+  "playlist": {
+    "no_playlist": "재생 목록 이름을 입력해주세요",
+    "playlist_not_found": "재생 목록을 찾을 수 없습니다",
+    "exist_playlist": "재생 목록이 이미 존재합니다",
+    "empty_playlist": "재생 목록이 비어 있습니다"
+  },
+  "premium": {
+    "contact": "프리미엄 봇을 활성화하려면 <@{ownerId}>에게 문의하세요!",
+    "limit_tracks": "프리미엄 없이는 25곡 이상 추가할 수 없습니다",
+    "limit_playlists": "2개 이상의 재생 목록을 만들 수 없습니다",
+    "limit_load_playlist": "3번째 이후의 재생 목록은 사용할 수 없습니다"
+  },
+  "volume": {
+    "minium": "볼륨은 0 미만이 될 수 없습니다",
+    "maxium": "볼륨은 200을 초과할 수 없습니다. 귀나 스피커를 손상시키고 싶으신가요? 좋은 생각이 아닌 것 같네요."
+  },
+  "filters": {
+    "pitch": "0.5에서 5.0 사이의 유효한 숫자를 입력해주세요",
+    "speed": "0.5에서 5.0 사이의 유효한 숫자를 입력해주세요"
+  }
+}

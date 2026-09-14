@@ -1,0 +1,19 @@
+{
+  "dont_have": "None",
+  "dont_have_data": "No data",
+  "searching": "Searching...",
+  "request_by": "Requested by",
+  "player": {
+    "playing": "Now Playing",
+    "description": "[{title}]({uri}) - Requested by: <@{requesterId}> - Duration: `{duration}`",
+    "stream": "LIVE"
+  },
+  "queue": "Queue",
+  "page_of": "Page {index} of {total}",
+  "song": "song",
+  "duration": "Duration",
+  "author": "Author",
+  "playlist_of": "@{username}'s Playlist",
+  "playlist_name_of": "@{username}'s Playlist {name}",
+  "help_command": "Use {prefix} help for more details"
+}
