@@ -7,7 +7,6 @@ WORKDIR /app
 # Manifests first: the install layer stays cached unless deps change.
 COPY package.json bun.lock ./
 COPY apps/example/package.json ./apps/example/
-COPY apps/docs/package.json ./apps/docs/
 COPY packages/cli/package.json ./packages/cli/
 COPY packages/common/package.json ./packages/common/
 COPY packages/core/package.json ./packages/core/
@@ -19,7 +18,8 @@ RUN bun install --frozen-lockfile
 
 # Full source for the one-time CLI build, then run the bot from source.
 COPY . .
-RUN bun run build
+# ponytail: bot image builds only the example closure (docs ships separately).
+RUN bunx turbo run build --filter=...example && bun run postinstall
 
 WORKDIR /app/apps/example
 ENV NODE_ENV=production
