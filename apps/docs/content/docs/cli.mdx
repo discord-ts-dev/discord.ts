@@ -14,13 +14,13 @@ discord start:shard   # boot shards from build output
 discord --help        # usage table
 ```
 
-| Command | Runs | Runtime |
-| ------- | ---- | ------- |
-| `dev` | `src/main.ts` | `bun` |
-| `dev:shard` | `src/main.ts --shards` | `bun` |
-| `deploy` | `src/deploy.ts` | `bun` |
-| `start` | `dist/main.js` | `node` |
-| `start:shard` | `dist/main.js --shards` | `node` |
+| Command       | Runs                    | Runtime |
+| ------------- | ----------------------- | ------- |
+| `dev`         | `src/main.ts`           | `bun`   |
+| `dev:shard`   | `src/main.ts --shards`  | `bun`   |
+| `deploy`      | `src/deploy.ts`         | `bun`   |
+| `start`       | `dist/main.js`          | `node`  |
+| `start:shard` | `dist/main.js --shards` | `node`  |
 
 Wire in your app `package.json`:
 

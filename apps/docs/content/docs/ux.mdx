@@ -16,11 +16,11 @@ const ok = await confirm(interaction, 'Ban this member?', 15_000);
 if (ok) await interaction.followUp('banned');
 ```
 
-| Arg | Default | Notes |
-| --- | ------- | ----- |
-| `target` | — | Interaction or prefix message. |
-| `question` | — | `string` or `{ content?, embeds? }`. |
-| `timeoutMs` | `15000` | Collector lifetime. |
+| Arg         | Default | Notes                                |
+| ----------- | ------- | ------------------------------------ |
+| `target`    | —       | Interaction or prefix message.       |
+| `question`  | —       | `string` or `{ content?, embeds? }`. |
+| `timeoutMs` | `15000` | Collector lifetime.                  |
 
 Buttons use unique ids per call. After pick it edits to `Confirmed.` / `Cancelled.` and clears components.
 
@@ -34,11 +34,11 @@ import { paginate } from '@discord.ts/ux';
 await paginate(interaction, [page1, page2, page3], 60_000);
 ```
 
-| Arg | Default | Notes |
-| --- | ------- | ----- |
-| `target` | — | Interaction or prefix message. |
-| `pages` | — | `EmbedBuilder[]`. Empty returns void. |
-| `timeoutMs` | `60000` | Collector lifetime. |
+| Arg         | Default | Notes                                 |
+| ----------- | ------- | ------------------------------------- |
+| `target`    | —       | Interaction or prefix message.        |
+| `pages`     | —       | `EmbedBuilder[]`. Empty returns void. |
+| `timeoutMs` | `60000` | Collector lifetime.                   |
 
 ## Error embed
 

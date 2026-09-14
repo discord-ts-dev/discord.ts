@@ -17,13 +17,13 @@ async onSelect(@Context() ix: StringSelectMenuInteraction) {
 }
 ```
 
-| Decorator | Matches |
-| --------- | ------- |
-| `@Button(customId)` | Button press. |
-| `@StringSelect(customId)` | String select menu. |
-| `@UserSelect(customId)` | User select menu. |
-| `@RoleSelect(customId)` | Role select menu. |
-| `@ChannelSelect(customId)` | Channel select menu. |
+| Decorator                      | Matches                  |
+| ------------------------------ | ------------------------ |
+| `@Button(customId)`            | Button press.            |
+| `@StringSelect(customId)`      | String select menu.      |
+| `@UserSelect(customId)`        | User select menu.        |
+| `@RoleSelect(customId)`        | Role select menu.        |
+| `@ChannelSelect(customId)`     | Channel select menu.     |
 | `@MentionableSelect(customId)` | Mentionable select menu. |
 
 `customId` is a string for exact match or a `RegExp` for prefix and parametric ids. `matches()` tests exact or regex.

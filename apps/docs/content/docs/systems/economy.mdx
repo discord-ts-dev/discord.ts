@@ -16,13 +16,13 @@ const r = await claimDaily(store, userId, { amount: 100, streakBonus: 25, streak
 if (r.claimed) console.log(`+${r.amount} streak ${r.streak}`);
 ```
 
-| Option | Default | Notes |
-| ------ | ------- | ----- |
-| `amount` | — | Base payout. |
-| `streakBonus` | `0` | Extra per streak day after day 1. |
-| `streakGraceDays` | `1` | Miss tolerance before streak resets to 1. |
-| `timeZone` | `'UTC'` | Reset zone. |
-| `now` | `new Date()` | Inject for tests. |
+| Option            | Default      | Notes                                     |
+| ----------------- | ------------ | ----------------------------------------- |
+| `amount`          | —            | Base payout.                              |
+| `streakBonus`     | `0`          | Extra per streak day after day 1.         |
+| `streakGraceDays` | `1`          | Miss tolerance before streak resets to 1. |
+| `timeZone`        | `'UTC'`      | Reset zone.                               |
+| `now`             | `new Date()` | Inject for tests.                         |
 
 ## Balance and shop
 
@@ -41,7 +41,13 @@ Check-then-act. Atomicity is the adapter job (`MemoryStore` is single-process, a
 One active quest per user per day window.
 
 ```ts
-import { assignQuest, addProgress, rerollQuest, completeQuest, getQuest } from '@discord.ts/systems';
+import {
+  assignQuest,
+  addProgress,
+  rerollQuest,
+  completeQuest,
+  getQuest,
+} from '@discord.ts/systems';
 
 await assignQuest(store, userId, ['chat-10', 'react-5'], { goal: 10 });
 await addProgress(store, userId, 3);

@@ -29,17 +29,17 @@ export default defineConfig({
 });
 ```
 
-| Option | Default | Notes |
-| ------ | ------- | ----- |
-| `token` | — | `DISCORD_TOKEN` wins. |
-| `clientId` | — | `DISCORD_CLIENT_ID` wins. |
-| `intents` | — | Passed to `discord.js` Client. |
-| `development` | `[]` | Guild ids for instant dev sync. Empty means global. `DISCORD_GUILD_ID` sets one. |
-| `skipRegistration` | `false` | Skip REST sync on boot. `SKIP_REGISTRATION` toggles. |
-| `prefix` | `'!'` | String or array. |
-| `shards` / `shardCount` | — | Passed to Client. `SHARD_COUNT` sets count, `'auto'` sets auto. |
-| `shardFile` | `'./src/main.ts'` | Entry each shard boots. |
-| `respawn` | `true` | Respawn dead shards. |
+| Option                  | Default           | Notes                                                                            |
+| ----------------------- | ----------------- | -------------------------------------------------------------------------------- |
+| `token`                 | —                 | `DISCORD_TOKEN` wins.                                                            |
+| `clientId`              | —                 | `DISCORD_CLIENT_ID` wins.                                                        |
+| `intents`               | —                 | Passed to `discord.js` Client.                                                   |
+| `development`           | `[]`              | Guild ids for instant dev sync. Empty means global. `DISCORD_GUILD_ID` sets one. |
+| `skipRegistration`      | `false`           | Skip REST sync on boot. `SKIP_REGISTRATION` toggles.                             |
+| `prefix`                | `'!'`             | String or array.                                                                 |
+| `shards` / `shardCount` | —                 | Passed to Client. `SHARD_COUNT` sets count, `'auto'` sets auto.                  |
+| `shardFile`             | `'./src/main.ts'` | Entry each shard boots.                                                          |
+| `respawn`               | `true`            | Respawn dead shards.                                                             |
 
 `loadDiscordConfig()` merges file then env then `overrides`. Missing `token` / `clientId` throws unless `skipValidation`. `checkAppStructure()` warns (never throws) when `discord.config.ts`, `src/main.ts`, `src/commands`, `src/events` are missing.
 

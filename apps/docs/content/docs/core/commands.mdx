@@ -19,13 +19,13 @@ export class RollCommand {
 }
 ```
 
-| Field | Type | Notes |
-| ----- | ---- | ----- |
-| `name` | `string` | Lowercase, Discord rules apply. Checked at boot. |
-| `description` | `string` | Required by Discord. |
-| `nsfw` | `boolean` | Age-restricted channel only. |
-| `defaultMemberPermissions` | `string \| number \| bigint \| null` | Caller permission floor. |
-| `contexts` | `InteractionContextType[]` | Where the command shows. |
+| Field                      | Type                                 | Notes                                            |
+| -------------------------- | ------------------------------------ | ------------------------------------------------ |
+| `name`                     | `string`                             | Lowercase, Discord rules apply. Checked at boot. |
+| `description`              | `string`                             | Required by Discord.                             |
+| `nsfw`                     | `boolean`                            | Age-restricted channel only.                     |
+| `defaultMemberPermissions` | `string \| number \| bigint \| null` | Caller permission floor.                         |
+| `contexts`                 | `InteractionContextType[]`           | Where the command shows.                         |
 
 ## Command (unified)
 
@@ -38,11 +38,11 @@ async handle(@Context() ctx: ChatInputCommandInteraction | Message) {
 }
 ```
 
-| Field | Notes |
-| ----- | ----- |
-| `slash` | Register as slash command. |
-| `prefix` | Register as prefix command under the same name. |
-| `aliases` | Extra text triggers for the prefix surface. |
+| Field     | Notes                                           |
+| --------- | ----------------------------------------------- |
+| `slash`   | Register as slash command.                      |
+| `prefix`  | Register as prefix command under the same name. |
+| `aliases` | Extra text triggers for the prefix surface.     |
 
 ## Subcommand and group
 
@@ -76,7 +76,7 @@ async handle(@Context() interaction: MessageContextMenuCommandInteraction) {
 }
 ```
 
-| Field | Notes |
-| ----- | ----- |
-| `name` | Display name. |
+| Field  | Notes                                        |
+| ------ | -------------------------------------------- |
+| `name` | Display name.                                |
 | `type` | `ApplicationCommandType.User` or `.Message`. |

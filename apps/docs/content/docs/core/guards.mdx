@@ -31,10 +31,10 @@ import { PermissionFlagsBits } from 'discord.js';
 async handle(@Context() ix: Ctx) {}
 ```
 
-| Decorator | Checks | On missing |
-| --------- | ------ | ---------- |
-| `@RequirePermissions(...perms)` | Caller `memberPermissions` or `member.permissions`. | Ephemeral `Missing permissions: X`. Blocks. |
-| `@RequireBotPermissions(...perms)` | Bot `guild.members.me.permissions`. | Ephemeral `Bot is missing permissions: X`. Blocks. |
+| Decorator                          | Checks                                              | On missing                                         |
+| ---------------------------------- | --------------------------------------------------- | -------------------------------------------------- |
+| `@RequirePermissions(...perms)`    | Caller `memberPermissions` or `member.permissions`. | Ephemeral `Missing permissions: X`. Blocks.        |
+| `@RequireBotPermissions(...perms)` | Bot `guild.members.me.permissions`.                 | Ephemeral `Bot is missing permissions: X`. Blocks. |
 
 Method metadata wins over class metadata via `Reflector.getAllAndOverride()`.
 

@@ -15,10 +15,10 @@ async handle(
 }
 ```
 
-| Param | Use |
-| ----- | --- |
-| `@Context()` | The interaction or message for the current call. |
-| `@Options()` | Validated slash-options DTO. |
+| Param           | Use                                               |
+| --------------- | ------------------------------------------------- |
+| `@Context()`    | The interaction or message for the current call.  |
+| `@Options()`    | Validated slash-options DTO.                      |
 | `@PrefixArgs()` | Raw `string[]` for prefix calls. See prefix page. |
 
 ## DTO fields
@@ -48,17 +48,17 @@ export class RollDto {
 }
 ```
 
-| Decorator | Kind |
-| --------- | ---- |
-| `@StringOption()` | string |
-| `@IntegerOption()` | integer |
-| `@NumberOption()` | number |
-| `@BooleanOption()` | boolean |
-| `@UserOption()` | user |
-| `@ChannelOption()` | channel |
-| `@RoleOption()` | role |
+| Decorator              | Kind        |
+| ---------------------- | ----------- |
+| `@StringOption()`      | string      |
+| `@IntegerOption()`     | integer     |
+| `@NumberOption()`      | number      |
+| `@BooleanOption()`     | boolean     |
+| `@UserOption()`        | user        |
+| `@ChannelOption()`     | channel     |
+| `@RoleOption()`        | role        |
 | `@MentionableOption()` | mentionable |
-| `@AttachmentOption()` | attachment |
+| `@AttachmentOption()`  | attachment  |
 
 Each field accepts `name`, `description`, `required`, plus `autocomplete`, `choices`, `minValue` / `maxValue`, `minLength` / `maxLength`, and `channelTypes` where they apply. `applyOptions()` maps the DTO to a `SlashCommandBuilder` automatically.
 

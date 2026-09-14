@@ -15,12 +15,12 @@ export class EchoPrefixCommand {
 }
 ```
 
-| Item | Notes |
-| ---- | ----- |
-| `@PrefixCommand({ name, aliases?, description? })` | Method-level. `aliases` are extra text triggers. |
-| `@PrefixArgs()` | Raw `string[]` after the name. Quoted strings stay together via `splitArgs()`. |
-| Prefix | From config `prefix`, default `'!'`. String or array. Routing only active if a `@PrefixCommand` exists. |
-| Intent | Needs `GatewayIntentBits.MessageContent` plus `GuildMessages`. |
+| Item                                               | Notes                                                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `@PrefixCommand({ name, aliases?, description? })` | Method-level. `aliases` are extra text triggers.                                                        |
+| `@PrefixArgs()`                                    | Raw `string[]` after the name. Quoted strings stay together via `splitArgs()`.                          |
+| Prefix                                             | From config `prefix`, default `'!'`. String or array. Routing only active if a `@PrefixCommand` exists. |
+| Intent                                             | Needs `GatewayIntentBits.MessageContent` plus `GuildMessages`.                                          |
 
 ## Unified and sub-routes
 

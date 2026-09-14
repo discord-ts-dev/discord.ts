@@ -16,12 +16,12 @@ runner.start();
 // runner.stop();
 ```
 
-| Field | Notes |
-| ----- | ----- |
-| `name` | Unique. Duplicate throws. |
-| `everyMs` | Interval. Chains `setTimeout`, one tick schedules the next. |
-| `dailyAt` | `{ hour, minute?, timeZone? }`. Next fire via `msUntilDaily()`. |
-| `jitterMs` | Random extra delay to spread load. |
-| `run` | Sync or async work. Single-flight per name. Errors go to `getLastError(name)`, never throw. |
+| Field      | Notes                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| `name`     | Unique. Duplicate throws.                                                                   |
+| `everyMs`  | Interval. Chains `setTimeout`, one tick schedules the next.                                 |
+| `dailyAt`  | `{ hour, minute?, timeZone? }`. Next fire via `msUntilDaily()`.                             |
+| `jitterMs` | Random extra delay to spread load.                                                          |
+| `run`      | Sync or async work. Single-flight per name. Errors go to `getLastError(name)`, never throw. |
 
 Helpers: `msUntilDaily(now, at)` for ms to next run, `dayIndex(now, timeZone)` for whole reset windows since epoch (streak math). Timers `unref` so a started runner dies with the process.

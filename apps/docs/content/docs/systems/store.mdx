@@ -13,15 +13,15 @@ await store.set('bal:123', '100');
 await store.incrBy('bal:123', 50);
 ```
 
-| Method | Use |
-| ------ | --- |
-| `get(key)` | String or `null`. Lazy TTL: expired keys die on read, no sweep timer. |
-| `set(key, value, ttlMs?)` | Write with optional expiry. |
-| `incrBy(key, amount)` | Atomic-ish increment. Returns next. |
-| `zadd(key, score, member)` | Upsert sorted-set entry. |
-| `zrange(key, start, stop, reverse?)` | Slice ordered entries. `stop: -1` means end. |
-| `zscore(key, member)` | Score or `null`. |
-| `zrank(key, member, reverse?)` | 0-based rank or `null`. |
-| `del(key)` | Delete string and sorted keys. |
+| Method                               | Use                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------- |
+| `get(key)`                           | String or `null`. Lazy TTL: expired keys die on read, no sweep timer. |
+| `set(key, value, ttlMs?)`            | Write with optional expiry.                                           |
+| `incrBy(key, amount)`                | Atomic-ish increment. Returns next.                                   |
+| `zadd(key, score, member)`           | Upsert sorted-set entry.                                              |
+| `zrange(key, start, stop, reverse?)` | Slice ordered entries. `stop: -1` means end.                          |
+| `zscore(key, member)`                | Score or `null`.                                                      |
+| `zrank(key, member, reverse?)`       | 0-based rank or `null`.                                               |
+| `del(key)`                           | Delete string and sorted keys.                                        |
 
 Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. Daily payouts land in `bal:` so they are spendable in the shop.

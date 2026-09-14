@@ -7,6 +7,7 @@ WORKDIR /app
 # Manifests first: the install layer stays cached unless deps change.
 COPY package.json bun.lock ./
 COPY apps/example/package.json ./apps/example/
+COPY apps/docs/package.json ./apps/docs/
 COPY packages/cli/package.json ./packages/cli/
 COPY packages/common/package.json ./packages/common/
 COPY packages/core/package.json ./packages/core/

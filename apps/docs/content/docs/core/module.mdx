@@ -18,9 +18,9 @@ export class AppModule {}
 
 ## forRoot vs forRootAsync
 
-| API | Use |
-| --- | --- |
-| `DiscordModule.forRoot(options)` | Sync def. Pass `DiscordModuleOptions` inline. Good for tests. |
+| API                                                                          | Use                                                               |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `DiscordModule.forRoot(options)`                                             | Sync def. Pass `DiscordModuleOptions` inline. Good for tests.     |
 | `DiscordModule.forRootAsync({ cwd, configPath, skipValidation, overrides })` | File + env def. Reads `discord.config.ts`. Env wins. Use in apps. |
 
 ```ts
@@ -43,12 +43,12 @@ DiscordModule.forRootAsync({
 
 ## DI helpers
 
-| Helper | Use |
-| ------ | --- |
-| `@Injectable()` | Mark a class as provider. Required on every command and listener. |
-| `@Module({ imports, providers })` | Group providers. |
-| `Inject(token)` | Compat no-op. The container wires known services directly. |
-| `SetMetadata(key, value)` | Attach metadata to method or class. |
-| `applyDecorators(...decs)` | Compose decorators into one. |
-| `Reflector.get(key, target)` | Read metadata. |
-| `CanActivate` | Guard contract: `canActivate(context)` returns boolean or promise. |
+| Helper                            | Use                                                                |
+| --------------------------------- | ------------------------------------------------------------------ |
+| `@Injectable()`                   | Mark a class as provider. Required on every command and listener.  |
+| `@Module({ imports, providers })` | Group providers.                                                   |
+| `Inject(token)`                   | Compat no-op. The container wires known services directly.         |
+| `SetMetadata(key, value)`         | Attach metadata to method or class.                                |
+| `applyDecorators(...decs)`        | Compose decorators into one.                                       |
+| `Reflector.get(key, target)`      | Read metadata.                                                     |
+| `CanActivate`                     | Guard contract: `canActivate(context)` returns boolean or promise. |
