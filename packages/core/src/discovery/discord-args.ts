@@ -6,6 +6,7 @@ import {
   PARAM_PREFIX_ARGS_METADATA,
   type OptionFieldMeta,
 } from '@discord.ts/common';
+import { parseMentionId } from '@discord.ts/utils';
 import type { Handler } from './handler.types.js';
 
 // ponytail: pure arg building, no DI. Shared by routing; optionsDto by discovery JSON.
@@ -100,14 +101,6 @@ export function buildDtoFromArgs(
     else dto[key] = coerceArg(f, args[i]);
   });
   return dto;
-}
-
-/** Extract a Discord id from mention syntax or a raw id. Returns undefined when not id-like. */
-export function parseMentionId(raw: string | undefined): string | undefined {
-  if (!raw) return undefined;
-  const m = raw.match(/^<@!?(\d+)>$/) ?? raw.match(/^<@&(\d+)>$/) ?? raw.match(/^<#(\d+)>$/);
-  if (m) return m[1];
-  return /^\d+$/.test(raw) ? raw : undefined;
 }
 
 function coerceArg(f: OptionFieldMeta, raw: string | undefined): unknown {

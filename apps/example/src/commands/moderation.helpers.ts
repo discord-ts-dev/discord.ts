@@ -1,3 +1,4 @@
+import { isMessage as isMsg, userIdOf } from '@discord.ts/utils';
 import { errorEmbed } from '@discord.ts/ux';
 import {
   AuditLogEvent,
@@ -5,8 +6,9 @@ import {
   type ChatInputCommandInteraction,
   type Guild,
   type Message,
-  type User,
 } from 'discord.js';
+
+export { userIdOf };
 
 export type Ctx = ChatInputCommandInteraction | Message;
 
@@ -47,25 +49,12 @@ export function pushWarn(w: WarnRecord): void {
   pushAudit({ ...w, action: 'warn' });
 }
 
-export function isMsg(ctx: Ctx): ctx is Message {
-  return 'content' in ctx && 'author' in ctx;
-}
-
 export function modId(ctx: Ctx): string {
   return isMsg(ctx) ? ctx.author.id : ctx.user.id;
 }
 
 export function guildOf(ctx: Ctx): Guild | null {
   return (ctx.guild as Guild | null) ?? null;
-}
-
-// Slash gives User, prefix gives coerced id string. Resolve both.
-export function userIdOf(raw: User | string | undefined): string | undefined {
-  if (!raw) return undefined;
-  if (typeof raw !== 'string') return raw.id;
-  const m = raw.match(/^<@!?(\d+)>$/) ?? raw.match(/^<@&(\d+)>$/) ?? raw.match(/^<#(\d+)>$/);
-  if (m) return m[1];
-  return /^\d+$/.test(raw) ? raw : undefined;
 }
 
 export interface NativeAuditEntry {

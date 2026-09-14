@@ -1,7 +1,7 @@
 {
-  "name": "@discord.ts/core",
+  "name": "@discord.ts/utils",
   "version": "0.1.0",
-  "description": "discord.ts runtime: module, discovery, sync, guards, config, sharding",
+  "description": "discord.ts pure helpers: mentions, ids, message guards",
   "license": "MIT",
   "files": [
     "dist"
@@ -12,21 +12,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsc -p tsconfig.json --watch",
     "lint": "oxlint .",
     "format": "oxfmt --write src",
     "test": "bun test"
   },
   "dependencies": {
-    "@discord.ts/common": "workspace:*",
-    "@discord.ts/utils": "workspace:*",
-    "class-validator": "^0.15.1",
-    "discord.js": "^14.0.0",
-    "reflect-metadata": "^0.2.2"
+    "discord.js": "^14.0.0"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
-    "fast-check": "^4.10.0",
     "typescript": "^5.6.3"
   },
   "peerDependencies": {
