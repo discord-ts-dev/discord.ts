@@ -5,6 +5,7 @@ import {
   BUTTON_METADATA,
   COMMAND_GROUP_METADATA,
   COMMAND_METADATA,
+  type CommandGroupMeta,
   CONTEXT_MENU_METADATA,
   type CommandMeta,
   type DiscordModuleOptions,
@@ -179,7 +180,7 @@ export class DiscordDiscoveryService {
       if (!proto) continue;
       const names = Object.getOwnPropertyNames(proto).filter((n) => n !== 'constructor');
       const group = Reflect.getMetadata(COMMAND_GROUP_METADATA, instance.constructor) as
-        | { name: string; description: string }
+        | CommandGroupMeta
         | undefined;
       for (const name of names) {
         const fn = (instance as Record<string, (...a: never[]) => unknown>)[name];
@@ -231,16 +232,21 @@ export class DiscordDiscoveryService {
         } else if (sub && (group ?? methodGroup)) {
           const top = group?.name ?? slash?.name ?? methodGroup?.name ?? sub.name;
           const topDescription = group?.description ?? slash?.description ?? sub.description;
-          this.slash.push({
-            ...base,
-            top,
-            topDescription,
-            group: group && methodGroup ? methodGroup.name : undefined,
-            groupDescription: group?.description,
-            sub: sub.name,
-            subDescription: sub.description,
-            meta: slash ?? { name: top, description: topDescription },
-          });
+          // ponytail: class group owns both surfaces. Prefix has no nesting,
+          // so only the class flag (not method subgroups) feeds prefix routes.
+          if (group?.slash !== false)
+            this.slash.push({
+              ...base,
+              top,
+              topDescription,
+              group: group && methodGroup ? methodGroup.name : undefined,
+              groupDescription: group?.description,
+              sub: sub.name,
+              subDescription: sub.description,
+              meta: slash ?? { name: top, description: topDescription },
+            });
+          if (group?.prefix === true)
+            this.prefix.push({ ...base, name: group.name, aliases: [], sub: sub.name });
         } else if (sub && slash) {
           this.slash.push({
             ...base,

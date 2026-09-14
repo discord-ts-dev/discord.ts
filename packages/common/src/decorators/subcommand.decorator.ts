@@ -4,6 +4,10 @@ import { COMMAND_GROUP_METADATA, SUBCOMMAND_METADATA } from '../constants.js';
 export interface CommandGroupMeta {
   name: string;
   description: string;
+  /** Register member subcommands as slash subs. Default true. */
+  slash?: boolean;
+  /** Register member subcommands as prefix sub-routes. Default false. */
+  prefix?: boolean;
 }
 
 export interface SubcommandMeta {
