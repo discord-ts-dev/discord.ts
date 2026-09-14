@@ -63,7 +63,7 @@ export class QuestCommand {
 }
 ```
 
-Group flags pick surfaces: `slash` defaults `true`, `prefix` defaults `false`. A method-level `@Quest({ subgroup })` nests via the parent chain. Discovery validates names, limits, and duplicates and throws one aggregated error before any REST call.
+Group flags pick surfaces: `slash` defaults `true`, `prefix` defaults `false`. A method-level `@Quest({ subgroup })` nests via the parent chain. A `@Subcommand()` on a `@Command()` parent nests on every surface the parent enables. Discovery validates names, limits, and duplicates and throws one aggregated error before any REST call.
 
 ## ContextMenu
 
