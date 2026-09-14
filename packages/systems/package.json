@@ -1,0 +1,22 @@
+{
+  "name": "@discord.ts/systems",
+  "version": "0.1.0",
+  "description": "discord.ts bot systems: store, scheduler, daily, quests, leaderboard, shop",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint .",
+    "format": "oxfmt --write src",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
