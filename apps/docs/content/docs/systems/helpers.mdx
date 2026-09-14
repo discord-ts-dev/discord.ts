@@ -1,0 +1,51 @@
+---
+title: Helpers
+description: Words, votes, help lists, guild settings. Small pure pieces.
+---
+
+## Words
+
+Word-boundary, case-insensitive blocklist.
+
+```ts
+import { containsBlocked, maskBlocked } from '@discord.ts/systems';
+
+containsBlocked('hello spam', ['spam']); // true
+maskBlocked('hello spam', ['spam']); // 'hello ***'
+```
+
+## Votes
+
+top.gg webhook bodies carry the voter id in `user`.
+
+```ts
+import { parseVotePayload, awardVote } from '@discord.ts/systems';
+
+const voter = parseVotePayload(body); // string | null
+if (voter) await awardVote(store, voter, 100); // stamps vote: + adds balance
+```
+
+No signature check here. Verify webhook secrets at the HTTP layer before calling `awardVote()`.
+
+## Help
+
+Group and sort `{ name, description, category? }` into sections. `General` sorts last.
+
+```ts
+import { buildHelp } from '@discord.ts/systems';
+
+buildHelp([{ name: 'ping', description: 'Pong' }]);
+// [{ category: 'General', commands: [...] }]
+```
+
+## Guild settings
+
+Per-guild prefix and per-command toggles in `guild:` keys.
+
+```ts
+import { getSettings, setPrefix, setCommandEnabled, isCommandEnabled } from '@discord.ts/systems';
+
+await setPrefix(store, guildId, '?');
+await setCommandEnabled(store, guildId, 'shop', false);
+await isCommandEnabled(store, guildId, 'shop'); // false
+```

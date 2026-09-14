@@ -1,0 +1,76 @@
+---
+title: Economy
+description: Daily streaks, balances, shop, quests, leaderboard, amounts.
+---
+
+All functions take a `Store`. All money lives in `bal:`.
+
+## Daily
+
+Once per window claim with streak bonus and grace days.
+
+```ts
+import { claimDaily } from '@discord.ts/systems';
+
+const r = await claimDaily(store, userId, { amount: 100, streakBonus: 25, streakGraceDays: 1 });
+if (r.claimed) console.log(`+${r.amount} streak ${r.streak}`);
+```
+
+| Option | Default | Notes |
+| ------ | ------- | ----- |
+| `amount` | — | Base payout. |
+| `streakBonus` | `0` | Extra per streak day after day 1. |
+| `streakGraceDays` | `1` | Miss tolerance before streak resets to 1. |
+| `timeZone` | `'UTC'` | Reset zone. |
+| `now` | `new Date()` | Inject for tests. |
+
+## Balance and shop
+
+```ts
+import { getBalance, addBalance, buy, inventory, useItem } from '@discord.ts/systems';
+
+await addBalance(store, userId, 500);
+const r = await buy(store, userId, { id: 'sword', price: 300 }, 1);
+// { ok: true, balance, qty } | { ok: false, reason: 'invalid-qty' | 'insufficient-funds', balance }
+```
+
+Check-then-act. Atomicity is the adapter job (`MemoryStore` is single-process, awaits never interleave). `useItem()` consumes qty and deletes at zero.
+
+## Quests
+
+One active quest per user per day window.
+
+```ts
+import { assignQuest, addProgress, rerollQuest, completeQuest, getQuest } from '@discord.ts/systems';
+
+await assignQuest(store, userId, ['chat-10', 'react-5'], { goal: 10 });
+await addProgress(store, userId, 3);
+await rerollQuest(store, userId, pool); // once per window, swaps to a different id
+await completeQuest(store, userId); // returns state if done, else null
+```
+
+State: `{ id, progress, goal, done, day, rerolled }`. Expired days read as `null`.
+
+## Leaderboard
+
+```ts
+import { addScore, top, rankOf } from '@discord.ts/systems';
+
+await addScore(store, 'xp', userId, 10);
+await top(store, 'xp', 10); // desc SortedEntry[]
+await rankOf(store, 'xp', userId); // { rank: 1-based, score } | null
+```
+
+Boards live in `lb:` sorted sets.
+
+## Amounts
+
+Parse `100`, `1,000`, `2k`, `1.5m`, `all` / `max` (= balance). Floored to ints.
+
+```ts
+import { parseAmount } from '@discord.ts/systems';
+
+parseAmount('2k', 5000); // { ok: true, value: 2000 }
+```
+
+Fail reasons: `invalid` | `non-positive` | `exceeds-balance`.

@@ -1,0 +1,14 @@
+{
+  "title": "Core",
+  "pages": [
+    "module",
+    "commands",
+    "options",
+    "events",
+    "components",
+    "guards",
+    "prefix",
+    "config-deploy",
+    "sharding"
+  ]
+}

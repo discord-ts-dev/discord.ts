@@ -1,0 +1,27 @@
+---
+title: Prefix commands
+description: Text commands like !echo. Needs MessageContent intent.
+---
+
+```ts
+import { Injectable, PrefixCommand, PrefixArgs, Context } from '@discord.ts/common';
+
+@Injectable()
+export class EchoPrefixCommand {
+  @PrefixCommand({ name: 'echo', aliases: ['say'], description: 'Repeat text' })
+  async handle(@Context() message: Message, @PrefixArgs() args: string[]) {
+    await message.reply(args.join(' ') || '(empty)');
+  }
+}
+```
+
+| Item | Notes |
+| ---- | ----- |
+| `@PrefixCommand({ name, aliases?, description? })` | Method-level. `aliases` are extra text triggers. |
+| `@PrefixArgs()` | Raw `string[]` after the name. Quoted strings stay together via `splitArgs()`. |
+| Prefix | From config `prefix`, default `'!'`. String or array. Routing only active if a `@PrefixCommand` exists. |
+| Intent | Needs `GatewayIntentBits.MessageContent` plus `GuildMessages`. |
+
+## Unified and sub-routes
+
+`@Command({ slash: true, prefix: true })` serves both surfaces from one handler. Prefix args map positionally into the `@Options()` DTO. `@Subcommand()` methods sharing the prefix name dispatch on the first token via `splitSubroute()` and fall back to the bare handler. Group classes with `prefix: true` register member subs on both surfaces.

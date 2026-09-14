@@ -1,0 +1,51 @@
+---
+title: UX
+description: Confirm dialogs, embed pagers, one error style. Dual surface.
+---
+
+`@discord.ts/ux`. Works on interactions and prefix messages. Detects surface via `isMessage()`.
+
+## Confirm
+
+Yes / No dialog. Text or embed payload. Resolves `true` on accept, `false` on cancel or timeout.
+
+```ts
+import { confirm } from '@discord.ts/ux';
+
+const ok = await confirm(interaction, 'Ban this member?', 15_000);
+if (ok) await interaction.followUp('banned');
+```
+
+| Arg | Default | Notes |
+| --- | ------- | ----- |
+| `target` | — | Interaction or prefix message. |
+| `question` | — | `string` or `{ content?, embeds? }`. |
+| `timeoutMs` | `15000` | Collector lifetime. |
+
+Buttons use unique ids per call. After pick it edits to `Confirmed.` / `Cancelled.` and clears components.
+
+## Paginate
+
+Prev / Next embed pager. One page replies direct. Resolves when it times out.
+
+```ts
+import { paginate } from '@discord.ts/ux';
+
+await paginate(interaction, [page1, page2, page3], 60_000);
+```
+
+| Arg | Default | Notes |
+| --- | ------- | ----- |
+| `target` | — | Interaction or prefix message. |
+| `pages` | — | `EmbedBuilder[]`. Empty returns void. |
+| `timeoutMs` | `60000` | Collector lifetime. |
+
+## Error embed
+
+One red style everywhere. Success embeds stay per-feature.
+
+```ts
+import { errorEmbed } from '@discord.ts/ux';
+
+await interaction.reply({ embeds: [errorEmbed('Missing target.')] });
+```

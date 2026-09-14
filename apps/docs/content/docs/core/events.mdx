@@ -1,0 +1,26 @@
+---
+title: Events
+description: Run on gateway events. OnEvent for every fire, OnceEvent for the first.
+---
+
+```ts
+import { Injectable, Logger, OnEvent, Context } from '@discord.ts/common';
+import { Events, type Client } from 'discord.js';
+
+@Injectable()
+export class ReadyListener {
+  private readonly log = new Logger(ReadyListener.name);
+
+  @OnEvent(Events.ClientReady)
+  ready(@Context() client: Client<true>) {
+    this.log.log(`Logged in as ${client.user.tag}`);
+  }
+}
+```
+
+| Decorator | Use |
+| --------- | --- |
+| `@OnEvent(event)` | Run on every fire. `event` is a Discord `Events` value or string. |
+| `@OnceEvent(event)` | Run once, then detach. |
+
+`@Context()` on an event handler receives `raw[0]` (for `ClientReady`, the ready client). Other args pass through untouched via `buildEventArgs()`.

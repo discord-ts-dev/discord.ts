@@ -1,0 +1,54 @@
+---
+title: Module
+description: Group providers. Boot with forRoot or forRootAsync.
+---
+
+A `Module` groups providers. The root module wires `DiscordModule` once.
+
+```ts
+import { Module } from '@discord.ts/common';
+import { DiscordModule } from '@discord.ts/core';
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [PingCommand, ReadyListener],
+})
+export class AppModule {}
+```
+
+## forRoot vs forRootAsync
+
+| API | Use |
+| --- | --- |
+| `DiscordModule.forRoot(options)` | Sync def. Pass `DiscordModuleOptions` inline. Good for tests. |
+| `DiscordModule.forRootAsync({ cwd, configPath, skipValidation, overrides })` | File + env def. Reads `discord.config.ts`. Env wins. Use in apps. |
+
+```ts
+// Sync, no file
+DiscordModule.forRoot({
+  token: process.env.DISCORD_TOKEN!,
+  clientId: process.env.DISCORD_CLIENT_ID!,
+  intents: [GatewayIntentBits.Guilds],
+});
+
+// Async, file + env + overrides (overrides win)
+DiscordModule.forRootAsync({
+  overrides: { skipRegistration: true },
+});
+```
+
+## Runtime
+
+`createRuntime(AppModule)` builds client, sync, discovery, routing, and provider instances. `bootstrapApp(AppModule)` is the thin gate on top: `--shards` spawns shards, else it starts discovery. See sharding for details.
+
+## DI helpers
+
+| Helper | Use |
+| ------ | --- |
+| `@Injectable()` | Mark a class as provider. Required on every command and listener. |
+| `@Module({ imports, providers })` | Group providers. |
+| `Inject(token)` | Compat no-op. The container wires known services directly. |
+| `SetMetadata(key, value)` | Attach metadata to method or class. |
+| `applyDecorators(...decs)` | Compose decorators into one. |
+| `Reflector.get(key, target)` | Read metadata. |
+| `CanActivate` | Guard contract: `canActivate(context)` returns boolean or promise. |

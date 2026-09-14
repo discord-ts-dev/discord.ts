@@ -1,0 +1,32 @@
+---
+title: Sharding
+description: Split the gateway across processes. Same file, same config.
+---
+
+Tune in config, boot with the `--shards` gate.
+
+```ts
+export default defineConfig({
+  token: process.env.DISCORD_TOKEN!,
+  clientId: process.env.DISCORD_CLIENT_ID!,
+  intents: [GatewayIntentBits.Guilds],
+  shardFile: './src/main.ts',
+  shardCount: 2,
+  respawn: true,
+});
+```
+
+```ts
+import 'reflect-metadata';
+import { bootstrapApp } from '@discord.ts/core';
+
+void bootstrapApp(AppModule);
+```
+
+```bash
+bun run dev:shard     # TS source: src/main.ts --shards via bun
+bun run start:shard   # dist: dist/main.js --shards via node
+SHARD_COUNT=auto bun run dev:shard
+```
+
+`bootstrapApp()` checks `argv` for `--shards`. With the flag it calls `runShards(await loadShardingOptions())` and spawns a `ShardingManager`. Without it boots one process via `createRuntime()` + `discovery.start()`. Shard ids come from discord.js over IPC. `SIGINT` / `SIGTERM` stop discovery.

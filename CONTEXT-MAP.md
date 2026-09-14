@@ -13,5 +13,6 @@ Multi-context repo. Read the `CONTEXT.md` for each context relevant to the topic
 | `ux`      | `packages/ux/CONTEXT.md`  | Message helpers: confirm dialogs, pagers            |
 | `cli`     | `packages/cli/CONTEXT.md` | Runner: dev, shard, deploy, start                   |
 | `example` | `apps/example/CONTEXT.md`  | Example bot: wiring commands and events with core   |
+| `docs`    | `apps/docs/CONTEXT.md`     | Docs site: Fumadocs content, meta, site meta        |
 
 Context-specific decisions live in `<context-path>/docs/adr/` next to each `CONTEXT.md`.
