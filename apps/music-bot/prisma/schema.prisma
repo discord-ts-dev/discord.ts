@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Playlist {
+  playlist_id String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  name        String
+  tracks      Track[]
+  private     Boolean @default(false)
+
+  @@unique([userId, name])
+}
+
+model Track {
+  track_id    String   @id @default(cuid())
+  uri         String
+  name        String
+  encode      String
+  duration    Int
+  playlist    Playlist @relation(fields: [playlist_id], references: [playlist_id], onDelete: Cascade)
+  playlist_id String
+}
+
+model Guild {
+  guildId     String   @id
+  premiumFrom DateTime?
+  premiumTo   DateTime?
+  language    String   @default("EnglishUS")
+}
+
+model User {
+  userId      String     @id
+  premiumFrom DateTime?
+  premiumTo   DateTime?
+  playlists   Playlist[]
+}
