@@ -2,8 +2,8 @@ import { Command, CommandContext, Context, Guild, Injectable, Options } from '@d
 import { Cooldown, RequireGuild, RequireOwner, RequirePermissions } from '@discord.ts/core';
 import { availableLocales, t } from '@discord.ts/i18n';
 import { confirm } from '@discord.ts/ux';
+// ponytail: node:vm has no Bun equivalent; Bun runs the module natively.
 import { runInNewContext } from 'node:vm';
-import { inspect } from 'node:util';
 import { EmbedBuilder, PermissionFlagsBits, type Guild as DiscordGuild } from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
 import { PremiumService, premiumService } from './premium.service.js';
@@ -101,7 +101,7 @@ export class AdminCommand {
           { name: 'Type', value: typeof output },
           { name: 'Speed', value: `${Date.now() - started}ms` },
           { name: 'Code', value: `\`\`\`js\n${dto.code.slice(0, 1000)}\n\`\`\`` },
-          { name: 'Output', value: `\`\`\`js\n${inspect(output).slice(0, 1000)}\n\`\`\`` },
+          { name: 'Output', value: `\`\`\`js\n${Bun.inspect(output).slice(0, 1000)}\n\`\`\`` },
         );
       await ctx.reply({ embeds: [embed] });
     } catch (error) {

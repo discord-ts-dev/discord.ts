@@ -1,4 +1,4 @@
-import { pathToFileURL } from 'node:url';
+// ponytail: path.resolve and existsSync have no Bun equivalent.
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { DiscordLogger, type DiscordModuleOptions } from '@discord.ts/common';
@@ -55,7 +55,7 @@ function withoutUndefined<T extends object>(obj: T): Partial<T> {
 }
 
 async function importFile(file: string): Promise<DiscordConfigInput> {
-  const url = pathToFileURL(file).href;
+  const url = Bun.pathToFileURL(file).href;
   const mod = (await import(url)) as { default?: DiscordConfigInput } & DiscordConfigInput;
   return (mod.default ?? mod) as DiscordConfigInput;
 }

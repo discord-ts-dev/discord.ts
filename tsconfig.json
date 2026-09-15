@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "types": ["bun", "node"]
+    "types": ["bun"]
   },
   "include": [
     "packages/*/tests/**/*.ts",
