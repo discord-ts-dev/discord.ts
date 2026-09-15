@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
 import {
   Author,
-  CommandContext,
   Context,
   Guild,
   Locale,
@@ -13,8 +12,6 @@ import {
   PARAM_GUILD_METADATA,
   PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
-  PARAM_PREFIX_ARGS_METADATA,
-  PrefixArgs,
 } from '@discord.ts/common';
 import {
   buildArgs,
@@ -41,13 +38,12 @@ class Cmd {
 
 Context()(Cmd.prototype, 'run', 0);
 Options()(Cmd.prototype, 'run', 1);
-PrefixArgs()(Cmd.prototype, 'run', 2);
-Guild()(Cmd.prototype, 'run', 3);
-Author()(Cmd.prototype, 'run', 4);
-Locale()(Cmd.prototype, 'run', 5);
+Guild()(Cmd.prototype, 'run', 2);
+Author()(Cmd.prototype, 'run', 3);
+Locale()(Cmd.prototype, 'run', 4);
 Reflect.defineMetadata(
   'design:paramtypes',
-  [CommandContext, QueryDto, Array, Object, Object, String],
+  [Object, QueryDto, Object, Object, String],
   Cmd.prototype,
   'run',
 );
@@ -74,22 +70,12 @@ describe('buildArgs', () => {
       user: { id: 'u' },
       locale: 'de',
     };
-    const args = buildArgs(probe(new Cmd(), 'run'), interaction, undefined, 'en-US');
-    assert.ok(args[0] instanceof CommandContext);
+    const args = buildArgs(probe(new Cmd(), 'run'), interaction, 'en-US');
+    assert.deepEqual(args[0], interaction);
     assert.deepEqual({ ...(args[1] as object) }, { q: 'term' });
-    assert.deepEqual(args[2], []);
-    assert.deepEqual(args[3], { id: 'g' });
-    assert.deepEqual(args[4], { id: 'u' });
-    assert.equal(args[5], 'de');
-  });
-
-  test('fills DTO and args positionally for the prefix surface', () => {
-    const args = buildArgs(probe(new Cmd(), 'run'), {}, ['hello', 'world'], 'en-US');
-    assert.deepEqual({ ...(args[1] as object) }, { q: 'hello world' });
-    assert.deepEqual(args[2], ['hello', 'world']);
-    assert.equal(args[3], null);
-    assert.equal(args[4], null);
-    assert.equal(args[5], 'en-US');
+    assert.deepEqual(args[2], { id: 'g' });
+    assert.deepEqual(args[3], { id: 'u' });
+    assert.equal(args[4], 'de');
   });
 
   test('passes the interaction through when nothing is decorated', () => {
@@ -176,19 +162,19 @@ describe('buildEventArgs', () => {
       'fr',
     );
     assert.deepEqual(args[0], { guild: { id: 'g' }, user: { id: 'u' } });
-    assert.deepEqual(args[3], { id: 'g' });
-    assert.deepEqual(args[4], { id: 'u' });
-    assert.equal(args[5], 'fr');
+    assert.deepEqual(args[2], { id: 'g' });
+    assert.deepEqual(args[3], { id: 'u' });
+    assert.equal(args[4], 'fr');
   });
 
   test('keeps provided raw values over derived ones', () => {
     const args = buildEventArgs(
       probe(new Cmd(), 'run'),
-      ['ctx', 'dto', [], 'raw-guild', 'raw-a'],
+      ['ctx', 'dto', 'raw-guild', 'raw-a'],
       'en',
     );
-    assert.equal(args[3], 'raw-guild');
-    assert.equal(args[4], 'raw-a');
+    assert.equal(args[2], 'raw-guild');
+    assert.equal(args[3], 'raw-a');
   });
 });
 
@@ -199,6 +185,5 @@ describe('command metadata helpers', () => {
     assert.equal(PARAM_GUILD_METADATA.length > 0, true);
     assert.equal(PARAM_AUTHOR_METADATA.length > 0, true);
     assert.equal(PARAM_LOCALE_METADATA.length > 0, true);
-    assert.equal(PARAM_PREFIX_ARGS_METADATA.length > 0, true);
   });
 });

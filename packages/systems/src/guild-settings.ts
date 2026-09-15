@@ -1,7 +1,6 @@
 import type { Store } from './store.js';
 
 export interface GuildSettings {
-  prefix?: string;
   disabled?: string[];
 }
 
@@ -16,10 +15,6 @@ async function patch(store: Store, guildId: string, part: Partial<GuildSettings>
     settingsKey(guildId),
     JSON.stringify({ ...(await getSettings(store, guildId)), ...part }),
   );
-}
-
-export async function setPrefix(store: Store, guildId: string, prefix: string): Promise<void> {
-  await patch(store, guildId, { prefix });
 }
 
 export async function setCommandEnabled(

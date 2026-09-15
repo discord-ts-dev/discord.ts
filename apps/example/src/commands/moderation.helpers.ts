@@ -1,7 +1,11 @@
 import { userIdOf } from '@discord.ts/utils';
-import type { CommandContext } from '@discord.ts/common';
 import { errorEmbed } from '@discord.ts/ux';
-import { AuditLogEvent, EmbedBuilder, type Guild } from 'discord.js';
+import {
+  AuditLogEvent,
+  EmbedBuilder,
+  type ChatInputCommandInteraction,
+  type Guild,
+} from 'discord.js';
 
 export { userIdOf };
 
@@ -42,11 +46,11 @@ export function pushWarn(w: WarnRecord): void {
   pushAudit({ ...w, action: 'warn' });
 }
 
-export function modId(ctx: CommandContext): string {
+export function modId(ctx: ChatInputCommandInteraction): string {
   return ctx.user.id;
 }
 
-export function guildOf(ctx: CommandContext): Guild {
+export function guildOf(ctx: ChatInputCommandInteraction): Guild {
   return ctx.guild as Guild;
 }
 
@@ -131,20 +135,19 @@ export function modEmbed(action: string, color: number): EmbedBuilder {
 }
 
 export async function replyEmbed(
-  ctx: CommandContext,
+  ctx: ChatInputCommandInteraction,
   embed: EmbedBuilder,
   ephemeral = false,
 ): Promise<void> {
-  // ponytail: wrapper drops ephemeral on prefix, routes to followUp when already replied
   await ctx.reply({ embeds: [embed], ephemeral });
 }
 
-export async function replyError(ctx: CommandContext, text: string): Promise<void> {
+export async function replyError(ctx: ChatInputCommandInteraction, text: string): Promise<void> {
   await replyEmbed(ctx, errorEmbed(text), true);
 }
 
 export function auditAndLog(
-  ctx: CommandContext,
+  ctx: ChatInputCommandInteraction,
   action: string,
   userId: string,
   reason: string,

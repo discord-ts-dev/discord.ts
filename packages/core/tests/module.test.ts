@@ -55,13 +55,13 @@ describe('resolveDiscordOptions', () => {
         DiscordModule.forRootAsync({
           cwd: tmp(),
           skipValidation: true,
-          overrides: { token: 'inline', clientId: undefined, prefix: '?' },
+          overrides: { token: 'inline', clientId: undefined, respawn: false },
         }),
       ],
     })(App);
     const resolved = await resolveDiscordOptions(App);
     assert.equal(resolved.options.token, 'inline');
-    assert.equal(resolved.options.prefix, '?');
+    assert.equal(resolved.options.respawn, false);
     assert.deepEqual(resolved.providers, []);
   });
 
@@ -69,7 +69,7 @@ describe('resolveDiscordOptions', () => {
     class App {}
     Module({})(App);
     const resolved = await resolveDiscordOptions(App, { skipValidation: true });
-    assert.equal(resolved.options.prefix, '!');
+    assert.equal(resolved.options.skipRegistration, false);
     assert.deepEqual(resolved.options.development, []);
   });
 

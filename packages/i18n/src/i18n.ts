@@ -99,6 +99,12 @@ export function availableLocales(): string[] {
   return [...state.catalogs.keys()].sort();
 }
 
+/** Raw lookup for one locale, no default-locale fallback. Undefined when the key is missing. */
+export function lookup(key: string, locale: string): string | undefined {
+  const hit = lookupIn(locale, key);
+  return typeof hit === 'string' ? hit : undefined;
+}
+
 /** Translate a key (`ns:key`, dotted, or bare) with locale fallback to default. Echoes unknown keys. */
 export function t(key: string, params?: Record<string, string | number>, locale?: string): string {
   const loc = locale && locale ? locale : state.defaultLocale;

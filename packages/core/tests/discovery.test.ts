@@ -1,6 +1,9 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { ApplicationCommandType } from 'discord.js';
 import {
   Autocomplete,
@@ -10,13 +13,12 @@ import {
   Modal,
   OnEvent,
   PARAM_OPTIONS_METADATA,
-  PrefixCommand,
-  SlashCommand,
   StringOption,
   StringSelect,
   Subcommand,
   createCommandGroupDecorator,
 } from '@discord.ts/common';
+import { initI18n } from '@discord.ts/i18n';
 import { DiscordDiscoveryService, type DiscordSyncService } from '../src/index.js';
 import type { SlashEntry } from '../src/discovery/handler.types.js';
 
@@ -62,7 +64,6 @@ class PingDto {
 const QuestGroup = createCommandGroupDecorator({
   name: 'quest',
   description: 'Quests',
-  prefix: true,
 });
 
 class Probe {
@@ -75,22 +76,13 @@ class Probe {
   modal(): void {}
   auto(): void {}
   event(): void {}
-  prefix(): void {}
 }
 
-apply(SlashCommand({ name: 'ping', description: 'Pong' }), Probe.prototype, 'ping');
-apply(
-  Command({ name: 'plain', description: 'Plain', slash: true, prefix: true }),
-  Probe.prototype,
-  'plain',
-);
-apply(
-  Command({ name: 'quest', description: 'Quests', slash: true, prefix: false }),
-  Probe.prototype,
-  'grouped',
-);
+apply(Command({ name: 'ping', description: 'Pong' }), Probe.prototype, 'ping');
+apply(Command({ name: 'plain', description: 'Plain' }), Probe.prototype, 'plain');
+apply(Command({ name: 'quest', description: 'Quests' }), Probe.prototype, 'grouped');
 apply(Subcommand({ name: 'reroll', description: 'Reroll' }), Probe.prototype, 'grouped');
-(QuestGroup({}) as ClassDecorator)(Probe);
+(QuestGroup() as ClassDecorator)(Probe);
 apply(
   ContextMenu({ name: 'Inspect', type: ApplicationCommandType.Message }),
   Probe.prototype,
@@ -101,7 +93,6 @@ apply(StringSelect('pick'), Probe.prototype, 'select');
 apply(Modal('form'), Probe.prototype, 'modal');
 apply(Autocomplete('ping'), Probe.prototype, 'auto');
 apply(OnEvent('ready'), Probe.prototype, 'event');
-apply(PrefixCommand({ name: 'echo', aliases: ['e'] }), Probe.prototype, 'prefix');
 
 function entry(over: Partial<SlashEntry>): SlashEntry {
   return {
@@ -109,7 +100,7 @@ function entry(over: Partial<SlashEntry>): SlashEntry {
     method: 'run',
     top: 'ping',
     topDescription: 'Pong',
-    meta: { name: 'ping', description: 'Pong' },
+    flags: {},
     ...over,
   };
 }
@@ -123,28 +114,10 @@ describe('DiscordDiscoveryService.scan', () => {
       ['ping', 'plain', 'quest reroll'],
     );
     assert.deepEqual(
-      service.prefix.map((p) => `${p.name} ${p.sub ?? ''}`.trim()),
-      ['plain', 'quest reroll', 'echo'],
-    );
-    assert.deepEqual(
       [service.menus.length, service.buttons.length, service.selects.length, service.modals.length],
       [1, 1, 1, 1],
     );
     assert.deepEqual([service.autocompletes.length, service.events.length], [1, 1]);
-    assert.equal(service.prefix[2]?.aliases[0], 'e');
-  });
-
-  test('rejects a @Command with no surface flags', () => {
-    class Bad {
-      nope(): void {}
-    }
-    apply(
-      Command({ name: 'nope', description: 'Nope', slash: false, prefix: false }),
-      Bad.prototype,
-      'nope',
-    );
-    const { service } = fakes();
-    assert.throws(() => service.init([new Bad()]), /set slash or prefix to true/);
   });
 });
 
@@ -153,25 +126,17 @@ describe('DiscordDiscoveryService.buildJson', () => {
     const { service } = fakes();
     service.slash.push(
       entry({
-        meta: {
-          name: 'ping',
-          description: 'Pong',
-          nsfw: true,
-          defaultMemberPermissions: '8',
-          contexts: [0],
-        },
+        flags: { nsfw: true, defaultMemberPermissions: '8', contexts: [0], dmPermission: false },
       }),
       entry({
         top: 'plain',
         topDescription: 'Plain',
-        meta: { name: 'plain', description: 'Plain' },
       }),
       entry({
         top: 'plain',
         topDescription: 'Plain',
         sub: 'one',
         subDescription: 'One',
-        meta: { name: 'plain', description: 'Plain' },
       }),
       entry({
         top: 'quest',
@@ -180,7 +145,6 @@ describe('DiscordDiscoveryService.buildJson', () => {
         groupDescription: 'Daily quests',
         sub: 'reroll',
         subDescription: 'Reroll',
-        meta: { name: 'quest', description: 'Quests' },
       }),
       entry({
         top: 'quest',
@@ -189,7 +153,6 @@ describe('DiscordDiscoveryService.buildJson', () => {
         groupDescription: 'Daily quests',
         sub: 'lock',
         subDescription: 'Lock',
-        meta: { name: 'quest', description: 'Quests' },
       }),
     );
     service.menus.push(
@@ -215,7 +178,9 @@ describe('DiscordDiscoveryService.buildJson', () => {
     );
     const json = service.buildJson() as Array<Record<string, unknown>>;
     const byName = new Map(json.map((j) => [j['name'] as string, j]));
+    const ping = byName.get('ping') as { dm_permission?: unknown };
     assert.equal(byName.get('ping')?.['nsfw'], true);
+    assert.equal(ping.dm_permission, false);
     assert.deepEqual(byName.get('ping')?.['options'], []);
     const plain = byName.get('plain') as { options: Array<{ name: string }> } | undefined;
     assert.deepEqual(
@@ -243,6 +208,26 @@ describe('DiscordDiscoveryService.buildJson', () => {
     assert.equal(plainMenu.contexts, undefined);
   });
 
+  test('fills localizations from the i18n catalog and explicit maps', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'discord-ts-i18n-'));
+    fs.mkdirSync(path.join(dir, 'de'));
+    fs.writeFileSync(
+      path.join(dir, 'de/commands.json'),
+      JSON.stringify({ ping: { description: 'Pong auf Deutsch' } }),
+    );
+    initI18n({ localesDir: dir, languages: ['de'] });
+    try {
+      const { service } = fakes();
+      service.slash.push(entry({ topLocalizations: { name: { fr: 'ping-fr' } } }));
+      const json = service.buildJson() as Array<Record<string, unknown>>;
+      assert.deepEqual(json[0]?.['description_localizations'], { de: 'Pong auf Deutsch' });
+      assert.deepEqual(json[0]?.['name_localizations'], { fr: 'ping-fr' });
+    } finally {
+      initI18n({ localesDir: path.join(dir, 'empty') });
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   test('mirrors DTO options onto the command JSON', () => {
     const { service } = fakes();
     const instance = new Probe();
@@ -253,7 +238,7 @@ describe('DiscordDiscoveryService.buildJson', () => {
       method: 'ping',
       top: 'search',
       topDescription: 'Search',
-      meta: { name: 'search', description: 'Search' },
+      flags: {},
     });
     const json = service.buildJson() as Array<{ name: string; options?: Array<{ name: string }> }>;
     assert.deepEqual(

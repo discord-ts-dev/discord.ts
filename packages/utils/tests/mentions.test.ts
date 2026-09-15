@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
-import { isMessage, isSnowflake, parseMentionId, userIdOf } from '../src/index.js';
+import { isSnowflake, parseMentionId, userIdOf } from '../src/index.js';
 
 describe('utils mentions', () => {
   test('parseMentionId coerces mentions and raw ids', () => {
@@ -23,10 +23,5 @@ describe('utils mentions', () => {
     assert.equal(isSnowflake('123456789012345678'), true);
     assert.equal(isSnowflake('123'), false);
     assert.equal(isSnowflake(undefined), false);
-  });
-
-  test('isMessage separates prefix messages from interactions', () => {
-    assert.equal(isMessage({ content: 'hi', author: { id: '1' } }), true);
-    assert.equal(isMessage({ options: {}, user: { id: '1' } }), false);
   });
 });

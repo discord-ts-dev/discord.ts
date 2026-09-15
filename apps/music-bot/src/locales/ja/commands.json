@@ -1,0 +1,141 @@
+{
+  "autoplay": {
+    "description": "自動再生モードを切り替え"
+  },
+  "clearqueue": {
+    "description": "キューをクリア"
+  },
+  "join": {
+    "description": "ボイスチャンネルに参加"
+  },
+  "leave": {
+    "description": "ボイスチャンネルから退出"
+  },
+  "loop": {
+    "description": "現在の曲またはキューをループ"
+  },
+  "lyric": {
+    "description": "歌詞を取得"
+  },
+  "nowplaying": {
+    "description": "現在再生中の曲を表示"
+  },
+  "pause": {
+    "description": "現在の曲を一時停止"
+  },
+  "playnext": {
+    "description": "次に再生する曲をキューに追加"
+  },
+  "play": {
+    "description": "YouTube、Spotify、SoundCloudまたはリンクから曲を再生"
+  },
+  "queue": {
+    "description": "現在のキューを表示"
+  },
+  "remove": {
+    "description": "キューから曲を削除"
+  },
+  "replay": {
+    "description": "現在の曲をリプレイ"
+  },
+  "resume": {
+    "description": "現在の曲を再開"
+  },
+  "search": {
+    "description": "曲を検索"
+  },
+  "seek": {
+    "description": "曲の特定の時間に移動"
+  },
+  "shuffle": {
+    "description": "キューをシャッフル"
+  },
+  "skip": {
+    "description": "現在の曲をスキップまたはキュー内の特定の曲にスキップ"
+  },
+  "volume": {
+    "description": "プレーヤーの音量を設定"
+  },
+  "help": {
+    "description": "ヘルプメニューを表示"
+  },
+  "ping": {
+    "description": "ボットの遅延を表示"
+  },
+  "premium": {
+    "description": "プレミアムの進捗を表示"
+  },
+  "language": {
+    "description": "ボットの言語を表示/編集"
+  },
+  "data": {
+    "description": "ユーザーデータを表示"
+  },
+  "eval": {
+    "description": "JavaScriptコードを実行"
+  },
+  "register": {
+    "description": "ユーザー/ギルドを登録"
+  },
+  "restart": {
+    "description": "ボットを再起動"
+  },
+  "playlist-add": {
+    "description": "プレイリストに曲を追加"
+  },
+  "playlist-create": {
+    "description": "プレイリストを作成"
+  },
+  "playlist-delete": {
+    "description": "プレイリストを削除"
+  },
+  "playlist-load": {
+    "description": "プレイリストを使用"
+  },
+  "playlist": {
+    "description": "プレイリストを表示"
+  },
+  "playlist-remove": {
+    "description": "プレイリストから曲を削除"
+  },
+  "playlist-steal": {
+    "description": "プレイリストを盗む"
+  },
+  "filters": {
+    "subcommands": {
+      "8d": {
+        "description": "8Dフィルターを切り替え"
+      },
+      "bassboost": {
+        "description": "ベースブーストフィルターを切り替え"
+      },
+      "karaoke": {
+        "description": "カラオケフィルターを切り替え"
+      },
+      "lowpass": {
+        "description": "ローパスフィルターを切り替え"
+      },
+      "nightcore": {
+        "description": "ナイトコアフィルターを切り替え"
+      },
+      "pitch": {
+        "description": "ピッチフィルターを切り替え"
+      },
+      "reset": {
+        "description": "アクティブなフィルターをリセット"
+      },
+      "rotation": {
+        "description": "ローテーションフィルターを切り替え"
+      },
+      "speed": {
+        "description": "曲の速度を変更"
+      },
+      "tremolo": {
+        "description": "トレモロフィルターを切り替え"
+      },
+      "vibrato": {
+        "description": "ビブラートフィルターを切り替え"
+      }
+    }
+  }
+}

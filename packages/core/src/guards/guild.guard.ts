@@ -2,7 +2,7 @@ import type { CanActivate } from '@discord.ts/common';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: mirrors the permission guards but only checks presence of a
-// guild. Interactions and prefix messages both carry .guild (null in DMs).
+// guild. Interactions carry .guild (null in DMs).
 export class GuildGuard implements CanActivate {
   constructor() {}
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {

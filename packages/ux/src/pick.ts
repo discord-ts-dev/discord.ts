@@ -7,26 +7,7 @@ import {
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
-type PickTarget =
-  | (RepliableInteraction & {
-      editReply(msg: unknown): Promise<unknown>;
-      reply(msg: unknown): Promise<unknown>;
-      replied?: boolean;
-      deferred?: boolean;
-    })
-  // ponytail: structural slot for CommandContext, no dep on common
-  | {
-      reply(msg: unknown): Promise<unknown>;
-      editReply(msg: unknown): Promise<unknown>;
-      replied?: boolean;
-      deferred?: boolean;
-    }
-  | {
-      reply(msg: unknown): Promise<unknown>;
-    };
-
-const isMessage = (t: PickTarget): boolean =>
-  'content' in (t as object) && 'author' in (t as object);
+type PickTarget = RepliableInteraction;
 
 export interface PickOption {
   label: string;
@@ -62,9 +43,8 @@ export async function pickOne(
     editReply(m: unknown): Promise<unknown>;
     reply(m: unknown): Promise<unknown>;
   };
-  const msg = isMessage(target)
-    ? await ix.reply(payload)
-    : ix.replied || ix.deferred
+  const msg =
+    ix.replied || ix.deferred
       ? await ix.editReply(payload)
       : await ix.reply({ ...payload, fetchReply: true });
   return new Promise((resolve) => {

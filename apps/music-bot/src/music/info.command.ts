@@ -1,16 +1,13 @@
-import {
-  Author,
-  Command,
-  CommandContext,
-  Context,
-  Guild,
-  Injectable,
-  Options,
-} from '@discord.ts/common';
+import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireGuild } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import { buildHelp } from '@discord.ts/systems';
-import { EmbedBuilder, type Guild as DiscordGuild, type User } from 'discord.js';
+import {
+  EmbedBuilder,
+  type ChatInputCommandInteraction,
+  type Guild as DiscordGuild,
+  type User,
+} from 'discord.js';
 import { HelpDto, PremiumScopeDto } from './dto/admin.dto.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
@@ -69,12 +66,10 @@ export class InfoCommand {
   @Command({
     name: 'help',
     description: 'Show all commands or one command',
-    slash: true,
-    prefix: true,
   })
   @Cooldown(5)
   async help(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Options() dto: HelpDto,
   ): Promise<void> {
@@ -106,9 +101,12 @@ export class InfoCommand {
     await ctx.reply({ embeds: [embed] });
   }
 
-  @Command({ name: 'ping', description: 'Check bot latency', slash: true, prefix: true })
+  @Command({ name: 'ping', description: 'Check bot latency' })
   @Cooldown(5)
-  async ping(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
+  async ping(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Guild() guild: DiscordGuild,
+  ): Promise<void> {
     const lang = this.premium.languageOf(guild.id);
     const t0 = Date.now();
     await ctx.reply(t('ping.checking', undefined, lang));
@@ -127,10 +125,10 @@ export class InfoCommand {
     await ctx.reply({ embeds: [embed] });
   }
 
-  @Command({ name: 'premium', description: 'Check premium status', slash: true, prefix: true })
+  @Command({ name: 'premium', description: 'Check premium status' })
   @Cooldown(5)
   async premiumStatus(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Author() author: User,
     @Options() dto: PremiumScopeDto,

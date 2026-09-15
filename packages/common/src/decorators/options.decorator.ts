@@ -1,4 +1,4 @@
-import type { ChannelType } from 'discord.js';
+import type { ChannelType, LocalizationMap } from 'discord.js';
 import { OPTION_FIELD_METADATA } from '../constants.js';
 
 /** Channel kinds Discord accepts on channel options (no DMs, groups, directories). */
@@ -20,9 +20,15 @@ export interface OptionFieldMeta {
     | 'attachment';
   name: string;
   description: string;
+  nameLocalizations?: LocalizationMap;
+  descriptionLocalizations?: LocalizationMap;
   required?: boolean;
   autocomplete?: boolean;
-  choices?: readonly { name: string; value: string | number }[];
+  choices?: readonly {
+    name: string;
+    value: string | number;
+    nameLocalizations?: LocalizationMap;
+  }[];
   minValue?: number;
   maxValue?: number;
   minLength?: number;

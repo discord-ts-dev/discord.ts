@@ -19,11 +19,9 @@ export default defineConfig({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildModeration,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
   ],
   development: [],
   skipRegistration: true,
-  prefix: '!',
   shardFile: './src/main.ts',
   respawn: true,
 });
@@ -36,7 +34,6 @@ export default defineConfig({
 | `intents`               | —                 | Passed to `discord.js` Client.                                                   |
 | `development`           | `[]`              | Guild ids for instant dev sync. Empty means global. `DISCORD_GUILD_ID` sets one. |
 | `skipRegistration`      | `false`           | Skip REST sync on boot. `SKIP_REGISTRATION` toggles.                             |
-| `prefix`                | `'!'`             | String or array.                                                                 |
 | `shards` / `shardCount` | —                 | Passed to Client. `SHARD_COUNT` sets count, `'auto'` sets auto.                  |
 | `shardFile`             | `'./src/main.ts'` | Entry each shard boots.                                                          |
 | `respawn`               | `true`            | Respawn dead shards.                                                             |

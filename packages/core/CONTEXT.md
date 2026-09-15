@@ -13,8 +13,6 @@ Ubiquitous language. Glossary only. No implementation.
 - **Validation**: boot check of every definition (names, limits, duplicates). Throws aggregated before any REST call.
 - **Guard**: a `CanActivate` check before a command. Used via `@UseGuards()`. Reads interaction via `DiscordExecutionContext`.
 - **Sync**: push of command JSON to Discord REST. Auto on bootstrap unless `skipRegistration`. Target is global or `development` guilds.
-- **Prefix command**: a text invocation `!name args`. Declared with `@PrefixCommand()`. Args injected with `@PrefixArgs()` as `string[]`. Needs `MessageContent` intent.
-- **Prefix subcommand**: first-token dispatch to a `@Subcommand()` method sharing the prefix name. Falls back to the bare handler. Group classes with `prefix: true` register member subs on both surfaces.
 - **Deploy**: sync without login. Done via `deployWithModule(AppModule)` or `bun run deploy` in the app.
 - **Validated options**: an `Options` DTO checked on each call. Required fields plus `class-validator` rules plus `@UsePipes()`. Fail replies ephemeral and blocks the handler.
 - **Cooldown**: per-user rate limit. Declared with `@Cooldown(seconds)`. Hit replies ephemeral and blocks.
@@ -24,6 +22,5 @@ Ubiquitous language. Glossary only. No implementation.
 - **Required owner**: owner-only commands. Declared with `@RequireOwner()`. Reads `owners` config, denies everyone when unset.
 - **Required voice**: caller must be in a voice channel. Declared with `@RequireVoice()`.
 - **Same voice**: caller must share the bot's voice channel. Declared with `@SameVoice()`.
-- **Prefix DTO fill**: positional map of prefix args into the DTO. Trailing words join into a final string field. Mentions coerce to ids.
-- **Sub-route**: a prefix arg split into route plus rest. Split via `splitSubroute()`.
+- **Localizations**: command metadata translations filled from the i18n catalogs plus explicit maps. Catalog keys use the `commands:<name>...` shape; explicit maps win per locale. Only Discord locale codes apply.
 - **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `bootstrapApp()`, spawned with `runShards()`.
