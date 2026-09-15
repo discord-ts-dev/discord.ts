@@ -1,5 +1,5 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild, RequirePermissions, t } from '@discord.ts/core';
+import { Cooldown, RequireGuild, RequirePermissions, availableLocales, t } from '@discord.ts/core';
 import { confirm } from '@discord.ts/ux';
 import { runInNewContext } from 'node:vm';
 import { inspect } from 'node:util';
@@ -12,7 +12,6 @@ import {
   type User,
 } from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
-import { SUPPORTED_LANGUAGES, normalizeLanguage } from './languages.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig, isOwner } from './bot-config.js';
 
@@ -46,9 +45,11 @@ export class AdminCommand {
       await ctx.reply(t('success.language', { lang: current }, current));
       return;
     }
-    const match = dto.lang ? normalizeLanguage(dto.lang) : undefined;
+    const match = dto.lang
+      ? availableLocales().find((l) => l.toLowerCase() === dto.lang!.toLowerCase())
+      : undefined;
     if (!match) {
-      await ctx.reply(t('error.language', { valid: SUPPORTED_LANGUAGES.join(', ') }, current));
+      await ctx.reply(t('error.language', { valid: availableLocales().join(', ') }, current));
       return;
     }
     this.premium.setLanguage(guild.id, match);

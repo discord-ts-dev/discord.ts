@@ -17,6 +17,7 @@ let state: I18nState = { defaultLocale: 'en-US', defaultNamespace: 'common', cat
 // normalized to namespaces by top-level key, so old layouts keep working.
 export function initI18n(opts: I18nOptions = {}, cwd: string = process.cwd()): void {
   const dir = path.resolve(cwd, opts.localesDir ?? './src/locales');
+  const allow = opts.languages?.length ? new Set(opts.languages) : undefined;
   const next: I18nState = {
     defaultLocale: opts.defaultLocale ?? 'en-US',
     defaultNamespace: opts.defaultNamespace ?? 'common',
@@ -27,6 +28,7 @@ export function initI18n(opts: I18nOptions = {}, cwd: string = process.cwd()): v
       const full = path.join(dir, entry);
       try {
         if (fs.statSync(full).isDirectory()) {
+          if (allow && !allow.has(entry)) continue;
           const namespaces = new Map<string, Table>();
           for (const file of fs.readdirSync(full)) {
             if (!file.endsWith('.json')) continue;
@@ -35,6 +37,7 @@ export function initI18n(opts: I18nOptions = {}, cwd: string = process.cwd()): v
           next.catalogs.set(entry, namespaces);
         } else if (entry.endsWith('.json')) {
           const lang = entry.slice(0, -5);
+          if (allow && !allow.has(lang)) continue;
           if (next.catalogs.has(lang)) continue;
           const flat = readTable(full);
           const namespaces = new Map<string, Table>();
@@ -89,6 +92,11 @@ function lookupIn(locale: string, key: string): unknown {
 function fill(template: string, params?: Record<string, string | number>): string {
   if (!params) return template;
   return template.replace(/\{(\w+)\}/g, (_, name: string) => String(params[name] ?? `{${name}}`));
+}
+
+/** Loaded locale names, sorted. Reflects the `languages` allowlist when set. */
+export function availableLocales(): string[] {
+  return [...state.catalogs.keys()].sort();
 }
 
 /** Translate a key (`ns:key`, dotted, or bare) with locale fallback to default. Echoes unknown keys. */

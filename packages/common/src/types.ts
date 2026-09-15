@@ -30,4 +30,6 @@ export interface I18nOptions {
   localesDir?: string;
   /** Namespace for bare keys. Default 'common'. */
   defaultNamespace?: string;
+  /** Active languages. When set, only these dirs load. Default: every dir found. */
+  languages?: string[];
 }

@@ -20,5 +20,6 @@ export default defineConfig({
   i18n: {
     defaultLocale: 'EnglishUS',
     localesDir: './src/locales',
+    languages: ['EnglishUS', 'Indonesian', 'Japanese', 'Korean', 'Vietnamese'],
   },
 });

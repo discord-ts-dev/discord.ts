@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { describe, test } from 'node:test';
 import { Locale } from '@discord.ts/common';
 import { buildArgs } from '../src/discovery/discord-args.js';
-import { initI18n, resolveLocale, t } from '../src/i18n.js';
+import { availableLocales, initI18n, resolveLocale, t } from '../src/i18n.js';
 import type { Handler } from '../src/discovery/handler.types.js';
 
 function fixtures(): string {
@@ -21,7 +21,7 @@ function fixtures(): string {
   return root;
 }
 
-fixtures();
+const fixtureRoot = fixtures();
 
 class Cmd {
   run(_ctx: unknown, _locale: unknown): void {}
@@ -54,5 +54,12 @@ describe('native i18n', () => {
   test('@Locale() resolves through buildArgs', () => {
     assert.equal(buildArgs(handler(), { locale: 'vi' })[1], 'vi');
     assert.equal(buildArgs(handler(), { guild: { preferredLocale: 'ja' } })[1], 'ja');
+  });
+
+  test('languages allowlist restricts loading, availableLocales lists loaded', () => {
+    assert.deepStrictEqual(availableLocales(), ['en', 'vi']);
+    initI18n({ defaultLocale: 'en', localesDir: './locales', languages: ['vi'] }, fixtureRoot);
+    assert.deepStrictEqual(availableLocales(), ['vi']);
+    assert.equal(t('common:hello', { name: 'a' }, 'en'), 'common:hello');
   });
 });
