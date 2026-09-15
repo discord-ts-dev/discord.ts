@@ -3,6 +3,7 @@ import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 export class PermissionsGuard implements CanActivate {
+  constructor() {}
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
     const fn = context.getHandler() as object;
     const cls = context.getClass() as object;

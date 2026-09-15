@@ -30,16 +30,17 @@ export async function runShards(opts: ShardingOptions): Promise<ShardingManager>
 }
 
 // ponytail: gate on argv, not env. Children inherit env, flag keeps them bots.
+// The runtime factory parameter is the test seam (bun's mock.module is process-global).
 export async function bootstrapApp(
   appModule: Type<unknown>,
-  opts: { argv?: string[] } = {},
+  opts: { argv?: string[]; create?: typeof createRuntime } = {},
 ): Promise<void> {
   if ((opts.argv ?? process.argv).includes('--shards')) {
     await runShards(await loadShardingOptions());
     new DiscordLogger('Sharding').success('Shards spawned.');
     return;
   }
-  const { discovery } = await createRuntime(appModule);
+  const { discovery } = await (opts.create ?? createRuntime)(appModule);
   const shutdown = () => void discovery.stop();
   process.once('SIGINT', shutdown);
   process.once('SIGTERM', shutdown);

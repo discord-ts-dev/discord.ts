@@ -228,18 +228,23 @@ export class DiscordRoutingService {
   private async validateDto(dto: unknown): Promise<string | null> {
     const rec = dto as Record<string, unknown> | null;
     if (!rec || typeof rec !== 'object') return null;
-    const fields: Record<string, OptionFieldMeta> =
-      Reflect.getMetadata(OPTION_FIELD_METADATA, (rec as object).constructor) ?? {};
-    for (const [key, f] of Object.entries(fields)) {
-      if (f.required && (rec[key] === null || rec[key] === undefined))
-        return `Missing required option "${f.name}".`;
-    }
     try {
-      // ponytail: optional peer, plain DTOs without decorators pass free
+      // ponytail: optional peer, plain DTOs without decorators pass free.
+      // Metadata and the peer are both inside the try so a hostile DTO or a
+      // missing peer is treated as valid instead of crashing the handler.
+      const fields: Record<string, OptionFieldMeta> =
+        Reflect.getMetadata(OPTION_FIELD_METADATA, (rec as object).constructor) ?? {};
+      for (const [key, f] of Object.entries(fields)) {
+        if (f.required && (rec[key] === null || rec[key] === undefined))
+          return `Missing required option "${f.name}".`;
+      }
       const { validate } = (await import('class-validator')) as unknown as {
-        validate(o: object): Promise<{ constraints?: Record<string, string> }[]>;
+        validate(
+          o: object,
+          opts: { forbidUnknownValues: boolean },
+        ): Promise<{ constraints?: Record<string, string> }[]>;
       };
-      const errors = await validate(rec as object);
+      const errors = await validate(rec as object, { forbidUnknownValues: false });
       if (errors.length) {
         const first = Object.values(errors[0].constraints ?? {})[0] ?? 'Invalid options.';
         return first;

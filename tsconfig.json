@@ -5,5 +5,10 @@
     "allowImportingTsExtensions": true,
     "types": ["bun", "node"]
   },
-  "include": ["packages/*/tests/**/*.ts", "apps/*/tests/**/*.ts", "scripts/test-preload.ts"]
+  "include": [
+    "packages/*/tests/**/*.ts",
+    "apps/*/tests/**/*.ts",
+    "tests/**/*.ts",
+    "scripts/test-preload.ts"
+  ]
 }

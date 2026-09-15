@@ -88,6 +88,7 @@ export interface CanActivate {
 }
 
 export class Reflector {
+  constructor() {}
   get<T>(key: string, target: object): T | undefined {
     return Reflect.getMetadata(key, target) as T | undefined;
   }

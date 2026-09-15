@@ -32,6 +32,8 @@ interface AsyncDef {
 }
 
 export class DiscordModule {
+  constructor() {}
+
   static forRoot(options: DiscordModuleOptions): SyncDef {
     return { module: DiscordModule, kind: 'sync', options };
   }
@@ -64,7 +66,10 @@ export async function resolveDiscordOptions(
   const providers = meta.providers ?? [];
   if (def?.kind === 'sync') return { options: def.options, providers };
   const asyncOpts = def?.kind === 'async' ? def.opts : {};
-  const file = await loadDiscordConfig({ ...asyncOpts, skipValidation: opts.skipValidation });
+  const file = await loadDiscordConfig({
+    ...asyncOpts,
+    skipValidation: opts.skipValidation ?? asyncOpts.skipValidation,
+  });
   const clean = Object.fromEntries(
     Object.entries(asyncOpts.overrides ?? {}).filter(([, v]) => v !== undefined),
   );

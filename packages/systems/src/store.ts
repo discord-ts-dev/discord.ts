@@ -17,6 +17,7 @@ export interface Store {
 }
 
 export class MemoryStore implements Store {
+  constructor() {}
   private readonly strings = new Map<string, { value: string; expiresAt?: number }>();
   private readonly sorted = new Map<string, Map<string, number>>();
 

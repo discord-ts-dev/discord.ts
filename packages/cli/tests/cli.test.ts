@@ -1,6 +1,15 @@
 import { describe, test } from 'bun:test';
 import assert from 'node:assert/strict';
-import { COMMANDS, main, usage, type CliDeps } from '../src/cli.js';
+import { fileURLToPath } from 'node:url';
+import {
+  COMMANDS,
+  isEntry,
+  main,
+  mainIfEntry,
+  processDeps,
+  usage,
+  type CliDeps,
+} from '../src/cli.js';
 
 function harness(overrides: Partial<CliDeps> = {}) {
   const out: string[] = [];
@@ -96,5 +105,53 @@ describe('@discord.ts/cli', () => {
     const { deps, exits } = harness({ spawn: () => ({ status: null }) });
     main(['node', 'cli.js', 'dev'], deps);
     assert.deepEqual(exits, [1]);
+  });
+
+  test('isEntry compares realpaths and tolerates a missing entry', () => {
+    const self = fileURLToPath(import.meta.url);
+    assert.equal(isEntry(undefined, import.meta.url), false);
+    assert.equal(isEntry('/definitely/missing', import.meta.url), false);
+    assert.equal(isEntry(self, import.meta.url), true);
+  });
+
+  test('mainIfEntry only runs main for the entry file', () => {
+    const self = fileURLToPath(import.meta.url);
+    const first = harness();
+    mainIfEntry(['node', self], import.meta.url, first.deps);
+    assert.equal(first.out.length, 1);
+    const second = harness();
+    mainIfEntry(['node', '/somewhere/else.js'], import.meta.url, second.deps);
+    assert.deepEqual(second.out, []);
+  });
+
+  test('processDeps wires real side effects', () => {
+    const deps = processDeps();
+    const out: string[] = [];
+    const origOut = process.stdout.write.bind(process.stdout);
+    const origErr = process.stderr.write.bind(process.stderr);
+    process.stdout.write = ((chunk: string) => {
+      out.push(String(chunk));
+      return true;
+    }) as never;
+    process.stderr.write = ((chunk: string) => {
+      out.push(String(chunk));
+      return true;
+    }) as never;
+    const prevExitCode = process.exitCode;
+    try {
+      assert.equal(deps.cwd, process.cwd());
+      assert.equal(deps.exists('/definitely/missing'), false);
+      deps.out('a');
+      deps.err('b');
+      const run = deps.spawn('node', ['-e', 'process.exit(7)']);
+      assert.equal(run.status, 7);
+      deps.exit(3);
+      assert.equal(process.exitCode, 3);
+    } finally {
+      process.stdout.write = origOut;
+      process.stderr.write = origErr;
+      process.exitCode = prevExitCode ?? 0;
+    }
+    assert.deepEqual(out, ['a', 'b']);
   });
 });
