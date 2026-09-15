@@ -1,21 +1,13 @@
-import { Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Command, CommandContext, Context, Guild, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireGuild, RequireOwner, RequirePermissions } from '@discord.ts/core';
 import { availableLocales, t } from '@discord.ts/i18n';
 import { confirm } from '@discord.ts/ux';
 import { runInNewContext } from 'node:vm';
 import { inspect } from 'node:util';
-import {
-  EmbedBuilder,
-  PermissionFlagsBits,
-  type ChatInputCommandInteraction,
-  type Guild as DiscordGuild,
-  type Message,
-} from 'discord.js';
+import { EmbedBuilder, PermissionFlagsBits, type Guild as DiscordGuild } from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
-
-type Ctx = ChatInputCommandInteraction | Message;
 
 function cleanId(raw: string): string {
   return raw.replace(/[<@!>]/g, '');
@@ -35,7 +27,7 @@ export class AdminCommand {
   })
   @RequirePermissions(PermissionFlagsBits.Administrator)
   async language(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Options() dto: LanguageDto,
   ): Promise<void> {
@@ -58,7 +50,7 @@ export class AdminCommand {
 
   @Command({ name: 'addpremium', description: 'Grant premium (owner)', slash: true, prefix: true })
   @RequireOwner()
-  async addpremium(@Context() ctx: Ctx, @Options() dto: GrantPremiumDto): Promise<void> {
+  async addpremium(@Context() ctx: CommandContext, @Options() dto: GrantPremiumDto): Promise<void> {
     const plan = dto.plan === 'month' ? 'Premium' : 'TrialPremium';
     this.premium.grant(dto.scope as 'guild' | 'user', cleanId(dto.target), plan);
     await ctx.reply(`${botConfig.emoji.done}`);
@@ -71,7 +63,10 @@ export class AdminCommand {
     prefix: true,
   })
   @RequireOwner()
-  async revokepremium(@Context() ctx: Ctx, @Options() dto: ScopeTargetDto): Promise<void> {
+  async revokepremium(
+    @Context() ctx: CommandContext,
+    @Options() dto: ScopeTargetDto,
+  ): Promise<void> {
     const ok = this.premium.revoke(dto.scope as 'guild' | 'user', cleanId(dto.target));
     await ctx.reply(ok ? `${botConfig.emoji.done}` : 'No premium row.');
   }
@@ -83,21 +78,21 @@ export class AdminCommand {
     prefix: true,
   })
   @RequireOwner()
-  async register(@Context() ctx: Ctx, @Options() dto: ScopeTargetDto): Promise<void> {
+  async register(@Context() ctx: CommandContext, @Options() dto: ScopeTargetDto): Promise<void> {
     const created = this.premium.ensure(dto.scope as 'guild' | 'user', cleanId(dto.target));
     await ctx.reply(created ? `${botConfig.emoji.done}` : 'Already exists.');
   }
 
   @Command({ name: 'data', description: 'Show stored row (dev)', slash: true, prefix: true })
   @RequireOwner()
-  async data(@Context() ctx: Ctx, @Options() dto: ScopeTargetDto): Promise<void> {
+  async data(@Context() ctx: CommandContext, @Options() dto: ScopeTargetDto): Promise<void> {
     const row = this.premium.dump(dto.scope as 'guild' | 'user', cleanId(dto.target));
     await ctx.reply(`\`\`\`json\n${JSON.stringify(row, null, 2).slice(0, 1900)}\n\`\`\``);
   }
 
   @Command({ name: 'eval', description: 'Evaluate code (owner)', slash: true, prefix: true })
   @RequireOwner()
-  async evalJs(@Context() ctx: Ctx, @Options() dto: EvalDto): Promise<void> {
+  async evalJs(@Context() ctx: CommandContext, @Options() dto: EvalDto): Promise<void> {
     const started = Date.now();
     try {
       const output = runInNewContext(dto.code, { process, console, Math, Date }, { timeout: 5000 });
@@ -125,8 +120,8 @@ export class AdminCommand {
   @Command({ name: 'restart', description: 'Restart bot (owner)', slash: true, prefix: true })
   @Cooldown(30)
   @RequireOwner()
-  async restart(@Context() ctx: Ctx): Promise<void> {
-    const ok = await confirm(ctx as never, 'Confirm restart?');
+  async restart(@Context() ctx: CommandContext): Promise<void> {
+    const ok = await confirm(ctx, 'Confirm restart?');
     if (!ok) {
       await ctx.reply('Restart cancelled.');
       return;

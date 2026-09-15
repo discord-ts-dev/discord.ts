@@ -1,4 +1,4 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Command, CommandContext, Context, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireBotPermissions, RequirePermissions } from '@discord.ts/core';
 import { confirm, paginate } from '@discord.ts/ux';
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
@@ -10,7 +10,6 @@ import type {
   WarningsDto,
 } from './dto/moderation.dto.js';
 import {
-  type Ctx,
   applyTimeout,
   audit,
   auditAndLog,
@@ -31,7 +30,7 @@ import {
 export class ModerationCommand {
   @Command({ name: 'warn', description: 'Warn a member', slash: true, prefix: true })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
-  async warn(@Context() ctx: Ctx, @Options() dto: TargetReasonDto): Promise<void> {
+  async warn(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const userId = userIdOf(dto.target);
@@ -52,7 +51,7 @@ export class ModerationCommand {
     prefix: true,
   })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
-  async warnings(@Context() ctx: Ctx, @Options() dto: WarningsDto): Promise<void> {
+  async warnings(@Context() ctx: CommandContext, @Options() dto: WarningsDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const userId = userIdOf(dto.target);
@@ -85,7 +84,7 @@ export class ModerationCommand {
   @Command({ name: 'kick', description: 'Kick a member', slash: true, prefix: true })
   @RequirePermissions(PermissionFlagsBits.KickMembers)
   @RequireBotPermissions(PermissionFlagsBits.KickMembers)
-  async kick(@Context() ctx: Ctx, @Options() dto: TargetReasonDto): Promise<void> {
+  async kick(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const userId = userIdOf(dto.target);
@@ -110,7 +109,7 @@ export class ModerationCommand {
   @RequirePermissions(PermissionFlagsBits.BanMembers)
   @RequireBotPermissions(PermissionFlagsBits.BanMembers)
   @Cooldown(3)
-  async ban(@Context() ctx: Ctx, @Options() dto: TargetReasonDto): Promise<void> {
+  async ban(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const userId = userIdOf(dto.target);
@@ -137,7 +136,7 @@ export class ModerationCommand {
   @Command({ name: 'unban', description: 'Unban a user id', slash: true, prefix: true })
   @RequirePermissions(PermissionFlagsBits.BanMembers)
   @RequireBotPermissions(PermissionFlagsBits.BanMembers)
-  async unban(@Context() ctx: Ctx, @Options() dto: UnbanDto): Promise<void> {
+  async unban(@Context() ctx: CommandContext, @Options() dto: UnbanDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const reason = dto.reason ?? 'No reason';
@@ -158,7 +157,7 @@ export class ModerationCommand {
   })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
   @RequireBotPermissions(PermissionFlagsBits.ModerateMembers)
-  async timeout(@Context() ctx: Ctx, @Options() dto: TimeoutDto): Promise<void> {
+  async timeout(@Context() ctx: CommandContext, @Options() dto: TimeoutDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const userId = userIdOf(dto.target);
@@ -187,7 +186,7 @@ export class ModerationCommand {
   @RequirePermissions(PermissionFlagsBits.ManageMessages)
   @RequireBotPermissions(PermissionFlagsBits.ManageMessages)
   @Cooldown(5)
-  async clear(@Context() ctx: Ctx, @Options() dto: ClearDto): Promise<void> {
+  async clear(@Context() ctx: CommandContext, @Options() dto: ClearDto): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const ok = await confirm(ctx, {
@@ -212,7 +211,7 @@ export class ModerationCommand {
 
   @Command({ name: 'logs', description: 'Recent moderation audit', slash: true, prefix: true })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
-  async logs(@Context() ctx: Ctx): Promise<void> {
+  async logs(@Context() ctx: CommandContext): Promise<void> {
     const guild = guildOf(ctx);
     if (!guild) return replyError(ctx, 'Use in a guild.');
     const list = audit

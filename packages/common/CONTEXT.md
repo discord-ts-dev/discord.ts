@@ -13,6 +13,11 @@ Ubiquitous language. Glossary only. No implementation.
 - **Autocomplete**: suggestion handler for a slash option. Declared with `@Autocomplete()`.
 - **Listener**: method that runs on a gateway event. Declared with `@OnEvent()` / `@OnceEvent()`. Event is a Discord `Events` value.
 - **Context**: the interaction object for current call. Injected with `@Context()`.
+- **Slash surface**: a `ChatInputCommandInteraction` call.
+- **Prefix surface**: a text `Message` call.
+- **CommandContext**: one wrapper over both surfaces. Injected with `@Context()` when the param type is `CommandContext`.
+- **Raw handler**: a handler taking the raw `ChatInputCommandInteraction | Message` union.
+- **Unified handler**: a handler taking `CommandContext`.
 - **Guild**: the guild of the current call, null in DMs. Injected with `@Guild()`.
 - **Author**: the calling user (`message.author` or `interaction.user`). Injected with `@Author()`.
 - **Locale**: the Discord locale of the current call. Injected with `@Locale()`.

@@ -15,11 +15,11 @@ async handle(
 }
 ```
 
-| Param           | Use                                               |
-| --------------- | ------------------------------------------------- |
-| `@Context()`    | The interaction or message for the current call.  |
-| `@Options()`    | Validated slash-options DTO.                      |
-| `@PrefixArgs()` | Raw `string[]` for prefix calls. See prefix page. |
+| Param           | Use                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| `@Context()`    | The `CommandContext` wrapper for the current call (raw interaction/message also injects). |
+| `@Options()`    | Validated slash-options DTO.                                                              |
+| `@PrefixArgs()` | Raw `string[]` for prefix calls. See prefix page.                                         |
 
 ## DTO fields
 
@@ -71,5 +71,5 @@ import { UsePipes } from '@discord.ts/common';
 
 @SlashCommand({ name: 'ban', description: 'Ban a member' })
 @UsePipes(/* your ValidationPipe */)
-async handle(@Context() ix: Ctx, @Options() dto: BanDto) {}
+async handle(@Context() ctx: CommandContext, @Options() dto: BanDto) {}
 ```

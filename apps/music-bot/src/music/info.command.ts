@@ -1,19 +1,19 @@
-import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import {
+  Author,
+  Command,
+  CommandContext,
+  Context,
+  Guild,
+  Injectable,
+  Options,
+} from '@discord.ts/common';
 import { Cooldown, RequireGuild } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import { buildHelp } from '@discord.ts/systems';
-import {
-  EmbedBuilder,
-  type ChatInputCommandInteraction,
-  type Guild as DiscordGuild,
-  type Message,
-  type User,
-} from 'discord.js';
+import { EmbedBuilder, type Guild as DiscordGuild, type User } from 'discord.js';
 import { HelpDto, PremiumScopeDto } from './dto/admin.dto.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
-
-type Ctx = ChatInputCommandInteraction | Message;
 
 const COMMANDS = [
   { name: 'play', description: 'Play a song or URL', category: 'Music' },
@@ -74,7 +74,7 @@ export class InfoCommand {
   })
   @Cooldown(5)
   async help(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Options() dto: HelpDto,
   ): Promise<void> {
@@ -108,12 +108,12 @@ export class InfoCommand {
 
   @Command({ name: 'ping', description: 'Check bot latency', slash: true, prefix: true })
   @Cooldown(5)
-  async ping(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
+  async ping(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
     const lang = this.premium.languageOf(guild?.id ?? null);
     const t0 = Date.now();
     await ctx.reply(t('ping.checking', undefined, lang));
     const botLatency = Date.now() - t0;
-    const apiLatency = 'client' in ctx ? ctx.client.ws.ping : -1;
+    const apiLatency = ctx.client.ws.ping;
     const embed = new EmbedBuilder().setColor(botConfig.color.main).addFields(
       {
         name: t('ping.bot_latency', undefined, lang),
@@ -130,7 +130,7 @@ export class InfoCommand {
   @Command({ name: 'premium', description: 'Check premium status', slash: true, prefix: true })
   @Cooldown(5)
   async premiumStatus(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Author() author: User,
     @Options() dto: PremiumScopeDto,

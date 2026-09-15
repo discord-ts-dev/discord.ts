@@ -1,4 +1,13 @@
-import { Author, Button, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import {
+  Author,
+  Button,
+  Command,
+  CommandContext,
+  Context,
+  Guild,
+  Injectable,
+  Options,
+} from '@discord.ts/common';
 import { Cooldown, RequireBotPermissions, RequireGuild, SameVoice } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import { paginate, pickOne } from '@discord.ts/ux';
@@ -19,7 +28,7 @@ import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 import { formatTime, progressBar } from '@discord.ts/utils';
-import { NON_PREMIUM_QUEUE_CAP, trackLine, type Ctx } from './music-helpers.js';
+import { NON_PREMIUM_QUEUE_CAP, trackLine } from './music-helpers.js';
 
 @Injectable()
 @RequireGuild()
@@ -56,7 +65,10 @@ export class MusicHudCommand {
 
   @Command({ name: 'nowplaying', description: 'Show current track', slash: true, prefix: true })
   @Cooldown(5)
-  async nowplaying(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
+  async nowplaying(
+    @Context() ctx: CommandContext,
+    @Guild() guild: DiscordGuild | null,
+  ): Promise<void> {
     if (!guild) return;
     const q = this.music.queueOf(guild.id);
     if (!q.current) {
@@ -77,7 +89,7 @@ export class MusicHudCommand {
   @Command({ name: 'autoplay', description: 'Toggle autoplay', slash: true, prefix: true })
   @Cooldown(5)
   async autoplay(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Options() dto: ToggleDto,
   ): Promise<void> {
@@ -91,7 +103,7 @@ export class MusicHudCommand {
   @Command({ name: 'loop', description: 'Loop track, queue, or off', slash: true, prefix: true })
   @Cooldown(5)
   async loop(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Options() dto: LoopDto,
   ): Promise<void> {
@@ -107,7 +119,7 @@ export class MusicHudCommand {
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
   @SameVoice()
   async search(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Author() author: User,
     @Options() dto: SearchDto,
@@ -119,7 +131,7 @@ export class MusicHudCommand {
       return;
     }
     const picked = await pickOne(
-      ctx as never,
+      ctx,
       tracks.map((track, i) => ({
         label: track.name.slice(0, 100),
         value: String(i),
@@ -138,22 +150,21 @@ export class MusicHudCommand {
       !this.premium.isPremium(guild.id, author.id)
     ) {
       const limited = t('error.premium.limit', undefined, this.lang(guild));
-      if ('followUp' in ctx) await ctx.followUp({ content: limited, ephemeral: true });
-      else await ctx.reply(limited);
+      // ponytail: wrapper reply routes to followUp when already replied (pickOne sent first)
+      await ctx.followUp({ content: limited, ephemeral: true });
       return;
     }
     const pos = this.music.enqueue(guild.id, { ...track, requesterId: author.id });
     void this.lavalink.playNow(guild.id, [{ ...track, requesterId: author.id }]);
     const done =
       pos === 0 ? `Now playing: ${trackLine(track)}` : `Queued #${pos}: ${trackLine(track)}`;
-    if ('followUp' in ctx) await ctx.followUp({ content: done });
-    else await ctx.reply(done);
+    await ctx.followUp({ content: done });
   }
 
   @Command({ name: 'lyric', description: 'Get lyrics', slash: true, prefix: true })
   @Cooldown(5)
   async lyric(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Options() dto: LyricDto,
   ): Promise<void> {
@@ -176,7 +187,7 @@ export class MusicHudCommand {
         .setDescription(page.slice(0, 4000))
         .setURL(found.url),
     );
-    await paginate(ctx as never, pages);
+    await paginate(ctx, pages);
   }
 
   @Button('music:resume')

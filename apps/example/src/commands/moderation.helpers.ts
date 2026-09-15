@@ -1,16 +1,9 @@
-import { isMessage as isMsg, userIdOf } from '@discord.ts/utils';
+import { userIdOf } from '@discord.ts/utils';
+import type { CommandContext } from '@discord.ts/common';
 import { errorEmbed } from '@discord.ts/ux';
-import {
-  AuditLogEvent,
-  EmbedBuilder,
-  type ChatInputCommandInteraction,
-  type Guild,
-  type Message,
-} from 'discord.js';
+import { AuditLogEvent, EmbedBuilder, type Guild } from 'discord.js';
 
 export { userIdOf };
-
-export type Ctx = ChatInputCommandInteraction | Message;
 
 // ponytail: bounded in-memory stores, FIFO evict. No DB until needed.
 const MAX_AUDIT = 100;
@@ -49,12 +42,12 @@ export function pushWarn(w: WarnRecord): void {
   pushAudit({ ...w, action: 'warn' });
 }
 
-export function modId(ctx: Ctx): string {
-  return isMsg(ctx) ? ctx.author.id : ctx.user.id;
+export function modId(ctx: CommandContext): string {
+  return ctx.user.id;
 }
 
-export function guildOf(ctx: Ctx): Guild | null {
-  return (ctx.guild as Guild | null) ?? null;
+export function guildOf(ctx: CommandContext): Guild | null {
+  return ctx.guild;
 }
 
 export interface NativeAuditEntry {
@@ -137,20 +130,25 @@ export function modEmbed(action: string, color: number): EmbedBuilder {
     .setFooter({ text: 'discord.ts moderation example' });
 }
 
-export async function replyEmbed(ctx: Ctx, embed: EmbedBuilder, ephemeral = false): Promise<void> {
-  if (isMsg(ctx)) {
-    await ctx.reply({ embeds: [embed] });
-    return;
-  }
-  if (ctx.replied || ctx.deferred) await ctx.followUp({ embeds: [embed], ephemeral });
-  else await ctx.reply({ embeds: [embed], ephemeral });
+export async function replyEmbed(
+  ctx: CommandContext,
+  embed: EmbedBuilder,
+  ephemeral = false,
+): Promise<void> {
+  // ponytail: wrapper drops ephemeral on prefix, routes to followUp when already replied
+  await ctx.reply({ embeds: [embed], ephemeral });
 }
 
-export async function replyError(ctx: Ctx, text: string): Promise<void> {
+export async function replyError(ctx: CommandContext, text: string): Promise<void> {
   await replyEmbed(ctx, errorEmbed(text), true);
 }
 
-export function auditAndLog(ctx: Ctx, action: string, userId: string, reason: string): void {
+export function auditAndLog(
+  ctx: CommandContext,
+  action: string,
+  userId: string,
+  reason: string,
+): void {
   const guild = guildOf(ctx);
   if (!guild) return;
   pushAudit({ action, guildId: guild.id, userId, moderatorId: modId(ctx), reason, at: Date.now() });

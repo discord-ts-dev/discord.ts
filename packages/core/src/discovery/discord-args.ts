@@ -7,6 +7,7 @@ import {
   PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
   PARAM_PREFIX_ARGS_METADATA,
+  CommandContext,
   type OptionFieldMeta,
 } from '@discord.ts/common';
 import { resolveLocale } from '@discord.ts/i18n';
@@ -38,7 +39,8 @@ export function buildArgs(
   const guildIdx: number[] = Reflect.getMetadata(PARAM_GUILD_METADATA, fn) ?? [];
   const authorIdx: number[] = Reflect.getMetadata(PARAM_AUTHOR_METADATA, fn) ?? [];
   const localeIdx: number[] = Reflect.getMetadata(PARAM_LOCALE_METADATA, fn) ?? [];
-  for (const i of ctxIdx) args[i] = interaction;
+  for (const i of ctxIdx)
+    args[i] = types[i] === CommandContext ? new CommandContext(interaction as never) : interaction;
   for (const i of optIdx) {
     const Dto = (types[i] ?? Object) as new () => Record<string, unknown>;
     args[i] =

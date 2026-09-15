@@ -33,10 +33,14 @@ One handler on slash and prefix. At least one of `slash` / `prefix` must be `tru
 
 ```ts
 @Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
-async handle(@Context() ctx: ChatInputCommandInteraction | Message) {
+async handle(@Context() ctx: CommandContext) {
   await ctx.reply('pong');
 }
 ```
+
+The raw `ChatInputCommandInteraction | Message` union still injects when the param
+type asks for it. Prefer `CommandContext`: one `reply`, one `user`, one
+`voiceChannelId`, `unwrap()` for surface-specific escapes.
 
 | Field     | Notes                                           |
 | --------- | ----------------------------------------------- |
@@ -49,7 +53,12 @@ async handle(@Context() ctx: ChatInputCommandInteraction | Message) {
 Children of a command or group. Make a group with the factory, then add `@Subcommand()` methods.
 
 ```ts
-import { createCommandGroupDecorator, Subcommand } from '@discord.ts/common';
+import {
+  createCommandGroupDecorator,
+  Subcommand,
+  CommandContext,
+  Context,
+} from '@discord.ts/common';
 
 const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily quests' });
 
@@ -57,7 +66,7 @@ const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily q
 @Quest({ prefix: true })
 export class QuestCommand {
   @Subcommand({ name: 'rr', description: 'Reroll your quest' })
-  async reroll(@Context() ctx: Ctx) {
+  async reroll(@Context() ctx: CommandContext) {
     await ctx.reply('Rerolled.');
   }
 }

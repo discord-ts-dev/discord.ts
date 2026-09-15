@@ -1,14 +1,6 @@
-import type { ChatInputCommandInteraction, GuildMember, Message } from 'discord.js';
 import { formatTime } from '@discord.ts/utils';
 
-export type Ctx = ChatInputCommandInteraction | Message;
-
 export const NON_PREMIUM_QUEUE_CAP = 25;
-
-export function voiceChannelIdOf(ctx: Ctx): string | null {
-  const member = ctx.member as GuildMember | null;
-  return member?.voice?.channelId ?? null;
-}
 
 export function trackLine(track: {
   name: string;

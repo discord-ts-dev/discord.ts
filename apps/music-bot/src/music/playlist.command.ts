@@ -1,14 +1,20 @@
-import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import {
+  Author,
+  Command,
+  CommandContext,
+  Context,
+  Guild,
+  Injectable,
+  Options,
+} from '@discord.ts/common';
 import { Cooldown, RequireGuild } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
-import type { ChatInputCommandInteraction, Guild as DiscordGuild, Message, User } from 'discord.js';
+import type { Guild as DiscordGuild, User } from 'discord.js';
 import { PlaylistAddDto, PlaylistNameDto, PlaylistStealDto } from './dto/music.dto.js';
 import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 
-type Ctx = ChatInputCommandInteraction | Message;
-
-async function reply(ctx: Ctx, text: string): Promise<void> {
+async function reply(ctx: CommandContext, text: string): Promise<void> {
   await ctx.reply(text.slice(0, 2000));
 }
 
@@ -21,7 +27,7 @@ export class PlaylistCommand {
 
   @Command({ name: 'playlist', description: 'List your playlists', slash: true, prefix: true })
   @Cooldown(5)
-  async list(@Context() ctx: Ctx, @Author() author: User): Promise<void> {
+  async list(@Context() ctx: CommandContext, @Author() author: User): Promise<void> {
     const list = this.music.listPlaylists(author.id);
     await reply(
       ctx,
@@ -32,7 +38,7 @@ export class PlaylistCommand {
   @Command({ name: 'playlist-create', description: 'Create a playlist', slash: true, prefix: true })
   @Cooldown(5)
   async create(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Guild() guild: DiscordGuild | null,
     @Author() author: User,
     @Options() dto: PlaylistNameDto,
@@ -50,7 +56,7 @@ export class PlaylistCommand {
   })
   @Cooldown(5)
   async add(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Author() author: User,
     @Options() dto: PlaylistAddDto,
   ): Promise<void> {
@@ -71,7 +77,7 @@ export class PlaylistCommand {
   })
   @Cooldown(5)
   async load(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Author() author: User,
     @Options() dto: PlaylistNameDto,
   ): Promise<void> {
@@ -82,7 +88,7 @@ export class PlaylistCommand {
   @Command({ name: 'playlist-delete', description: 'Delete a playlist', slash: true, prefix: true })
   @Cooldown(5)
   async remove(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Author() author: User,
     @Options() dto: PlaylistNameDto,
   ): Promise<void> {
@@ -97,7 +103,7 @@ export class PlaylistCommand {
     prefix: true,
   })
   @Cooldown(5)
-  async removeSong(@Context() ctx: Ctx, @Options() dto: PlaylistAddDto): Promise<void> {
+  async removeSong(@Context() ctx: CommandContext, @Options() dto: PlaylistAddDto): Promise<void> {
     // ponytail: index-based removesong plugs into the Prisma Track delete here.
     await reply(ctx, `Removesong in ${dto.name}: match by position in queue with /remove for now.`);
   }
@@ -110,7 +116,7 @@ export class PlaylistCommand {
   })
   @Cooldown(5)
   async steal(
-    @Context() ctx: Ctx,
+    @Context() ctx: CommandContext,
     @Author() author: User,
     @Options() dto: PlaylistStealDto,
   ): Promise<void> {
