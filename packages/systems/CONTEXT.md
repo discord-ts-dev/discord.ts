@@ -21,9 +21,6 @@ Ubiquitous language. Glossary only. No implementation.
   `useItem()`, topped up via `addBalance()`.
 - **Guild settings**: per-guild prefix and per-command enable flags.
   Read via `getSettings()`, toggled via `setCommandEnabled()`.
-- **Word filter**: a blocked-word list check. Checked via
-  `containsBlocked()`, redacted via `maskBlocked()`.
-- **Vote reward**: currency for a bot-list vote webhook. Parsed via
-  `parseVotePayload()`, awarded via `awardVote()`.
+- **Vote reward**: currency awarded for a bot-list vote webhook. Awarded via
+  `awardVote()`; the payload parse is a pure helper in `utils`.
 - **Help entries**: grouped command metadata. Built via `buildHelp()`.
-- **Amount**: a bet or transfer size. Parsed via `parseAmount()`.
