@@ -1,6 +1,6 @@
 // ponytail: property tests double as the Scorecard fuzzing signal (fast-check).
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import * as fc from 'fast-check';
 import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate.js';
 import type { SlashEntry } from '../src/discovery/handler.types.js';

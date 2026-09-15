@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { Author, Guild, Locale } from '@discord.ts/common';
 import { buildArgs, buildEventArgs } from '../src/discovery/discord-args.js';
 import type { Handler } from '../src/discovery/handler.types.js';

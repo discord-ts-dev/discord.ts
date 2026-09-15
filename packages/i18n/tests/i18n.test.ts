@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { availableLocales, initI18n, resolveLocale, t } from '../src/index.js';
 
 function fixtures(): string {

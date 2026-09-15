@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { StringOption, UserOption } from '@discord.ts/common';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { buildDtoFromArgs, splitSubroute } from '../src/discovery/discord-args.js';

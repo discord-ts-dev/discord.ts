@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { Module, PrefixCommand, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
 import { DiscordModule, createRuntime } from '../src/index.js';
 

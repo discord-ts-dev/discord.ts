@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { PARAM_AUTHOR_METADATA, PARAM_GUILD_METADATA, Author, Guild } from '../src/index.js';
 
 describe('Guild/Author', () => {

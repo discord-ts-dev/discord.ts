@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { pickOne } from '../src/index.js';
 
 function fakeTarget(pick: string | null, userId: string): unknown {

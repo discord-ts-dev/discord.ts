@@ -9,13 +9,19 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "dev": "tsc -p tsconfig.json --watch",
     "lint": "oxlint .",
     "format": "oxfmt --write src",
-    "test": "bun test"
+    "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
     "@discord.ts/common": "workspace:*",

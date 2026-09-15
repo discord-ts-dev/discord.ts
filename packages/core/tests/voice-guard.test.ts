@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { RequireVoice, SameVoice } from '../src/guards/guards.decorator.js';
 import { SameVoiceGuard, VoiceGuard } from '../src/guards/voice.guard.js';
