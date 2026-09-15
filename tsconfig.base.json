@@ -12,6 +12,7 @@
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "types": ["bun", "node"]
   }
 }
