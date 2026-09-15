@@ -17,7 +17,7 @@
     "postinstall": "bash scripts/postinstall.sh"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.4",
+    "@changesets/cli": "^3.0.2",
     "@discord.ts/common": "workspace:*",
     "@discord.ts/core": "workspace:*",
     "@discord.ts/i18n": "workspace:*",
