@@ -7,7 +7,8 @@ Reference bots agreed: Shiroko + template. Music/voice stays app-side.
 Rule: the framework ships opt-in **Capabilities** (decorators, helpers,
 guards, ports), never **Modules** (economy, hunt, battle rules) and
 never a forced bot style. Targets below: `→ utils` is a pure helper in
-`packages/utils`, `→ ux` a message helper in `packages/ux`.
+`packages/utils`, `→ ux` a message helper in `packages/ux`,
+`→ systems` a Store-backed capability in `packages/systems`.
 
 ## P0 — unlocks everything (decided)
 
@@ -16,21 +17,23 @@ never a forced bot style. Targets below: `→ utils` is a pure helper in
 
 ## P1 — high reuse, small
 
-- Daily-reset + streak helper over `Store` (`daily`, quest windows,
-  checklist; streak lost after N misses).
-- Leaderboard `topN` / `rankOf` over sorted sets (`top`, `my`,
-  per-category, server + global scope).
+- Daily-reset + streak helper over `Store` → `systems` (`daily`, quest
+  windows, checklist; streak lost after N misses).
+- Leaderboard `topN` / `rankOf` over sorted sets → `systems` (`top`,
+  `my`, per-category, server + global scope).
 - Author-only interaction guard → `ux` (button/select author lock).
 - Amount parser (`number | all | max`) → `utils` (`slots all`, `give`).
-- Auto-`help` from the command registry → `ux`.
-- Guild settings + enable/disable guard over `Store` (`prefix`,
-  `disable` / `enable`).
+- Auto-`help` from the command registry. `buildHelp()` groups metadata
+  → `systems`; registry-driven assembly is still open.
+- Guild settings + enable/disable guard over `Store` → `systems`
+  (`prefix`, `disable` / `enable`).
 - `weightedPick()` loot helper → `utils` (hunt tiers,
   first-drop-guaranteed, crate odds).
 
 ## P2 — nice to have
 
-- Word-filter guard recipe (`censor` / `uncensor`).
+- Word-filter helpers in `utils` (`containsBlocked` / `maskBlocked`);
+  the `censor` / `uncensor` command recipe is open.
 - `@Command({ slash, prefix })` + `@Subcommand()`: today the sub is
   silently dropped on both surfaces. Either wire it or fail boot.
   Blessed path until then is a group class with `prefix: true`.
@@ -38,7 +41,8 @@ never a forced bot style. Targets below: `→ utils` is a pure helper in
   `@Subcommand({ name })` serves both today. Needs a prefix alias map
   to fix; Discord has no subcommand aliases, so this stays a
   documented tradeoff until real pain.
-- Vote-webhook reward pattern (doc, top.gg → currency).
+- Vote-webhook reward: payload parse in `utils`, `awardVote()` over
+  `Store` in `systems`.
 - i18n pattern lifted from the template (doc, not a framework dep).
 
 ## Never framework (app-side)

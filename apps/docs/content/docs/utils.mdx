@@ -21,3 +21,36 @@ parseMentionId('<#789>'); // channel id
 | `isMessage(target)`   | unknown                                           | `true` for prefix `Message` vs slash interaction |
 
 Use `isSnowflake()` when a real Discord id shape is required. `parseMentionId()` is lenient on length. `isMessage()` checks for `content` + `author` keys, which is how `ux` picks reply vs `editReply` paths.
+
+## Amounts
+
+Parse `100`, `1,000`, `2k`, `1.5m`, `all` / `max` (= balance). Floored to ints.
+
+```ts
+import { parseAmount } from '@discord.ts/utils';
+
+parseAmount('2k', 5000); // { ok: true, value: 2000 }
+```
+
+Fail reasons: `invalid` | `non-positive` | `exceeds-balance`.
+
+## Words
+
+Word-boundary, case-insensitive blocklist.
+
+```ts
+import { containsBlocked, maskBlocked } from '@discord.ts/utils';
+
+containsBlocked('hello spam', ['spam']); // true
+maskBlocked('hello spam', ['spam']); // 'hello ***'
+```
+
+## Vote payload
+
+top.gg webhook bodies carry the voter id in `user`. Parsing is here; awarding is Store-backed, so it lives in `systems`.
+
+```ts
+import { parseVotePayload } from '@discord.ts/utils';
+
+const voter = parseVotePayload(body); // string | null
+```

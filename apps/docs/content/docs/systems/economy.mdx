@@ -71,10 +71,10 @@ Boards live in `lb:` sorted sets.
 
 ## Amounts
 
-Parse `100`, `1,000`, `2k`, `1.5m`, `all` / `max` (= balance). Floored to ints.
+Parse `100`, `1,000`, `2k`, `1.5m`, `all` / `max` (= balance). Floored to ints. Pure, so it lives in `utils`.
 
 ```ts
-import { parseAmount } from '@discord.ts/systems';
+import { parseAmount } from '@discord.ts/utils';
 
 parseAmount('2k', 5000); // { ok: true, value: 2000 }
 ```
