@@ -12,7 +12,7 @@ describe('CooldownGuard eviction', () => {
     const ctx = (userId: string) =>
       DiscordExecutionContext.create([{ user: { id: userId } }], fn, Object);
 
-    for (let i = 0; i < 5001; i++) await guard.canActivate(ctx(`u${i}`));
+    await Promise.all(Array.from({ length: 5001 }, (_, i) => guard.canActivate(ctx(`u${i}`))));
 
     assert.equal(await guard.canActivate(ctx('u5000')), false);
     assert.equal(await guard.canActivate(ctx('u0')), true);
