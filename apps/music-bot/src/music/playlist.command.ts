@@ -39,11 +39,11 @@ export class PlaylistCommand {
   @Cooldown(5)
   async create(
     @Context() ctx: CommandContext,
-    @Guild() guild: DiscordGuild | null,
+    @Guild() guild: DiscordGuild,
     @Author() author: User,
     @Options() dto: PlaylistNameDto,
   ): Promise<void> {
-    const lang = this.premium.languageOf(guild?.id ?? null);
+    const lang = this.premium.languageOf(guild.id);
     const ok = this.music.createPlaylist(author.id, dto.name);
     await reply(ctx, ok ? t('success.playlist.create', { name: dto.name }, lang) : 'Name taken.');
   }

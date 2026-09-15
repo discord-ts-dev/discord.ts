@@ -22,12 +22,7 @@ export class FiltersCommand {
   private readonly music: MusicService = musicService;
   private readonly lavalink: LavalinkService = lavalinkService;
 
-  private async toggle(
-    ctx: CommandContext,
-    guild: DiscordGuild | null,
-    name: string,
-  ): Promise<void> {
-    if (!guild) return;
+  private async toggle(ctx: CommandContext, guild: DiscordGuild, name: string): Promise<void> {
     const q = this.music.queueOf(guild.id);
     const i = q.filters.indexOf(name);
     if (i >= 0) q.filters.splice(i, 1);
@@ -42,68 +37,67 @@ export class FiltersCommand {
 
   @Subcommand({ name: 'bassboost', description: 'Toggle bassboost' })
   @Cooldown(5)
-  bassboost(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  bassboost(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'bassboost');
   }
 
   @Subcommand({ name: 'nightcore', description: 'Toggle nightcore' })
   @Cooldown(5)
-  nightcore(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  nightcore(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'nightcore');
   }
 
   @Subcommand({ name: 'karaoke', description: 'Toggle karaoke' })
   @Cooldown(5)
-  karaoke(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  karaoke(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'karaoke');
   }
 
   @Subcommand({ name: '8d', description: 'Toggle 8d rotation' })
   @Cooldown(5)
-  eightD(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  eightD(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, '8d');
   }
 
   @Subcommand({ name: 'pitch', description: 'Toggle pitch' })
   @Cooldown(5)
-  pitch(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  pitch(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'pitch');
   }
 
   @Subcommand({ name: 'speed', description: 'Toggle speed' })
   @Cooldown(5)
-  speed(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  speed(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'speed');
   }
 
   @Subcommand({ name: 'tremolo', description: 'Toggle tremolo' })
   @Cooldown(5)
-  tremolo(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  tremolo(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'tremolo');
   }
 
   @Subcommand({ name: 'vibrato', description: 'Toggle vibrato' })
   @Cooldown(5)
-  vibrato(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  vibrato(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'vibrato');
   }
 
   @Subcommand({ name: 'lowpass', description: 'Toggle lowpass' })
   @Cooldown(5)
-  lowpass(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  lowpass(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'lowpass');
   }
 
   @Subcommand({ name: 'rotation', description: 'Toggle rotation' })
   @Cooldown(5)
-  rotation(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
+  rotation(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     return this.toggle(ctx, guild, 'rotation');
   }
 
   @Subcommand({ name: 'reset', description: 'Reset all filters' })
   @Cooldown(5)
-  async reset(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
-    if (!guild) return;
+  async reset(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
     this.music.queueOf(guild.id).filters = [];
     void this.lavalink.resetFiltersLive(guild.id);
     await ctx.reply('Filters reset.');

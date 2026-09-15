@@ -28,10 +28,9 @@ export class AdminCommand {
   @RequirePermissions(PermissionFlagsBits.Administrator)
   async language(
     @Context() ctx: CommandContext,
-    @Guild() guild: DiscordGuild | null,
+    @Guild() guild: DiscordGuild,
     @Options() dto: LanguageDto,
   ): Promise<void> {
-    if (!guild) return;
     const current = this.premium.languageOf(guild.id);
     if (!dto.lang) {
       await ctx.reply(t('success.language', { lang: current }, current));

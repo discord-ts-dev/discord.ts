@@ -46,8 +46,8 @@ export function modId(ctx: CommandContext): string {
   return ctx.user.id;
 }
 
-export function guildOf(ctx: CommandContext): Guild | null {
-  return ctx.guild;
+export function guildOf(ctx: CommandContext): Guild {
+  return ctx.guild as Guild;
 }
 
 export interface NativeAuditEntry {
@@ -150,6 +150,5 @@ export function auditAndLog(
   reason: string,
 ): void {
   const guild = guildOf(ctx);
-  if (!guild) return;
   pushAudit({ action, guildId: guild.id, userId, moderatorId: modId(ctx), reason, at: Date.now() });
 }

@@ -75,10 +75,10 @@ export class InfoCommand {
   @Cooldown(5)
   async help(
     @Context() ctx: CommandContext,
-    @Guild() guild: DiscordGuild | null,
+    @Guild() guild: DiscordGuild,
     @Options() dto: HelpDto,
   ): Promise<void> {
-    const lang = this.premium.languageOf(guild?.id ?? null);
+    const lang = this.premium.languageOf(guild.id);
     if (dto.command) {
       const found = COMMANDS.find((n) => n.name === dto.command);
       const embed = new EmbedBuilder()
@@ -108,8 +108,8 @@ export class InfoCommand {
 
   @Command({ name: 'ping', description: 'Check bot latency', slash: true, prefix: true })
   @Cooldown(5)
-  async ping(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild | null): Promise<void> {
-    const lang = this.premium.languageOf(guild?.id ?? null);
+  async ping(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
+    const lang = this.premium.languageOf(guild.id);
     const t0 = Date.now();
     await ctx.reply(t('ping.checking', undefined, lang));
     const botLatency = Date.now() - t0;
@@ -131,13 +131,12 @@ export class InfoCommand {
   @Cooldown(5)
   async premiumStatus(
     @Context() ctx: CommandContext,
-    @Guild() guild: DiscordGuild | null,
+    @Guild() guild: DiscordGuild,
     @Author() author: User,
     @Options() dto: PremiumScopeDto,
   ): Promise<void> {
-    const lang = this.premium.languageOf(guild?.id ?? null);
+    const lang = this.premium.languageOf(guild.id);
     if (dto.scope === 'guild') {
-      if (!guild) return;
       const d = this.premium.describeGuild(guild.id);
       await ctx.reply(
         t(
