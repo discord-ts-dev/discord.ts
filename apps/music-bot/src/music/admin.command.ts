@@ -1,5 +1,6 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild, RequirePermissions, availableLocales, t } from '@discord.ts/core';
+import { Cooldown, RequireGuild, RequirePermissions } from '@discord.ts/core';
+import { availableLocales, t } from '@discord.ts/i18n';
 import { confirm } from '@discord.ts/ux';
 import { runInNewContext } from 'node:vm';
 import { inspect } from 'node:util';

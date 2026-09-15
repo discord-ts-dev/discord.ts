@@ -1,7 +1,7 @@
 {
-  "name": "@discord.ts/core",
+  "name": "@discord.ts/i18n",
   "version": "0.1.0",
-  "description": "discord.ts runtime: module, discovery, sync, guards, config, sharding",
+  "description": "discord.ts native i18n: namespaced locale catalogs, translate, locale resolve",
   "license": "MIT",
   "files": [
     "dist"
@@ -18,19 +18,10 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@discord.ts/common": "workspace:*",
-    "@discord.ts/i18n": "workspace:*",
-    "@discord.ts/utils": "workspace:*",
-    "class-validator": "^0.15.1",
-    "discord.js": "^14.0.0",
-    "reflect-metadata": "^0.2.2"
+    "@discord.ts/common": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.4.1",
-    "fast-check": "^4.10.0",
     "typescript": "^5.6.3"
-  },
-  "peerDependencies": {
-    "discord.js": "^14.0.0"
   }
 }

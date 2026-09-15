@@ -3,10 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, test } from 'node:test';
-import { Locale } from '@discord.ts/common';
-import { buildArgs } from '../src/discovery/discord-args.js';
-import { availableLocales, initI18n, resolveLocale, t } from '../src/i18n.js';
-import type { Handler } from '../src/discovery/handler.types.js';
+import { availableLocales, initI18n, resolveLocale, t } from '../src/index.js';
 
 function fixtures(): string {
   const root = mkdtempSync(join(tmpdir(), 'i18n-'));
@@ -23,17 +20,7 @@ function fixtures(): string {
 
 const fixtureRoot = fixtures();
 
-class Cmd {
-  run(_ctx: unknown, _locale: unknown): void {}
-}
-Locale()(Cmd.prototype, 'run', 1);
-
-function handler(): Handler {
-  const instance = new Cmd() as unknown as Record<string, (...args: never[]) => unknown>;
-  return { instance, method: 'run' };
-}
-
-describe('native i18n', () => {
+describe('locale catalogs', () => {
   test('t() reads namespaced files with params', () => {
     assert.equal(t('common:hello', { name: 'a' }, 'en'), 'hi a');
     assert.equal(t('errors.oops', { what: 'x' }, 'en'), 'bad x');
@@ -49,11 +36,6 @@ describe('native i18n', () => {
     assert.equal(resolveLocale({ guild: { preferredLocale: 'ja' } }), 'ja');
     assert.equal(resolveLocale({}, 'fr'), 'fr');
     assert.equal(resolveLocale({}), 'en');
-  });
-
-  test('@Locale() resolves through buildArgs', () => {
-    assert.equal(buildArgs(handler(), { locale: 'vi' })[1], 'vi');
-    assert.equal(buildArgs(handler(), { guild: { preferredLocale: 'ja' } })[1], 'ja');
   });
 
   test('languages allowlist restricts loading, availableLocales lists loaded', () => {

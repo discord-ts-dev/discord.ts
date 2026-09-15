@@ -1,5 +1,6 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild, t } from '@discord.ts/core';
+import { Cooldown, RequireGuild } from '@discord.ts/core';
+import { t } from '@discord.ts/i18n';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, Message, User } from 'discord.js';
 import { PlaylistAddDto, PlaylistNameDto, PlaylistStealDto } from './dto/music.dto.js';
 import { MusicService, musicService } from './music.service.js';

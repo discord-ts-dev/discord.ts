@@ -8,7 +8,8 @@ import {
   Options,
   StringSelect,
 } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequireGuild, t } from '@discord.ts/core';
+import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
+import { t } from '@discord.ts/i18n';
 import { paginate } from '@discord.ts/ux';
 import {
   ActionRowBuilder,

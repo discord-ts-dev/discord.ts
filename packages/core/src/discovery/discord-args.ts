@@ -9,7 +9,7 @@ import {
   PARAM_PREFIX_ARGS_METADATA,
   type OptionFieldMeta,
 } from '@discord.ts/common';
-import { resolveLocale } from '../i18n.js';
+import { resolveLocale } from '@discord.ts/i18n';
 import { parseMentionId } from '@discord.ts/utils';
 import type { Handler } from './handler.types.js';
 

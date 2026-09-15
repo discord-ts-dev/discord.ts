@@ -8,7 +8,7 @@ import { BotPermissionsGuard } from './guards/bot-permissions.guard.js';
 import { CooldownGuard } from './guards/cooldown.guard.js';
 import { GuildGuard } from './guards/guild.guard.js';
 import { PermissionsGuard } from './guards/permissions.guard.js';
-import { initI18n } from './i18n.js';
+import { initI18n } from '@discord.ts/i18n';
 
 export interface DiscordModuleAsyncOpts {
   cwd?: string;

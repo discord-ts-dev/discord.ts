@@ -24,6 +24,3 @@ Ubiquitous language. Glossary only. No implementation.
 - **Prefix DTO fill**: positional map of prefix args into the DTO. Trailing words join into a final string field. Mentions coerce to ids.
 - **Sub-route**: a prefix arg split into route plus rest. Split via `splitSubroute()`.
 - **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `bootstrapApp()`, spawned with `runShards()`.
-- **I18n**: native locale catalogs. Enabled with `i18n` in `Config`. Files live in `src/locales/<lang>/<namespace>.json`.
-- **Namespace**: one JSON file per language folder. Addressed as `ns:key`; dotted keys split on the first segment.
-- **Translate**: lookup via `t()` with default-locale fallback. Unknown keys echo.

@@ -9,6 +9,7 @@ Multi-context repo. Read the `CONTEXT.md` for each context relevant to the topic
 | `common`  | `packages/common/CONTEXT.md` | Foundation: metadata keys, decorators, types, logger |
 | `core`    | `packages/core/CONTEXT.md` | Runtime: module, discovery, routing, sync, guards, config |
 | `utils`   | `packages/utils/CONTEXT.md` | Pure helpers: mentions, ids, message guards        |
+| `i18n`    | `packages/i18n/CONTEXT.md`  | Native i18n: namespaced catalogs, translate, locales |
 | `systems` | `packages/systems/CONTEXT.md` | Bot systems: store, tasks, daily, quests, shop   |
 | `ux`      | `packages/ux/CONTEXT.md`  | Message helpers: confirm dialogs, pagers            |
 | `cli`     | `packages/cli/CONTEXT.md` | Runner: dev, shard, deploy, start                   |

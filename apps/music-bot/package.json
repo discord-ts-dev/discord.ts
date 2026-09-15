@@ -17,6 +17,7 @@
     "@discord.ts/cli": "workspace:*",
     "@discord.ts/common": "workspace:*",
     "@discord.ts/core": "workspace:*",
+    "@discord.ts/i18n": "workspace:*",
     "@discord.ts/utils": "workspace:*",
     "@discord.ts/ux": "workspace:*",
     "@prisma/client": "^6.12.0",

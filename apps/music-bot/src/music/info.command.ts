@@ -1,5 +1,6 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild, t } from '@discord.ts/core';
+import { Cooldown, RequireGuild } from '@discord.ts/core';
+import { t } from '@discord.ts/i18n';
 import {
   EmbedBuilder,
   type ChatInputCommandInteraction,
