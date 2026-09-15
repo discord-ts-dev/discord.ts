@@ -1,0 +1,13 @@
+{
+  "owner_only": "❌ **|** Only the bot owner can use this command!",
+  "dev_only": "`❌ **|** Only bot developers can use this command!`",
+  "voice_only": "❌ **|** You need to join a voice channel to use this command!",
+  "same_room": "❌ **|** You must be in the same room as the bot to use this command.",
+  "nsfw_only": "❌ **|** This command can only be used in NSFW channels!",
+  "no_permission": "❌ **|** You don't have permission to use this command!",
+  "bot_no_permission": "❌ **|** I don't have permission to do this!",
+  "premium": "❌ **|** You don't have premium to use this command!",
+  "cooldown": "❌ **|** You're using this command too fast! Try again at {time}!",
+  "duplicate_bot": "❌ **|** You cannot use multiple bots in one room!",
+  "run_out_of_track": "Queue finished playing"
+}

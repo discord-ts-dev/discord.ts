@@ -14,7 +14,7 @@ import { Cooldown } from '@discord.ts/core';
 
 @SlashCommand({ name: 'daily', description: 'Claim daily' })
 @Cooldown(60)
-async handle(@Context() ix: Ctx) {}
+async handle(@Context() ctx: CommandContext) {}
 ```
 
 Bounded in-memory map (`MAX_ENTRIES` 5000, FIFO evict on overflow). Key is `userId:Class.method`.
@@ -28,7 +28,7 @@ import { PermissionFlagsBits } from 'discord.js';
 @RequirePermissions(PermissionFlagsBits.KickMembers)
 @RequireBotPermissions(PermissionFlagsBits.ModerateMembers)
 @SlashCommand({ name: 'kick', description: 'Kick a member' })
-async handle(@Context() ix: Ctx) {}
+async handle(@Context() ctx: CommandContext) {}
 ```
 
 | Decorator                          | Checks                                              | On missing                                         |
@@ -51,7 +51,7 @@ class OwnerOnly implements CanActivate {
 
 @UseGuards(OwnerOnly)
 @SlashCommand({ name: 'secret', description: 'Owner only' })
-async handle(@Context() ix: Ctx) {}
+async handle(@Context() ctx: CommandContext) {}
 ```
 
 ## Pipes

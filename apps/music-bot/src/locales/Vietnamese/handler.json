@@ -1,0 +1,13 @@
+{
+  "owner_only": "❌ **|** Chỉ có chủ sở hữu bot mới có thể sử dụng lệnh này!",
+  "dev_only": "`❌ **|** Chỉ có nhà phát triển bot mới có thể sử dụng lệnh này!`",
+  "voice_only": "❌ **|** Bạn cần tham gia một kênh voice để sử dụng lệnh này!",
+  "same_room": "❌ **|** Bạn phải ở cùng phòng với bot để sử dụng lệnh này.",
+  "nsfw_only": "❌ **|** Lệnh này chỉ có thể được sử dụng trong kênh nsfw!",
+  "no_permission": "❌ **|** Bạn không có quyền sử dụng lệnh này!",
+  "bot_no_permission": "❌ **|** Tôi không có quyền thực hiện điều này!",
+  "premium": "❌ **|** Bạn không có premium để sử dụng lệnh này!",
+  "cooldown": "❌ **|** Bạn đang sử dụng quá nhanh lệnh này! Thử lại lúc {time}!",
+  "duplicate_bot": "❌ **|** Bạn không thể sử dụng nhiều bot trong một room!",
+  "run_out_of_track": "Đã phát hết danh sách chờ"
+}

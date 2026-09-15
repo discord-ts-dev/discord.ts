@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@discord.ts/common": "workspace:*",
+    "@discord.ts/i18n": "workspace:*",
     "@discord.ts/utils": "workspace:*",
     "class-validator": "^0.15.1",
     "discord.js": "^14.0.0",

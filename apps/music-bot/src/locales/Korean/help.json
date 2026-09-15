@@ -1,0 +1,6 @@
+{
+  "title": "🛠️ 도움말 메뉴",
+  "description": "안녕하세요! 저는 {owner}가 만든 음악 봇 {displayName}입니다.\n`{prefix} help <command>`를 사용하여 명령어에 대해 자세히 알아보세요.",
+  "footer": "{prefix} help <command>를 사용하여 명령어에 대해 자세히 알아보세요",
+  "detail": "**설명:** {content}\n**사용법:** `{usage}`\n**예시:** {examples}\n**별칭:** {aliases}\n**쿨다운:** {cooldown}"
+}

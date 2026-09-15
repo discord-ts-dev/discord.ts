@@ -1,0 +1,13 @@
+{
+  "previous": "Sebelumnya oleh {user}",
+  "resume": "Dilanjutkan oleh {user}",
+  "stop": "Dihentikan oleh {user}",
+  "skip": "Dilewati oleh {user}",
+  "no_previous_track": "Tidak ada trek sebelumnya.",
+  "loop": {
+    "track": "Trek diulang oleh {user}",
+    "queue": "Antrian diulang oleh {user}",
+    "off": "Pengulangan dinonaktifkan oleh {user}"
+  },
+  "shuffle": "Antrian diacak oleh {user}"
+}

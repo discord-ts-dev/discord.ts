@@ -1,0 +1,42 @@
+{
+  "filters": {
+    "8d_on": "`✅` | Bộ lọc 8D đã được `BẬT`.",
+    "8d_off": "`✅` | Bộ lọc 8D đã được `TẮT`.",
+    "karaoke_on": "`✅` | Bộ lọc Karaoke đã được `BẬT`.",
+    "karaoke_off": "`✅` | Bộ lọc Karaoke đã được `TẮT`.",
+    "lowpass_on": "`✅` | Bộ lọc Lowpass đã được `BẬT`.",
+    "lowpass_off": "`✅` | Bộ lọc Lowpass đã được `TẮT`.",
+    "nightcore_on": "`✅` | Bộ lọc Nightcore đã được `BẬT`.",
+    "nightcore_off": "`✅` | Bộ lọc Nightcore đã được `TẮT`.",
+    "rotation_on": "`✅` | Bộ lọc Rotation đã được `BẬT`.",
+    "rotation_off": "`✅` | Bộ lọc Rotation đã được `TẮT`.",
+    "tremolo_on": "`✅` | Bộ lọc Tremolo đã được `BẬT`.",
+    "tremolo_off": "`✅` | Bộ lọc Tremolo đã được `TẮT`.",
+    "vibrato_on": "`✅` | Bộ lọc Vibrato đã được `BẬT`.",
+    "vibrato_off": "`✅` | Bộ lọc Vibrato đã được `TẮT`."
+  },
+  "player": {
+    "autoplay_on": "`✅` | Bộ lọc tự động phát đã được `BẬT`.",
+    "autoplay_off": "`✅` | Bộ lọc tự động phát đã được `TẮT`.",
+    "loop": {
+      "track": "**Đang lặp lại bài hát.**",
+      "queue": "**Đang lặp lại hàng chờ.**",
+      "off": "**Đã tắt chế độ lặp lại.**"
+    },
+    "added": {
+      "track": "Đã thêm {amount} bài hát vào hàng chờ",
+      "queue": "Đã thêm [{title}]({uri}) vào hàng chờ"
+    },
+    "skipped": "Đã bỏ qua đến bài hát số **{number}** trong hàng chờ"
+  },
+  "playlist": {
+    "add": "Đã thêm **{number}** bài hát vào {playlist}",
+    "create": "Đã tạo danh sách phát **{name}**",
+    "delete": "Đã xóa danh sách phát **${name}**",
+    "load": "Đã tải playlist `{name}` với `{amount}` bài hát",
+    "removesong": "Đã xóa `{name}` khỏi `{playlist}`",
+    "steal": "Đã đánh cắp playlist `{playlist}` từ <@{userId}> thành công"
+  },
+  "language": "Ngôn ngữ hiện tại của guild là: `{lang}`",
+  "language_change": "Ngôn ngữ của guild đã được thay đổi thành: `{lang}`"
+}

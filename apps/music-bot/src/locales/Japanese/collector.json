@@ -1,0 +1,13 @@
+{
+  "previous": "{user} が前の曲に戻りました",
+  "resume": "{user} が再開しました",
+  "stop": "{user} が停止しました",
+  "skip": "{user} がスキップしました",
+  "no_previous_track": "前の曲はありません。",
+  "loop": {
+    "track": "{user} が曲をループしました",
+    "queue": "{user} がキューをループしました",
+    "off": "{user} がループを無効にしました"
+  },
+  "shuffle": "{user} がキューをシャッフルしました"
+}

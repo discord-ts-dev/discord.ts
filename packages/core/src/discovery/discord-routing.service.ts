@@ -146,7 +146,9 @@ export class DiscordRoutingService {
     try {
       if (!(await this.canActivate(h, interaction))) return;
       const args =
-        h && raw.length > 1 ? buildEventArgs(h, raw) : buildArgs(h, interaction, prefixArgs);
+        h && raw.length > 1
+          ? buildEventArgs(h, raw, this.opts.i18n?.defaultLocale)
+          : buildArgs(h, interaction, prefixArgs, this.opts.i18n?.defaultLocale);
       if (!(await this.runPipesAndValidate(h, args, interaction))) return;
       await (h.instance[h.method] as (...a: unknown[]) => unknown).apply(h.instance, args);
     } catch (err) {

@@ -16,6 +16,13 @@ type ConfirmTarget =
       replied?: boolean;
       deferred?: boolean;
     })
+  // ponytail: structural slot for CommandContext, no dep on common
+  | {
+      reply(msg: unknown): Promise<unknown>;
+      editReply(msg: unknown): Promise<unknown>;
+      replied?: boolean;
+      deferred?: boolean;
+    }
   | {
       reply(msg: unknown): Promise<{
         createMessageComponentCollector(o: unknown): {

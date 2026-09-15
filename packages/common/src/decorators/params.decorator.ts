@@ -1,5 +1,11 @@
 import 'reflect-metadata';
-import { PARAM_CONTEXT_METADATA, PARAM_OPTIONS_METADATA } from '../constants.js';
+import {
+  PARAM_AUTHOR_METADATA,
+  PARAM_CONTEXT_METADATA,
+  PARAM_GUILD_METADATA,
+  PARAM_LOCALE_METADATA,
+  PARAM_OPTIONS_METADATA,
+} from '../constants.js';
 
 type R = {
   getMetadata(key: string, target: object): number[] | undefined;
@@ -26,4 +32,20 @@ export function Context(): ParameterDecorator {
 
 export function Options(): ParameterDecorator {
   return (target, key, index) => pushParamMeta(PARAM_OPTIONS_METADATA, target, key, index);
+}
+
+// ponytail: derived params, resolved from the interaction/message in core.
+// Guild is null outside guilds; Author is message.author ?? interaction.user.
+export function Guild(): ParameterDecorator {
+  return (target, key, index) => pushParamMeta(PARAM_GUILD_METADATA, target, key, index);
+}
+
+export function Author(): ParameterDecorator {
+  return (target, key, index) => pushParamMeta(PARAM_AUTHOR_METADATA, target, key, index);
+}
+
+// ponytail: Discord locale of the call (interaction.locale, else the guild
+// preferred locale). App catalogs map it to their own language names.
+export function Locale(): ParameterDecorator {
+  return (target, key, index) => pushParamMeta(PARAM_LOCALE_METADATA, target, key, index);
 }

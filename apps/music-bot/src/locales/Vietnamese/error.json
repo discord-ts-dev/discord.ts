@@ -1,0 +1,72 @@
+{
+  "cmd": {
+    "not_found": "Lệnh `{cmd}` không tồn tại"
+  },
+  "common": {
+    "error": "Đã xảy ra lỗi trong quá trình thực hiện lệnh",
+    "invalid_number": "Vui lòng cung cấp một số hợp lệ.",
+    "invalid_duration": "Định dạng thời gian không hợp lệ. Ví dụ: `seek 1m`, `seek 1h 30m`",
+    "no_query": "Vui lòng cung cấp từ khóa hoặc đường dẫn",
+    "no_keyword": "Vui lòng cung cấp từ khóa",
+    "no_result": "Không có kết quả",
+    "cant_use_button": "Bạn không thể sử dụng nút này"
+  },
+  "user": {
+    "invalid_user": "Người dùng không hợp lệ",
+    "user_not_exist": "Người dùng không tồn tại",
+    "user_exist": "Người dùng đã tồn tại",
+    "user_dont_have_playlist": "Người dùng không có playlist"
+  },
+  "guild": {
+    "guild_not_exist": "Guild không tồn tại",
+    "guild_exist": "Guild đã tồn tại"
+  },
+  "voice": {
+    "connected": "Tôi đã kết nối với <#{voiceChannelId}> rồi!",
+    "no_connect": "Tôi không có trong kênh thoại nào"
+  },
+  "player": {
+    "no_player": "Không có tiến trình nào hoạt động trong guild này",
+    "no_track": "Vui lòng cung cấp tên bài hát",
+    "no_track_playing": "Không có bài hát nào đang được phát",
+    "no_song_in_queue": "Không có bài hát nào trong danh sách phát.",
+    "no_track_in_queue": "Không có bài hát nào trong hàng chờ",
+    "paused": "Bài hát đã được tạm dừng rồi",
+    "resumed": "Bài hát không bị tạm dừng",
+    "maxium_seek": "Không thể tìm kiếm vượt quá thời lượng bài hát {duration}",
+    "cant_load_playlist": "Không thể tải bài hát từ playlist",
+    "cant_replay": "Không thể phát lại bài hát này vì không thể tua được",
+    "cant_seek": "Không thể tua bài hát này"
+  },
+  "playlist": {
+    "no_playlist": "Vui lòng cung cấp tên playlist",
+    "playlist_not_found": "Không tìm thấy playlist",
+    "exist_playlist": "Playlist của bạn đã tồn tại",
+    "empty_playlist": "Playlist trống"
+  },
+  "premium": {
+    "contact": "Để kích hoạt premium bot, bạn có thể liên hệ với <@{ownerId}> nhé!",
+    "limit_tracks": "Bạn không thể thêm quá 25 bài hát vì chưa kích hoạt premium",
+    "limit_playlists": "Bạn không thể tạo nhiều hơn 2 playlists",
+    "limit_load_playlist": "Bạn không thể sử dụng playlist số 3 trở đi"
+  },
+  "volume": {
+    "minium": "Âm lượng không thể thấp hơn 0",
+    "maxium": "Âm lượng không thể cao hơn 200. Bạn có muốn làm hỏng tai hoặc loa của mình không? Hmmm, tôi không nghĩ đó là một ý kiến hay."
+  },
+  "filters": {
+    "pitch": "Vui lòng cung cấp một số hợp lệ giữa 0.5 và 5.0",
+    "speed": "Vui lòng cung cấp một số hợp lệ giữa 0.5 và 5.0"
+  },
+  "create": {
+    "limit_length": "Tên playlist không được vượt quá 50 ký tự.",
+    "playlist_exist": "Playlist đã tồn tại"
+  },
+  "language": "Vui lòng cung cấp một ngôn ngữ hợp lệ: {lang}",
+  "scope": "Vui lòng cung cấp một phạm vi hợp lệ: {scope}",
+  "user_or_guild": "Vui lòng cung cấp một người dùng hoặc guild",
+  "invalid_user_or_guild": "Người dùng hoặc guild không hợp lệ",
+  "bassboost_type": "Vui lòng cung cấp một loại bộ lọc bassboost hợp lệ: {type}",
+  "pitch": "Vui lòng cung cấp một số hợp lệ giữa 0.5 và 5.0",
+  "speed": "Vui lòng cung cấp một số hợp lệ giữa 0.5 và 5.0"
+}

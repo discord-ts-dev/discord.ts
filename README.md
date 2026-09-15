@@ -8,9 +8,9 @@ NestJS-style Discord bot framework without NestJS. OOP, DI, lifecycle, decorator
 ```ts
 @Injectable()
 export class PingCommand {
-  @SlashCommand({ name: 'ping', description: 'Reply with pong' })
-  async handle(@Context() interaction: ChatInputCommandInteraction) {
-    await interaction.reply('pong');
+  @Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
+  async handle(@Context() ctx: CommandContext) {
+    await ctx.reply('pong');
   }
 }
 ```
@@ -39,6 +39,7 @@ DISCORD_TOKEN=... bun run dev
 
 - `@SlashCommand` / `@Subcommand` + group factory, `@ContextMenu`, `@Button` + selects, `@Modal`, `@Autocomplete`, `@OnEvent` / `@OnceEvent`
 - `@Context()` + `@Options()` DTO with `@StringOption()` etc, required check, `class-validator`, `@UsePipes()`
+- `CommandContext` wrapper: one `reply` / `user` / `voiceChannelId` over slash and prefix; raw union still injects
 - `@UseGuards()` plus `@Cooldown(seconds)` and `@RequirePermissions(...)`
 - `@PrefixCommand()` + `@PrefixArgs()` text commands
 - Auto slash sync (global or `development` guilds), `skipRegistration`, `deployWithModule()` for CI

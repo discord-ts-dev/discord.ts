@@ -24,4 +24,4 @@ export class EchoPrefixCommand {
 
 ## Unified and sub-routes
 
-`@Command({ slash: true, prefix: true })` serves both surfaces from one handler. Prefix args map positionally into the `@Options()` DTO. `@Subcommand()` methods sharing the prefix name dispatch on the first token via `splitSubroute()` and fall back to the bare handler. Group classes with `prefix: true` register member subs on both surfaces.
+`@Command({ slash: true, prefix: true })` serves both surfaces from one handler; take `@Context() ctx: CommandContext` for one reply/user/voice API over both. Prefix args map positionally into the `@Options()` DTO. `@Subcommand()` methods sharing the prefix name dispatch on the first token via `splitSubroute()` and fall back to the bare handler. Group classes with `prefix: true` register member subs on both surfaces.

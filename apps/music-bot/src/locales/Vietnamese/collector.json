@@ -1,0 +1,13 @@
+{
+  "previous": "Trước đó bởi {user}",
+  "resume": "Tiếp tục bởi {user}",
+  "stop": "Tạm dừng bởi {user}",
+  "skip": "Bỏ qua bởi {user}",
+  "no_previous_track": "Không có bài hát trước.",
+  "loop": {
+    "track": "Lặp lại bài hát bởi {user}",
+    "queue": "Lặp lại hàng chờ bởi {user}",
+    "off": "Tắt lặp lại bởi {user}"
+  },
+  "shuffle": "Trộn hàng chờ bởi {user}"
+}

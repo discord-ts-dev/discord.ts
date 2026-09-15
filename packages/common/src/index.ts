@@ -12,4 +12,5 @@ export * from './decorators/components.decorator.js';
 export * from './decorators/event.decorator.js';
 export * from './decorators/params.decorator.js';
 export * from './decorators/options.decorator.js';
+export * from './command-context.js';
 export * from './decorators/prefix.decorator.js';

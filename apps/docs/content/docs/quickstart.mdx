@@ -37,14 +37,13 @@ Env wins over file: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`, `S
 ## 3. Declare
 
 ```ts
-import { Injectable, Command, Context } from '@discord.ts/common';
-import type { ChatInputCommandInteraction, Message } from 'discord.js';
+import { Injectable, Command, Context, CommandContext } from '@discord.ts/common';
 
 @Injectable()
 export class PingCommand {
   @Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
-  async handle(@Context() interaction: ChatInputCommandInteraction | Message) {
-    await interaction.reply('pong');
+  async handle(@Context() ctx: CommandContext) {
+    await ctx.reply('pong');
   }
 }
 ```

@@ -1,0 +1,61 @@
+{
+  "cmd": {
+    "not_found": "コマンド `{cmd}` は存在しません"
+  },
+  "common": {
+    "error": "コマンドの実行中にエラーが発生しました",
+    "invalid_number": "有効な数値を入力してください",
+    "invalid_duration": "無効な時間形式です。例: `seek 1m`, `seek 1h 30m`",
+    "no_query": "キーワードまたはURLを入力してください",
+    "no_keyword": "キーワードを入力してください",
+    "no_result": "結果が見つかりません",
+    "cant_use_button": "このボタンは使用できません"
+  },
+  "user": {
+    "invalid_user": "無効なユーザーです",
+    "user_not_exist": "ユーザーが存在しません",
+    "user_exist": "ユーザーは既に存在します",
+    "user_dont_have_playlist": "ユーザーにプレイリストがありません"
+  },
+  "guild": {
+    "guild_not_exist": "ギルドが存在しません",
+    "guild_exist": "ギルドは既に存在します"
+  },
+  "voice": {
+    "connected": "既に <#{voiceChannelId}> に接続しています！",
+    "no_connect": "ボイスチャンネルに接続していません"
+  },
+  "player": {
+    "no_player": "このギルドにアクティブなプレーヤーがありません",
+    "no_track": "曲名を入力してください",
+    "no_track_playing": "現在再生中の曲はありません",
+    "no_song_in_queue": "プレイリストに曲がありません",
+    "no_track_in_queue": "キューに曲がありません",
+    "paused": "曲は既に一時停止されています",
+    "resumed": "曲は一時停止されていません",
+    "maxium_seek": "曲の長さ {duration} を超えてシークできません",
+    "cant_load_playlist": "プレイリストから曲を読み込めません",
+    "cant_replay": "シークができないためこの曲をリプレイできません",
+    "cant_seek": "この曲ではシークできません"
+  },
+  "playlist": {
+    "no_playlist": "プレイリスト名を入力してください",
+    "playlist_not_found": "プレイリストが見つかりません",
+    "exist_playlist": "プレイリストは既に存在します",
+    "empty_playlist": "プレイリストが空です"
+  },
+  "premium": {
+    "contact": "プレミアムボットを有効にするには、<@{ownerId}> に連絡してください！",
+    "limit_tracks": "プレミアムなしでは25曲以上追加できません",
+    "limit_playlists": "2つ以上のプレイリストは作成できません",
+    "limit_load_playlist": "3番目以降のプレイリストは使用できません"
+  },
+  "volume": {
+    "minium": "音量は0未満にできません",
+    "maxium": "音量は200を超えることはできません。耳やスピーカーを傷めたいですか？それは良いアイデアとは思えません。"
+  },
+  "filters": {
+    "pitch": "0.5から5.0の間の有効な数値を入力してください",
+    "speed": "0.5から5.0の間の有効な数値を入力してください"
+  }
+}

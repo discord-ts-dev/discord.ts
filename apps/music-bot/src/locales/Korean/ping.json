@@ -1,0 +1,5 @@
+{
+  "checking": "지연 시간 확인 중...",
+  "bot_latency": "봇 지연 시간",
+  "api_latency": "API 지연 시간"
+}
