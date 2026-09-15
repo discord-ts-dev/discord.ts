@@ -13,7 +13,6 @@ const empty: DiscoveryState = {
   modals: [],
   autocompletes: [],
   events: [],
-  prefix: [],
 };
 
 const NAME = /^[\p{Ll}\p{Nd}_-]{1,32}$/u;
@@ -28,7 +27,7 @@ function entry(top: string, method: string, sub?: string): SlashEntry {
     top,
     topDescription: 'd',
     sub,
-    meta: { name: top, description: 'd' },
+    flags: {},
   };
 }
 

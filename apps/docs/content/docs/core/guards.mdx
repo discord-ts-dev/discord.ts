@@ -12,9 +12,9 @@ Per-user rate limit. Hit replies ephemeral with seconds left and blocks.
 ```ts
 import { Cooldown } from '@discord.ts/core';
 
-@SlashCommand({ name: 'daily', description: 'Claim daily' })
+@Command({ name: 'daily', description: 'Claim daily' })
 @Cooldown(60)
-async handle(@Context() ctx: CommandContext) {}
+async handle(@Context() interaction: ChatInputCommandInteraction) {}
 ```
 
 Bounded in-memory map (`MAX_ENTRIES` 5000, FIFO evict on overflow). Key is `userId:Class.method`.
@@ -27,8 +27,8 @@ import { PermissionFlagsBits } from 'discord.js';
 
 @RequirePermissions(PermissionFlagsBits.KickMembers)
 @RequireBotPermissions(PermissionFlagsBits.ModerateMembers)
-@SlashCommand({ name: 'kick', description: 'Kick a member' })
-async handle(@Context() ctx: CommandContext) {}
+@Command({ name: 'kick', description: 'Kick a member' })
+async handle(@Context() interaction: ChatInputCommandInteraction) {}
 ```
 
 | Decorator                          | Checks                                              | On missing                                         |
@@ -50,8 +50,8 @@ class OwnerOnly implements CanActivate {
 }
 
 @UseGuards(OwnerOnly)
-@SlashCommand({ name: 'secret', description: 'Owner only' })
-async handle(@Context() ctx: CommandContext) {}
+@Command({ name: 'secret', description: 'Owner only' })
+async handle(@Context() interaction: ChatInputCommandInteraction) {}
 ```
 
 ## Pipes

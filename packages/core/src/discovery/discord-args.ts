@@ -1,4 +1,4 @@
-import type { SlashCommandBuilder } from 'discord.js';
+import type { LocalizationMap, SlashCommandBuilder } from 'discord.js';
 import {
   OPTION_FIELD_METADATA,
   PARAM_AUTHOR_METADATA,
@@ -6,12 +6,10 @@ import {
   PARAM_GUILD_METADATA,
   PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
-  PARAM_PREFIX_ARGS_METADATA,
-  CommandContext,
   type OptionFieldMeta,
 } from '@discord.ts/common';
 import { resolveLocale } from '@discord.ts/i18n';
-import { parseMentionId } from '@discord.ts/utils';
+import { applyLocalizations, localizedPair } from './discord-localize.js';
 import type { Handler } from './handler.types.js';
 
 // ponytail: pure arg building, no DI. Shared by routing; optionsDto by discovery JSON.
@@ -24,29 +22,20 @@ export function optionsDto(h: Handler): (new () => Record<string, unknown>) | un
   return types[idxs[0]] as new () => Record<string, unknown>;
 }
 
-export function buildArgs(
-  h: Handler,
-  interaction: unknown,
-  prefixArgs?: string[],
-  i18nDefault?: string,
-): unknown[] {
+export function buildArgs(h: Handler, interaction: unknown, i18nDefault?: string): unknown[] {
   const fn = h.instance[h.method] as (...a: never[]) => unknown;
   const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
   const args: unknown[] = new Array(types.length).fill(undefined);
   const ctxIdx: number[] = Reflect.getMetadata(PARAM_CONTEXT_METADATA, fn) ?? [];
   const optIdx: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, fn) ?? [];
-  const argIdx: number[] = Reflect.getMetadata(PARAM_PREFIX_ARGS_METADATA, fn) ?? [];
   const guildIdx: number[] = Reflect.getMetadata(PARAM_GUILD_METADATA, fn) ?? [];
   const authorIdx: number[] = Reflect.getMetadata(PARAM_AUTHOR_METADATA, fn) ?? [];
   const localeIdx: number[] = Reflect.getMetadata(PARAM_LOCALE_METADATA, fn) ?? [];
-  for (const i of ctxIdx)
-    args[i] = types[i] === CommandContext ? new CommandContext(interaction as never) : interaction;
+  for (const i of ctxIdx) args[i] = interaction;
   for (const i of optIdx) {
     const Dto = (types[i] ?? Object) as new () => Record<string, unknown>;
-    args[i] =
-      prefixArgs !== undefined ? buildDtoFromArgs(Dto, prefixArgs) : buildDto(Dto, interaction);
+    args[i] = buildDto(Dto, interaction);
   }
-  for (const i of argIdx) args[i] = prefixArgs ?? [];
   for (const i of guildIdx) args[i] = resolveGuild(interaction);
   for (const i of authorIdx) args[i] = resolveAuthor(interaction);
   for (const i of localeIdx) args[i] = resolveLocale(interaction, i18nDefault);
@@ -54,7 +43,6 @@ export function buildArgs(
   if (
     !ctxIdx.length &&
     !optIdx.length &&
-    !argIdx.length &&
     !guildIdx.length &&
     !authorIdx.length &&
     !localeIdx.length &&
@@ -127,52 +115,6 @@ export function buildEventArgs(h: Handler, raw: unknown[], i18nDefault?: string)
   return args;
 }
 
-// ponytail: prefix surface fills DTO positionally, then the same validate pipeline runs.
-// Trailing free text joins into a final string field, so `!warn @u spamming links` works unquoted.
-// Mention syntax coerces to ids for user/role/channel kinds; full User fetch stays in handlers.
-export function buildDtoFromArgs(
-  Dto: new () => Record<string, unknown>,
-  args: string[],
-): Record<string, unknown> {
-  const dto = new Dto();
-  const fields: Record<string, OptionFieldMeta> =
-    Reflect.getMetadata(OPTION_FIELD_METADATA, Dto) ?? {};
-  const entries = Object.entries(fields);
-  entries.forEach(([key, f], i) => {
-    if (i === entries.length - 1 && f.kind === 'string' && args.length > entries.length)
-      dto[key] = args.slice(i).join(' ');
-    else dto[key] = coerceArg(f, args[i]);
-  });
-  return dto;
-}
-
-export interface Subroute {
-  route: string;
-  rest: string[];
-}
-
-// ponytail: first-token route split. `quest rr 2` with routes [rr, lock]
-// becomes { route: rr, rest: [2] }; handlers switch on route, DTO on rest.
-export function splitSubroute(args: string[], routes: string[]): Subroute | null {
-  if (args.length === 0) return null;
-  const first = (args[0] as string).toLowerCase();
-  const route = routes.find((r) => r.toLowerCase() === first);
-  return route === undefined ? null : { route, rest: args.slice(1) };
-}
-
-function coerceArg(f: OptionFieldMeta, raw: string | undefined): unknown {
-  if (raw === undefined) return undefined;
-  if (f.kind === 'integer') return /^-?\d+$/.test(raw) ? Number.parseInt(raw, 10) : raw;
-  if (f.kind === 'number') {
-    const n = Number(raw);
-    return raw.trim() !== '' && Number.isFinite(n) ? n : raw;
-  }
-  if (f.kind === 'boolean') return raw === 'true' ? true : raw === 'false' ? false : raw;
-  if (f.kind === 'user' || f.kind === 'mentionable' || f.kind === 'role' || f.kind === 'channel')
-    return parseMentionId(raw) ?? raw;
-  return raw;
-}
-
 type OptionBuilder = Pick<
   SlashCommandBuilder,
   | 'addStringOption'
@@ -190,26 +132,40 @@ type OptionBuilder = Pick<
 export function applyOptions(
   b: OptionBuilder,
   dto?: (new () => Record<string, unknown>) | undefined,
+  keyBase?: string,
 ): void {
   if (!dto) return;
   const fields: Record<string, OptionFieldMeta> =
     Reflect.getMetadata(OPTION_FIELD_METADATA, dto) ?? {};
   for (const f of Object.values(fields)) {
+    const loc = localizedPair(keyBase ? `${keyBase}.options.${f.name}` : undefined, {
+      name: f.nameLocalizations,
+      description: f.descriptionLocalizations,
+    });
     const base = (o: {
       setName(n: string): unknown;
       setDescription(d: string): unknown;
       setRequired(r: boolean): unknown;
+      setNameLocalizations(l: LocalizationMap | null): unknown;
+      setDescriptionLocalizations(l: LocalizationMap | null): unknown;
     }): void => {
       o.setName(f.name);
       o.setDescription(f.description);
       o.setRequired(!!f.required);
+      applyLocalizations(o, loc);
     };
     if (f.kind === 'string')
       b.addStringOption((o) => {
         base(o);
         if (f.autocomplete !== undefined) o.setAutocomplete(f.autocomplete);
         if (f.choices?.length)
-          o.addChoices(...f.choices.map((c) => ({ name: c.name, value: String(c.value) })));
+          o.addChoices(
+            ...f.choices.map((c) => ({
+              name: c.name,
+              value: String(c.value),
+              ...(c.nameLocalizations ? { name_localizations: c.nameLocalizations } : {}),
+            })),
+          );
         if (f.minLength !== undefined) o.setMinLength(f.minLength);
         if (f.maxLength !== undefined) o.setMaxLength(f.maxLength);
         return o;
@@ -223,7 +179,13 @@ export function applyOptions(
       }): void => {
         if (f.autocomplete !== undefined) o.setAutocomplete(f.autocomplete);
         if (f.choices?.length)
-          o.addChoices(...f.choices.map((c) => ({ name: c.name, value: Number(c.value) })));
+          o.addChoices(
+            ...f.choices.map((c) => ({
+              name: c.name,
+              value: Number(c.value),
+              ...(c.nameLocalizations ? { name_localizations: c.nameLocalizations } : {}),
+            })),
+          );
         if (f.minValue !== undefined) o.setMinValue(f.minValue);
         if (f.maxValue !== undefined) o.setMaxValue(f.maxValue);
       };

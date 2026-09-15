@@ -1,13 +1,4 @@
-import {
-  Author,
-  Button,
-  Command,
-  CommandContext,
-  Context,
-  Guild,
-  Injectable,
-  Options,
-} from '@discord.ts/common';
+import { Author, Button, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireBotPermissions, RequireGuild, SameVoice } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import { paginate, pickOne } from '@discord.ts/ux';
@@ -18,6 +9,7 @@ import {
   EmbedBuilder,
   PermissionFlagsBits,
   type ButtonInteraction,
+  type ChatInputCommandInteraction,
   type Guild as DiscordGuild,
   type User,
 } from 'discord.js';
@@ -63,9 +55,12 @@ export class MusicHudCommand {
     );
   }
 
-  @Command({ name: 'nowplaying', description: 'Show current track', slash: true, prefix: true })
+  @Command({ name: 'nowplaying', description: 'Show current track' })
   @Cooldown(5)
-  async nowplaying(@Context() ctx: CommandContext, @Guild() guild: DiscordGuild): Promise<void> {
+  async nowplaying(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Guild() guild: DiscordGuild,
+  ): Promise<void> {
     const q = this.music.queueOf(guild.id);
     if (!q.current) {
       await ctx.reply(t('error.player.no_track_playing', undefined, this.lang(guild)));
@@ -82,10 +77,10 @@ export class MusicHudCommand {
     await ctx.reply({ embeds: [embed], components: [this.controlRow(guild.id)] });
   }
 
-  @Command({ name: 'autoplay', description: 'Toggle autoplay', slash: true, prefix: true })
+  @Command({ name: 'autoplay', description: 'Toggle autoplay' })
   @Cooldown(5)
   async autoplay(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Options() dto: ToggleDto,
   ): Promise<void> {
@@ -95,10 +90,10 @@ export class MusicHudCommand {
     await ctx.reply(`Autoplay: ${q.autoplay ? 'on' : 'off'}.`);
   }
 
-  @Command({ name: 'loop', description: 'Loop track, queue, or off', slash: true, prefix: true })
+  @Command({ name: 'loop', description: 'Loop track, queue, or off' })
   @Cooldown(5)
   async loop(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Options() dto: LoopDto,
   ): Promise<void> {
@@ -108,12 +103,12 @@ export class MusicHudCommand {
     await ctx.reply(`Loop: ${mode}.`);
   }
 
-  @Command({ name: 'search', description: 'Search songs', slash: true, prefix: true })
+  @Command({ name: 'search', description: 'Search songs' })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
   @SameVoice()
   async search(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Author() author: User,
     @Options() dto: SearchDto,
@@ -143,7 +138,6 @@ export class MusicHudCommand {
       !this.premium.isPremium(guild.id, author.id)
     ) {
       const limited = t('error.premium.limit', undefined, this.lang(guild));
-      // ponytail: wrapper reply routes to followUp when already replied (pickOne sent first)
       await ctx.followUp({ content: limited, ephemeral: true });
       return;
     }
@@ -154,10 +148,10 @@ export class MusicHudCommand {
     await ctx.followUp({ content: done });
   }
 
-  @Command({ name: 'lyric', description: 'Get lyrics', slash: true, prefix: true })
+  @Command({ name: 'lyric', description: 'Get lyrics' })
   @Cooldown(5)
   async lyric(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Options() dto: LyricDto,
   ): Promise<void> {

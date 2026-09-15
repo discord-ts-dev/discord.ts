@@ -33,11 +33,8 @@ describe('confirm', () => {
     assert.equal(await confirm(target as never, 'Delete?'), false);
   });
 
-  test('accepts an embed payload and a prefix message target', async () => {
-    const { target, captured } = fakeTarget({
-      message: true,
-      plan: (ids) => [ids[0] as string],
-    });
+  test('accepts an embed payload', async () => {
+    const { target, captured } = fakeTarget({ plan: (ids) => [ids[0] as string] });
     const embed = new EmbedBuilder().setTitle('Sure?');
     assert.equal(await confirm(target as never, { embeds: [embed] }), true);
     const sent = captured.replies[0] as { embeds?: unknown[]; components?: unknown[] };

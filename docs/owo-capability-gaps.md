@@ -26,7 +26,7 @@ never a forced bot style. Targets below: `→ utils` is a pure helper in
 - Auto-`help` from the command registry. `buildHelp()` groups metadata
   → `systems`; registry-driven assembly is still open.
 - Guild settings + enable/disable guard over `Store` → `systems`
-  (`prefix`, `disable` / `enable`).
+  (`disable` / `enable`).
 - `weightedPick()` loot helper → `utils` (hunt tiers,
   first-drop-guaranteed, crate odds).
 
@@ -34,13 +34,6 @@ never a forced bot style. Targets below: `→ utils` is a pure helper in
 
 - Word-filter helpers in `utils` (`containsBlocked` / `maskBlocked`);
   the `censor` / `uncensor` command recipe is open.
-- `@Command({ slash, prefix })` + `@Subcommand()`: today the sub is
-  silently dropped on both surfaces. Either wire it or fail boot.
-  Blessed path until then is a group class with `prefix: true`.
-- Per-surface sub names (prefix `rr` vs slash `reroll`): one
-  `@Subcommand({ name })` serves both today. Needs a prefix alias map
-  to fix; Discord has no subcommand aliases, so this stays a
-  documented tradeoff until real pain.
 - Vote-webhook reward: payload parse in `utils`, `awardVote()` over
   `Store` in `systems`.
 - i18n pattern lifted from the template (doc, not a framework dep).

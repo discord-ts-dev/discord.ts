@@ -9,28 +9,9 @@ import {
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
-type PageTarget =
-  | (RepliableInteraction & {
-      editReply(msg: unknown): Promise<unknown>;
-      reply(msg: unknown): Promise<unknown>;
-      replied?: boolean;
-      deferred?: boolean;
-    })
-  // ponytail: structural slot for CommandContext, no dep on common
-  | {
-      reply(msg: unknown): Promise<unknown>;
-      editReply(msg: unknown): Promise<unknown>;
-      replied?: boolean;
-      deferred?: boolean;
-    }
-  | {
-      reply(msg: unknown): Promise<unknown>;
-    };
+type PageTarget = RepliableInteraction;
 
-const isMessage = (t: PageTarget): boolean =>
-  'content' in (t as object) && 'author' in (t as object);
-
-/** Prev/Next embed pager. Works on interactions and prefix messages. Resolves when it times out. */
+/** Prev/Next embed pager. Resolves when it times out. */
 export async function paginate(
   target: PageTarget,
   pages: EmbedBuilder[],
@@ -45,7 +26,7 @@ export async function paginate(
   };
   if (pages.length === 1) {
     const payload = { embeds: [pages[0]] };
-    if (!isMessage(target) && (ix.replied || ix.deferred)) await ix.editReply(payload);
+    if (ix.replied || ix.deferred) await ix.editReply(payload);
     else await ix.reply(payload);
     return;
   }
@@ -59,9 +40,9 @@ export async function paginate(
   let i = 0;
   const payload = () => ({ embeds: [pages[i]], components: [row] });
   const msg =
-    !isMessage(target) && (ix.replied || ix.deferred)
+    ix.replied || ix.deferred
       ? await ix.editReply(payload())
-      : await ix.reply(isMessage(target) ? payload() : { ...payload(), fetchReply: true });
+      : await ix.reply({ ...payload(), fetchReply: true });
   const collector = (
     msg as unknown as {
       createMessageComponentCollector(o: unknown): {

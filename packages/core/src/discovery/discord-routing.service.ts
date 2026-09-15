@@ -13,7 +13,7 @@ import {
 import { DiscordExecutionContext } from '../context/discord-execution-context.js';
 import { buildArgs, buildEventArgs } from './discord-args.js';
 import { DiscordDiscoveryService } from './discord-discovery.service.js';
-import { matches, splitArgs, type Handler } from './handler.types.js';
+import { matches, type Handler } from './handler.types.js';
 
 // Reads scan state from DiscordDiscoveryService. Subscribe after discovery init.
 export class DiscordRoutingService {
@@ -44,9 +44,6 @@ export class DiscordRoutingService {
       const run = (...args: unknown[]) => void this.invoke(e, args[0], args);
       if (e.once) this.client.once(e.event, run);
       else this.client.on(e.event, run);
-    }
-    if (this.discovery.prefix.length) {
-      this.client.on(Events.MessageCreate, (m) => void this.routePrefix(m));
     }
   }
 
@@ -137,54 +134,19 @@ export class DiscordRoutingService {
     }
   }
 
-  private async invoke(
-    h: Handler,
-    interaction: unknown,
-    raw: unknown[],
-    prefixArgs?: string[],
-  ): Promise<void> {
+  private async invoke(h: Handler, interaction: unknown, raw: unknown[]): Promise<void> {
     try {
       if (!(await this.canActivate(h, interaction))) return;
       const args =
-        h && raw.length > 1
+        raw.length > 1
           ? buildEventArgs(h, raw, this.opts.i18n?.defaultLocale)
-          : buildArgs(h, interaction, prefixArgs, this.opts.i18n?.defaultLocale);
+          : buildArgs(h, interaction, this.opts.i18n?.defaultLocale);
       if (!(await this.runPipesAndValidate(h, args, interaction))) return;
       await (h.instance[h.method] as (...a: unknown[]) => unknown).apply(h.instance, args);
     } catch (err) {
       // ponytail: log, never crash gateway loop
       this.logger.error(`handler ${h.method} failed:`, err);
     }
-  }
-
-  /** Prefix text routing. Ignores bots, matches prefix + name/alias,
-   * then first token to a @Subcommand() method, else the bare handler. */
-  private async routePrefix(message: {
-    author?: { bot?: boolean };
-    content?: string;
-    reply(msg: unknown): Promise<unknown>;
-  }): Promise<void> {
-    if (message.author?.bot) return;
-    const prefixes = Array.isArray(this.opts.prefix) ? this.opts.prefix : [this.opts.prefix ?? '!'];
-    const content = message.content ?? '';
-    const hit = prefixes.find((p) => content.startsWith(p));
-    if (!hit) return;
-    const [name, ...rest] = content.slice(hit.length).trim().split(/\s+/);
-    if (!name) return;
-    const candidates = this.discovery.prefix.filter(
-      (p) => p.name === name || p.aliases.includes(name),
-    );
-    if (!candidates.length) return;
-    const args = splitArgs(rest.join(' '));
-    const sub =
-      args.length > 0
-        ? candidates.find(
-            (c) => c.sub !== undefined && c.sub.toLowerCase() === args[0]?.toLowerCase(),
-          )
-        : undefined;
-    const target = sub ?? candidates.find((c) => c.sub === undefined);
-    if (!target) return;
-    await this.invoke(target, message, [message], sub ? args.slice(1) : args);
   }
 
   /** @UsePipes() + required check + class-validator (if installed). False = blocked. */

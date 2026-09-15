@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
 import { Events } from 'discord.js';
-import { INTERACTION_CREATE, MESSAGE_CREATE, flush, handlerFor, setup } from './routing-helpers.js';
+import { INTERACTION_CREATE, flush, handlerFor, setup } from './routing-helpers.js';
 describe('DiscordRoutingService.subscribe', () => {
   test('wires gateway, debug and per-handler event listeners', () => {
     const h = setup();
@@ -20,9 +20,6 @@ describe('DiscordRoutingService.subscribe', () => {
         once: false,
       },
     ];
-    h.discovery['prefix'] = [
-      { instance: { run: () => undefined } as never, method: 'run', name: 'echo', aliases: [] },
-    ];
     process.env['DISCORD_DEBUG'] = 'true';
     try {
       h.routing.subscribe();
@@ -34,7 +31,7 @@ describe('DiscordRoutingService.subscribe', () => {
     assert.equal(h.handlers.get(Events.Error)?.length, 1);
     assert.equal(h.handlers.get(Events.Debug)?.length, 1);
     assert.equal(h.handlers.get('ready')?.length, 1);
-    assert.equal(h.handlers.get('messageCreate')?.length, 2);
+    assert.equal(h.handlers.get('messageCreate')?.length, 1);
     h.handlers.get(Events.Warn)?.[0]?.('careful');
     h.handlers.get(Events.Error)?.[0]?.(new Error('boom'));
     h.handlers.get(Events.Debug)?.[0]?.('detail');
@@ -59,10 +56,9 @@ describe('DiscordRoutingService.subscribe', () => {
     assert.equal(seen.length, 1);
   });
 
-  test('skips prefix and debug listeners when unused', () => {
+  test('skips debug listeners when unused', () => {
     const h = setup();
     h.routing.subscribe();
-    assert.equal(h.handlers.get(MESSAGE_CREATE), undefined);
     assert.equal(h.handlers.get(Events.Debug), undefined);
   });
 });

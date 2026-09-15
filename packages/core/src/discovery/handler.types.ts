@@ -1,19 +1,27 @@
-import type { ApplicationCommandType } from 'discord.js';
-import type { ContextMenuMeta, SlashCommandMeta } from '@discord.ts/common';
+import type { ApplicationCommandType, LocalizationMap } from 'discord.js';
+import type { CommandFlags, ContextMenuMeta } from '@discord.ts/common';
 
 export interface Handler {
   instance: Record<string, (...args: never[]) => unknown>;
   method: string;
 }
 
+export interface LocalizationPair {
+  name?: LocalizationMap;
+  description?: LocalizationMap;
+}
+
 export interface SlashEntry extends Handler {
   top: string;
   topDescription: string;
+  topLocalizations?: LocalizationPair;
   group?: string;
   groupDescription?: string;
+  groupLocalizations?: LocalizationPair;
   sub?: string;
   subDescription?: string;
-  meta: SlashCommandMeta;
+  subLocalizations?: LocalizationPair;
+  flags: CommandFlags;
 }
 
 export interface MenuEntry extends Handler {
@@ -44,22 +52,6 @@ export interface EventEntry extends Handler {
   once: boolean;
 }
 
-export interface PrefixEntry extends Handler {
-  name: string;
-  aliases: string[];
-  /** First-token sub-route. Set when the method also carries @Subcommand(). */
-  sub?: string;
-}
-
 export function matches(id: string | RegExp, value: string): boolean {
   return typeof id === 'string' ? id === value : id.test(value);
-}
-
-/** Split on spaces, keep "quoted parts" together. */
-export function splitArgs(input: string): string[] {
-  const out: string[] = [];
-  const re = /"([^"]*)"|'([^']*)'|(\S+)/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(input)) !== null) out.push(m[1] ?? m[2] ?? m[3]);
-  return out.filter((s) => s.length > 0);
 }
