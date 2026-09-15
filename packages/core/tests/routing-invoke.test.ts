@@ -96,6 +96,31 @@ describe('DiscordRoutingService pipes and guards', () => {
     assert.deepEqual(h.calls, ['run']);
   });
 
+  test('treats a hostile DTO as valid instead of crashing', async () => {
+    const h = setup();
+    class Dto {
+      @StringOption({ name: 'q', description: 'Query', required: false })
+      q?: string;
+    }
+    class HostilePipe {
+      transform(): unknown {
+        return new Proxy(
+          {},
+          {
+            get: (_t, key) => {
+              if (key === 'constructor') throw new Error('hostile DTO');
+              return undefined;
+            },
+          },
+        );
+      }
+    }
+    const handler = dtoHandler(h, 'run', Dto);
+    onMethod(handler, UsePipes(HostilePipe));
+    await invokeWith(h, handler, { options: {} });
+    assert.deepEqual(h.calls, ['run']);
+  });
+
   test('treats an unvalidatable DTO as valid', async () => {
     const h = setup();
     class Dto {
