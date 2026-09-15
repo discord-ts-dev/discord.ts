@@ -1,19 +1,151 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { COMMAND_METADATA, SlashCommand } from '../src/index.js';
+import { ApplicationCommandType } from 'discord.js';
+import {
+  AUTOCOMPLETE_METADATA,
+  Author,
+  Autocomplete,
+  BUTTON_METADATA,
+  Button,
+  COMMAND_METADATA,
+  CONTEXT_MENU_METADATA,
+  ChannelSelect,
+  Context,
+  ContextMenu,
+  Guild,
+  Locale,
+  MODAL_METADATA,
+  MentionableSelect,
+  Modal,
+  ON_EVENT_METADATA,
+  OnEvent,
+  OnceEvent,
+  Options,
+  PARAM_AUTHOR_METADATA,
+  PARAM_CONTEXT_METADATA,
+  PARAM_GUILD_METADATA,
+  PARAM_LOCALE_METADATA,
+  PARAM_OPTIONS_METADATA,
+  PARAM_PREFIX_ARGS_METADATA,
+  PREFIX_COMMAND_METADATA,
+  PrefixArgs,
+  PrefixCommand,
+  RoleSelect,
+  SELECT_METADATA,
+  SlashCommand,
+  StringSelect,
+  UserSelect,
+} from '../src/index.js';
+
+type Loose = (target: object, key?: string | symbol, descriptor?: PropertyDescriptor) => unknown;
+type LooseParam = (target: object, key: string | symbol | undefined, index: number) => unknown;
+const loose = (dec: unknown): Loose => dec as unknown as Loose;
+const looseParam = (dec: unknown): LooseParam => dec as unknown as LooseParam;
+
+class Probe {
+  run(): void {}
+}
+
+const descriptor = (): PropertyDescriptor =>
+  Object.getOwnPropertyDescriptor(Probe.prototype, 'run') as PropertyDescriptor;
+
+const metaOf = (key: string): unknown => Reflect.getMetadata(key, Probe.prototype.run);
 
 describe('SlashCommand', () => {
   test('publishes name and description under the unified command key', () => {
-    class Ping {
-      run(): void {}
-    }
     const meta = { name: 'ping', description: 'Reply with pong' };
-    const descriptor = Object.getOwnPropertyDescriptor(Ping.prototype, 'run');
-    SlashCommand(meta)(Ping.prototype, 'run', descriptor as PropertyDescriptor);
-    assert.deepStrictEqual(Reflect.getMetadata(COMMAND_METADATA, Ping.prototype.run), {
-      ...meta,
-      slash: true,
-      prefix: false,
-    });
+    loose(SlashCommand(meta))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(COMMAND_METADATA), { ...meta, slash: true, prefix: false });
+  });
+});
+
+describe('component decorators', () => {
+  test('button and modal store a customId', () => {
+    loose(Button('btn'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(BUTTON_METADATA), { customId: 'btn' });
+    loose(Modal(/modal-/))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(MODAL_METADATA), { customId: /modal-/ });
+  });
+
+  test('selects store kind plus customId', () => {
+    loose(StringSelect('s'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(SELECT_METADATA), { kind: 'string', customId: 's' });
+    loose(UserSelect('s'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(SELECT_METADATA), { kind: 'user', customId: 's' });
+    loose(RoleSelect('s'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(SELECT_METADATA), { kind: 'role', customId: 's' });
+    loose(ChannelSelect('s'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(SELECT_METADATA), { kind: 'channel', customId: 's' });
+    loose(MentionableSelect('s'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(SELECT_METADATA), { kind: 'mentionable', customId: 's' });
+  });
+
+  test('autocomplete stores the optional command name', () => {
+    loose(Autocomplete('ping'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(AUTOCOMPLETE_METADATA), { commandName: 'ping' });
+    loose(Autocomplete())(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(AUTOCOMPLETE_METADATA), { commandName: undefined });
+  });
+});
+
+describe('ContextMenu', () => {
+  test('stores the application command type', () => {
+    const meta = {
+      name: 'Inspect',
+      type: ApplicationCommandType.Message as ApplicationCommandType.Message,
+      contexts: [] as never[],
+    };
+    loose(ContextMenu(meta))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(CONTEXT_MENU_METADATA), meta);
+  });
+});
+
+describe('event decorators', () => {
+  test('OnEvent and OnceEvent set the once flag', () => {
+    loose(OnEvent('messageCreate'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(ON_EVENT_METADATA), { event: 'messageCreate', once: false });
+    loose(OnceEvent('ready'))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(ON_EVENT_METADATA), { event: 'ready', once: true });
+  });
+});
+
+describe('PrefixCommand and PrefixArgs', () => {
+  test('stores name, aliases and description', () => {
+    const meta = { name: 'echo', aliases: ['e'], description: 'Echo text' };
+    loose(PrefixCommand(meta))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(PREFIX_COMMAND_METADATA), meta);
+  });
+
+  test('collects parameter indexes in order', () => {
+    looseParam(PrefixArgs())(Probe.prototype, 'run', 1);
+    looseParam(PrefixArgs())(Probe.prototype, 'run', 2);
+    assert.deepEqual(metaOf(PARAM_PREFIX_ARGS_METADATA), [1, 2]);
+  });
+
+  test('is a no-op without a method key', () => {
+    looseParam(PrefixArgs())(Probe.prototype, undefined, 0);
+    assert.equal(Reflect.getMetadata(PARAM_PREFIX_ARGS_METADATA, Probe.prototype), undefined);
+  });
+});
+
+describe('parameter decorators', () => {
+  test('each records its own index list', () => {
+    const cases: Array<[unknown, string]> = [
+      [Context(), PARAM_CONTEXT_METADATA],
+      [Options(), PARAM_OPTIONS_METADATA],
+      [Guild(), PARAM_GUILD_METADATA],
+      [Author(), PARAM_AUTHOR_METADATA],
+      [Locale(), PARAM_LOCALE_METADATA],
+    ];
+    for (const [dec, key] of cases) {
+      looseParam(dec)(Probe.prototype, 'run', 0);
+      looseParam(dec)(Probe.prototype, 'run', 1);
+      assert.deepEqual(metaOf(key), [0, 1]);
+    }
+  });
+
+  test('is a no-op without a method key', () => {
+    looseParam(Context())(Probe.prototype, undefined, 0);
+    assert.equal(Reflect.getMetadata(PARAM_CONTEXT_METADATA, Probe.prototype), undefined);
   });
 });

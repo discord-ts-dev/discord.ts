@@ -64,7 +64,7 @@ Each field accepts `name`, `description`, `required`, plus `autocomplete`, `choi
 
 ## Validation
 
-Required fields plus `class-validator` rules plus `@UsePipes()` run on each call. Fail replies ephemeral and blocks the handler. Prefix calls fill the same DTO positionally: trailing words join into the final string field, mentions coerce to ids.
+Required fields plus `class-validator` rules plus `@UsePipes()` run on each call. Fail replies ephemeral and blocks the handler. Prefix calls fill the same DTO positionally: trailing words join into the final string field, mentions coerce to ids. DTOs with no `class-validator` decorators pass validation untouched.
 
 ```ts
 import { UsePipes } from '@discord.ts/common';

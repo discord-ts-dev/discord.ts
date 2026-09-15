@@ -4,6 +4,7 @@ import type { DiscordExecutionContext } from '../context/discord-execution-conte
 
 // ponytail: mirrors PermissionsGuard but checks the bot member, not the caller.
 export class BotPermissionsGuard implements CanActivate {
+  constructor() {}
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
     const fn = context.getHandler() as object;
     const cls = context.getClass() as object;

@@ -28,6 +28,7 @@ async function block(ix: Record<string, unknown>, content: string): Promise<bool
 
 // ponytail: structural voice reads, works for interactions and messages.
 export class VoiceGuard implements CanActivate {
+  constructor() {}
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
     const ix = context.getArgByIndex<Record<string, unknown>>(0);
     if (channelOf(ix)) return true;
@@ -36,6 +37,7 @@ export class VoiceGuard implements CanActivate {
 }
 
 export class SameVoiceGuard implements CanActivate {
+  constructor() {}
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
     const ix = context.getArgByIndex<Record<string, unknown>>(0);
     const mine = channelOf(ix);

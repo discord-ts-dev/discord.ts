@@ -77,21 +77,35 @@ export function main(argv: string[], deps: CliDeps = processDeps()): void {
   deps.exit(run.status ?? 1);
 }
 
-function processDeps(): CliDeps {
+/** True when this module is the process entry. Realpath so bin symlinks match. */
+export function isEntry(entry: string | undefined, moduleUrl: string): boolean {
+  if (entry === undefined) return false;
+  try {
+    return fs.realpathSync(entry) === fs.realpathSync(fileURLToPath(moduleUrl));
+  } catch {
+    return false;
+  }
+}
+
+export function mainIfEntry(
+  argv: string[],
+  moduleUrl: string,
+  deps: CliDeps = processDeps(),
+): void {
+  if (isEntry(argv[1], moduleUrl)) main(argv, deps);
+}
+
+export function processDeps(): CliDeps {
   return {
     cwd: process.cwd(),
     exists: (file) => fs.existsSync(file),
     spawn: (runtime, args) => spawnSync(runtime, args, { stdio: 'inherit' }),
     out: (text) => void process.stdout.write(text),
     err: (text) => void process.stderr.write(text),
-    exit: (code) => process.exit(code),
+    exit: (code) => {
+      process.exitCode = code;
+    },
   };
 }
 
-const entry = process.argv[1];
-if (
-  entry !== undefined &&
-  fs.realpathSync(entry) === fs.realpathSync(fileURLToPath(import.meta.url))
-) {
-  main(process.argv);
-}
+mainIfEntry(process.argv, import.meta.url);

@@ -5,6 +5,7 @@ import type { DiscordExecutionContext } from '../context/discord-execution-conte
 const MAX_ENTRIES = 5000;
 
 export class CooldownGuard implements CanActivate {
+  constructor() {}
   private readonly hits = new Map<string, number>();
 
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
