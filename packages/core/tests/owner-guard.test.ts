@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { RequireOwner } from '../src/guards/guards.decorator.js';
 import { OwnerGuard } from '../src/guards/owner.guard.js';

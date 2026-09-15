@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { describe, test } from 'node:test';
+import { describe, test } from 'bun:test';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { RequireGuild } from '../src/guards/guards.decorator.js';
 import { GuildGuard } from '../src/guards/guild.guard.js';
