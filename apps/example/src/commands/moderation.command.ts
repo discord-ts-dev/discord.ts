@@ -1,5 +1,10 @@
 import { Command, CommandContext, Context, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequirePermissions } from '@discord.ts/core';
+import {
+  Cooldown,
+  RequireBotPermissions,
+  RequireGuild,
+  RequirePermissions,
+} from '@discord.ts/core';
 import { confirm, paginate } from '@discord.ts/ux';
 import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import type {
@@ -27,12 +32,14 @@ import {
 } from './moderation.helpers.js';
 
 @Injectable()
+@RequireGuild()
 export class ModerationCommand {
   @Command({ name: 'warn', description: 'Warn a member', slash: true, prefix: true })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
   async warn(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user. Mention or id.');
     const reason = dto.reason ?? 'No reason';
@@ -53,7 +60,8 @@ export class ModerationCommand {
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
   async warnings(@Context() ctx: CommandContext, @Options() dto: WarningsDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
     const list = warnings.get(warnKey(guild.id, userId)) ?? [];
@@ -86,7 +94,8 @@ export class ModerationCommand {
   @RequireBotPermissions(PermissionFlagsBits.KickMembers)
   async kick(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
     const reason = dto.reason ?? 'No reason';
@@ -111,7 +120,8 @@ export class ModerationCommand {
   @Cooldown(3)
   async ban(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
     const reason = dto.reason ?? 'No reason';
@@ -138,7 +148,8 @@ export class ModerationCommand {
   @RequireBotPermissions(PermissionFlagsBits.BanMembers)
   async unban(@Context() ctx: CommandContext, @Options() dto: UnbanDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const reason = dto.reason ?? 'No reason';
     try {
       await guild.members.unban(dto.userId, reason);
@@ -159,7 +170,8 @@ export class ModerationCommand {
   @RequireBotPermissions(PermissionFlagsBits.ModerateMembers)
   async timeout(@Context() ctx: CommandContext, @Options() dto: TimeoutDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
     const reason = dto.reason ?? 'No reason';
@@ -188,7 +200,8 @@ export class ModerationCommand {
   @Cooldown(5)
   async clear(@Context() ctx: CommandContext, @Options() dto: ClearDto): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const ok = await confirm(ctx, {
       embeds: [modEmbed('clear?', 0x3498db).setDescription(`Delete ${dto.count} messages?`)],
     });
@@ -213,7 +226,8 @@ export class ModerationCommand {
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
   async logs(@Context() ctx: CommandContext): Promise<void> {
     const guild = guildOf(ctx);
-    if (!guild) return replyError(ctx, 'Use in a guild.');
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guild) return;
     const list = audit
       .filter((a) => a.guildId === guild.id)
       .slice(-20)

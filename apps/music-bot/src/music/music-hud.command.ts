@@ -193,10 +193,8 @@ export class MusicHudCommand {
   @Button('music:resume')
   async onResume(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId;
-    if (!guildId) {
-      await ix.reply({ content: 'Use in a guild.', ephemeral: true });
-      return;
-    }
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guildId) return;
     const q = this.music.queueOf(guildId);
     q.paused = !q.paused;
     void this.lavalink.pauseLive(guildId, q.paused);
@@ -206,10 +204,8 @@ export class MusicHudCommand {
   @Button('music:skip')
   async onSkip(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId;
-    if (!guildId) {
-      await ix.reply({ content: 'Use in a guild.', ephemeral: true });
-      return;
-    }
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guildId) return;
     this.music.skip(guildId);
     void this.lavalink.skipLive(guildId);
     await ix.update({ components: [this.controlRow(guildId)] });
@@ -218,10 +214,8 @@ export class MusicHudCommand {
   @Button('music:stop')
   async onStop(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId;
-    if (!guildId) {
-      await ix.reply({ content: 'Use in a guild.', ephemeral: true });
-      return;
-    }
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guildId) return;
     this.music.clear(guildId);
     this.music.queueOf(guildId).current = null;
     void this.lavalink.stopLive(guildId);
@@ -231,10 +225,8 @@ export class MusicHudCommand {
   @Button('music:loop')
   async onLoop(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId;
-    if (!guildId) {
-      await ix.reply({ content: 'Use in a guild.', ephemeral: true });
-      return;
-    }
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guildId) return;
     const q = this.music.queueOf(guildId);
     q.loop = q.loop === 'off' ? 'track' : q.loop === 'track' ? 'queue' : 'off';
     void this.lavalink.repeatLive(guildId, q.loop);
@@ -244,10 +236,8 @@ export class MusicHudCommand {
   @Button('music:shuffle')
   async onShuffle(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId;
-    if (!guildId) {
-      await ix.reply({ content: 'Use in a guild.', ephemeral: true });
-      return;
-    }
+    // ponytail: @RequireGuild() already replied; narrow only
+    if (!guildId) return;
     this.music.shuffle(guildId);
     await ix.reply({ content: 'Shuffled.', ephemeral: true });
   }
