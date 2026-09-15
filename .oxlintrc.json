@@ -39,7 +39,33 @@
         "vitest/no-conditional-expect": "off",
         "jest/valid-title": "off",
         "vitest/valid-title": "off",
-        "vitest/require-mock-type-parameters": "off"
+        "vitest/require-mock-type-parameters": "off",
+        // empty marker classes are how tests build modules and stubs
+        "typescript/no-extraneous-class": "off"
+      }
+    },
+    {
+      // bun's coverage counts an implicit class constructor as an uncovered
+      // function, so stateless classes carry an explicit empty one
+      "files": [
+        "packages/core/src/guards/*.guard.ts",
+        "packages/core/src/discord.module.ts",
+        "packages/common/src/di.ts",
+        "packages/systems/src/store.ts"
+      ],
+      "rules": {
+        "eslint/no-useless-constructor": "off"
+      }
+    },
+    {
+      // sequential by design: pipe and guard chains feed each result into the
+      // next, and GitHub pagination needs page N before page N + 1
+      "files": [
+        "packages/core/src/discovery/discord-routing.service.ts",
+        "scripts/github/triage-label.mjs"
+      ],
+      "rules": {
+        "eslint/no-await-in-loop": "off"
       }
     }
   ],
