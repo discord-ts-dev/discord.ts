@@ -17,6 +17,8 @@ export default defineConfig({
   prefix: '!',
   shardFile: './src/main.ts',
   respawn: true,
+  // ponytail: owner ids unlock @RequireOwner commands. Prefer DISCORD_OWNER_IDS env.
+  owners: [],
   i18n: {
     defaultLocale: 'EnglishUS',
     localesDir: './src/locales',

@@ -32,15 +32,3 @@ export const botConfig = {
     ColorResolvable
   >,
 };
-
-export function ownerIds(): string[] {
-  const raw = process.env.OWNER_IDS ?? process.env.OWNER_ID ?? '';
-  return raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-export function isOwner(userId: string): boolean {
-  return ownerIds().includes(userId);
-}

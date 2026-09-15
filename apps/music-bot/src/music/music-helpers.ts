@@ -1,5 +1,5 @@
 import type { ChatInputCommandInteraction, GuildMember, Message } from 'discord.js';
-import { formatTime } from './format.js';
+import { formatTime } from '@discord.ts/utils';
 
 export type Ctx = ChatInputCommandInteraction | Message;
 

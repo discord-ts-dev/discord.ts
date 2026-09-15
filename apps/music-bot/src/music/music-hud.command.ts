@@ -1,26 +1,15 @@
-import {
-  Author,
-  Button,
-  Command,
-  Context,
-  Guild,
-  Injectable,
-  Options,
-  StringSelect,
-} from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
+import { Author, Button, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Cooldown, RequireBotPermissions, RequireGuild, SameVoice } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
-import { paginate } from '@discord.ts/ux';
+import { paginate, pickOne } from '@discord.ts/ux';
 import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
   PermissionFlagsBits,
-  StringSelectMenuBuilder,
   type ButtonInteraction,
   type Guild as DiscordGuild,
-  type StringSelectMenuInteraction,
   type User,
 } from 'discord.js';
 import { LoopDto, LyricDto, SearchDto, ToggleDto } from './dto/music.dto.js';
@@ -29,8 +18,8 @@ import { LyricService, lyricService } from './lyric.service.js';
 import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
-import { formatTime, progressBar } from './format.js';
-import { NON_PREMIUM_QUEUE_CAP, trackLine, voiceChannelIdOf, type Ctx } from './music-helpers.js';
+import { formatTime, progressBar } from '@discord.ts/utils';
+import { NON_PREMIUM_QUEUE_CAP, trackLine, type Ctx } from './music-helpers.js';
 
 @Injectable()
 @RequireGuild()
@@ -116,72 +105,49 @@ export class MusicHudCommand {
   @Command({ name: 'search', description: 'Search songs', slash: true, prefix: true })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
+  @SameVoice()
   async search(
     @Context() ctx: Ctx,
     @Guild() guild: DiscordGuild | null,
     @Author() author: User,
     @Options() dto: SearchDto,
   ): Promise<void> {
-    if (!voiceChannelIdOf(ctx)) {
-      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
-      return;
-    }
+    if (!guild) return;
     const tracks = (await this.lavalink.search(dto.query, author.id)).slice(0, 5);
     if (!tracks.length) {
       await ctx.reply(t('error.no_result', undefined, this.lang(guild)));
       return;
     }
-    this.music.rememberSearch(author.id, tracks);
-    const menu = new StringSelectMenuBuilder()
-      .setCustomId(`music:search:${author.id}`)
-      .setPlaceholder(t('search.placeholder', undefined, this.lang(guild)))
-      .addOptions(
-        tracks.map((track, i) => ({
-          label: track.name.slice(0, 100),
-          value: String(i),
-          description: track.uri.slice(0, 100),
-        })),
-      );
-    await ctx.reply({
-      content: `Search: ${dto.query}`,
-      components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(menu)],
-    });
-  }
-
-  @StringSelect(/^music:search:.+/)
-  async onSearchPick(@Context() ix: StringSelectMenuInteraction): Promise<void> {
-    const ownerId = ix.customId.split(':')[2];
-    if (ix.user.id !== ownerId) {
-      await ix.reply({ content: 'Not your search.', ephemeral: true });
-      return;
-    }
-    const guildId = ix.guildId;
-    if (!guildId) {
-      await ix.reply({ content: 'Use in a guild.', ephemeral: true });
-      return;
-    }
+    const picked = await pickOne(
+      ctx as never,
+      tracks.map((track, i) => ({
+        label: track.name.slice(0, 100),
+        value: String(i),
+        description: track.uri.slice(0, 100),
+      })),
+      {
+        content: `Search: ${dto.query}`,
+        placeholder: t('search.placeholder', undefined, this.lang(guild)),
+        allowedUserId: author.id,
+      },
+    );
+    if (picked === null) return;
+    const track = tracks[Number(picked)]!;
     if (
-      this.music.queueOf(guildId).tracks.length >= NON_PREMIUM_QUEUE_CAP &&
-      !this.premium.isPremium(guildId, ix.user.id)
+      this.music.queueOf(guild.id).tracks.length >= NON_PREMIUM_QUEUE_CAP &&
+      !this.premium.isPremium(guild.id, author.id)
     ) {
-      await ix.reply({
-        content: t('error.premium.limit', undefined, this.premium.languageOf(guildId)),
-        ephemeral: true,
-      });
+      const limited = t('error.premium.limit', undefined, this.lang(guild));
+      if ('followUp' in ctx) await ctx.followUp({ content: limited, ephemeral: true });
+      else await ctx.reply(limited);
       return;
     }
-    const track = this.music.takeSearch(ix.user.id, Number(ix.values[0] ?? 0));
-    if (!track) {
-      await ix.reply({ content: 'Expired. Search again.', ephemeral: true });
-      return;
-    }
-    const pos = this.music.enqueue(guildId, { ...track, requesterId: ix.user.id });
-    void this.lavalink.playNow(guildId, [{ ...track, requesterId: ix.user.id }]);
-    await ix.update({
-      content:
-        pos === 0 ? `Now playing: ${trackLine(track)}` : `Queued #${pos}: ${trackLine(track)}`,
-      components: [],
-    });
+    const pos = this.music.enqueue(guild.id, { ...track, requesterId: author.id });
+    void this.lavalink.playNow(guild.id, [{ ...track, requesterId: author.id }]);
+    const done =
+      pos === 0 ? `Now playing: ${trackLine(track)}` : `Queued #${pos}: ${trackLine(track)}`;
+    if ('followUp' in ctx) await ctx.followUp({ content: done });
+    else await ctx.reply(done);
   }
 
   @Command({ name: 'lyric', description: 'Get lyrics', slash: true, prefix: true })

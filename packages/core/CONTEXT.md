@@ -21,6 +21,9 @@ Ubiquitous language. Glossary only. No implementation.
 - **Required permissions**: Discord permissions a caller must hold. Declared with `@RequirePermissions(...)`. Missing replies ephemeral and blocks.
 - **Required bot permissions**: Discord permissions the bot member must hold. Declared with `@RequireBotPermissions(...)`. Missing replies ephemeral and blocks.
 - **Required guild**: guild-only commands. Declared with `@RequireGuild()`. DM use replies ephemeral and blocks.
+- **Required owner**: owner-only commands. Declared with `@RequireOwner()`. Reads `owners` config, denies everyone when unset.
+- **Required voice**: caller must be in a voice channel. Declared with `@RequireVoice()`.
+- **Same voice**: caller must share the bot's voice channel. Declared with `@SameVoice()`.
 - **Prefix DTO fill**: positional map of prefix args into the DTO. Trailing words join into a final string field. Mentions coerce to ids.
 - **Sub-route**: a prefix arg split into route plus rest. Split via `splitSubroute()`.
 - **Sharding**: multi-process gateway split. Tuned via `shardFile` / `shardCount` / `respawn` in `Config`; booted via the `--shards` gate in `bootstrapApp()`, spawned with `runShards()`.

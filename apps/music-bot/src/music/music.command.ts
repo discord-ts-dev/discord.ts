@@ -1,5 +1,11 @@
 import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequireGuild } from '@discord.ts/core';
+import {
+  Cooldown,
+  RequireBotPermissions,
+  RequireGuild,
+  RequireVoice,
+  SameVoice,
+} from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import { paginate } from '@discord.ts/ux';
 import {
@@ -13,7 +19,8 @@ import { LavalinkService, lavalinkService } from './lavalink.service.js';
 import { MusicService, musicService } from './music.service.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
-import { chunk, formatTime, parseSeek } from './format.js';
+import { formatTime } from '@discord.ts/utils';
+import { chunk, parseSeek } from './format.js';
 import { NON_PREMIUM_QUEUE_CAP, trackLine, voiceChannelIdOf, type Ctx } from './music-helpers.js';
 
 @Injectable()
@@ -37,12 +44,10 @@ export class MusicCommand {
   @Command({ name: 'join', description: 'Join your voice channel', slash: true, prefix: true })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
+  @RequireVoice()
   async join(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
     const channelId = voiceChannelIdOf(ctx);
-    if (!guild || !channelId) {
-      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
-      return;
-    }
+    if (!guild || !channelId) return;
     const live = await this.lavalink.join(guild.id, channelId, ctx.channelId);
     await ctx.reply(
       live
@@ -64,6 +69,7 @@ export class MusicCommand {
   @Command({ name: 'play', description: 'Play a song or URL', slash: true, prefix: true })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
+  @SameVoice()
   async play(
     @Context() ctx: Ctx,
     @Guild() guild: DiscordGuild | null,
@@ -71,10 +77,6 @@ export class MusicCommand {
     @Options() dto: PlayDto,
   ): Promise<void> {
     if (!guild) return;
-    if (!voiceChannelIdOf(ctx)) {
-      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
-      return;
-    }
     if (this.capped(guild, author)) {
       await ctx.reply(t('error.premium.limit', undefined, this.lang(guild)));
       return;
@@ -94,6 +96,7 @@ export class MusicCommand {
   @Command({ name: 'playnext', description: 'Add a song to play next', slash: true, prefix: true })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
+  @SameVoice()
   async playnext(
     @Context() ctx: Ctx,
     @Guild() guild: DiscordGuild | null,
@@ -101,10 +104,6 @@ export class MusicCommand {
     @Options() dto: PlayDto,
   ): Promise<void> {
     if (!guild) return;
-    if (!voiceChannelIdOf(ctx)) {
-      await ctx.reply(t('error.voice.not_in_voice', undefined, this.lang(guild)));
-      return;
-    }
     if (this.capped(guild, author)) {
       await ctx.reply(t('error.premium.limit', undefined, this.lang(guild)));
       return;
@@ -117,6 +116,7 @@ export class MusicCommand {
 
   @Command({ name: 'pause', description: 'Pause playback', slash: true, prefix: true })
   @Cooldown(5)
+  @SameVoice()
   async pause(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
     if (!guild) return;
     this.music.queueOf(guild.id).paused = true;
@@ -126,6 +126,7 @@ export class MusicCommand {
 
   @Command({ name: 'resume', description: 'Resume playback', slash: true, prefix: true })
   @Cooldown(5)
+  @SameVoice()
   async resume(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
     if (!guild) return;
     this.music.queueOf(guild.id).paused = false;
@@ -135,6 +136,7 @@ export class MusicCommand {
 
   @Command({ name: 'skip', description: 'Skip current track', slash: true, prefix: true })
   @Cooldown(5)
+  @SameVoice()
   async skip(@Context() ctx: Ctx, @Guild() guild: DiscordGuild | null): Promise<void> {
     if (!guild) return;
     const next = this.music.skip(guild.id);
@@ -152,6 +154,7 @@ export class MusicCommand {
 
   @Command({ name: 'seek', description: 'Seek in current track', slash: true, prefix: true })
   @Cooldown(5)
+  @SameVoice()
   async seek(
     @Context() ctx: Ctx,
     @Guild() guild: DiscordGuild | null,
@@ -170,6 +173,7 @@ export class MusicCommand {
 
   @Command({ name: 'volume', description: 'Set volume 0-200', slash: true, prefix: true })
   @Cooldown(5)
+  @SameVoice()
   async volume(
     @Context() ctx: Ctx,
     @Guild() guild: DiscordGuild | null,

@@ -18,6 +18,8 @@ export interface DiscordModuleOptions {
   shardFile?: string;
   /** Respawn dead shards. Read by --shards gate. Default true. */
   respawn?: boolean;
+  /** Discord user ids allowed through `@RequireOwner()`. Also `DISCORD_OWNER_IDS` (comma-separated). */
+  owners?: string[];
   /** Native i18n. Presence enables loading `src/locales/<lang>/<namespace>.json`. */
   i18n?: I18nOptions;
 }

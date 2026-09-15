@@ -7,7 +7,9 @@ import { DiscordSyncService } from './discovery/discord-sync.service.js';
 import { BotPermissionsGuard } from './guards/bot-permissions.guard.js';
 import { CooldownGuard } from './guards/cooldown.guard.js';
 import { GuildGuard } from './guards/guild.guard.js';
+import { OwnerGuard } from './guards/owner.guard.js';
 import { PermissionsGuard } from './guards/permissions.guard.js';
+import { SameVoiceGuard, VoiceGuard } from './guards/voice.guard.js';
 import { initI18n } from '@discord.ts/i18n';
 
 export interface DiscordModuleAsyncOpts {
@@ -100,11 +102,15 @@ export async function createRuntime(
   const permissions = new PermissionsGuard();
   const botPermissions = new BotPermissionsGuard();
   const guild = new GuildGuard();
+  const owner = new OwnerGuard(options.owners ?? []);
   const guards = new Map<unknown, { canActivate(ctx: unknown): unknown }>([
     [CooldownGuard, cooldown as unknown as { canActivate(ctx: unknown): unknown }],
     [PermissionsGuard, permissions as unknown as { canActivate(ctx: unknown): unknown }],
     [BotPermissionsGuard, botPermissions as unknown as { canActivate(ctx: unknown): unknown }],
     [GuildGuard, guild as unknown as { canActivate(ctx: unknown): unknown }],
+    [OwnerGuard, owner as unknown as { canActivate(ctx: unknown): unknown }],
+    [VoiceGuard, new VoiceGuard() as unknown as { canActivate(ctx: unknown): unknown }],
+    [SameVoiceGuard, new SameVoiceGuard() as unknown as { canActivate(ctx: unknown): unknown }],
   ]);
   const instances: object[] = [...providers.map((P) => new (P as Type<object>)() as object)];
   discovery.init(instances);

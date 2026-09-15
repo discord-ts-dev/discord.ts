@@ -42,7 +42,6 @@ const DEFAULT_QUEUE: () => GuildQueue = () => ({
 @Injectable()
 export class MusicService {
   private readonly queues = new Map<string, GuildQueue>();
-  private readonly lastSearch = new Map<string, Track[]>();
   private readonly playlists = new Map<
     string,
     { name: string; tracks: Track[]; isPrivate: boolean }[]
@@ -91,15 +90,6 @@ export class MusicService {
     const q = this.queueOf(guildId);
     if (index < 1 || index > q.tracks.length) return null;
     return q.tracks.splice(index - 1, 1)[0] ?? null;
-  }
-
-  rememberSearch(userId: string, tracks: Track[]): void {
-    this.lastSearch.set(userId, tracks);
-  }
-
-  takeSearch(userId: string, index: number): Track | null {
-    const list = this.lastSearch.get(userId) ?? [];
-    return list[index] ?? null;
   }
 
   /** Lavalink trackStart mirror: adopt the live track as current. */

@@ -35,6 +35,10 @@ function envOverlay(): DiscordConfigInput {
   if (process.env.DISCORD_TOKEN) out.token = process.env.DISCORD_TOKEN;
   if (process.env.DISCORD_CLIENT_ID) out.clientId = process.env.DISCORD_CLIENT_ID;
   if (process.env.DISCORD_GUILD_ID) out.development = [process.env.DISCORD_GUILD_ID];
+  if (process.env.DISCORD_OWNER_IDS)
+    out.owners = process.env.DISCORD_OWNER_IDS.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
   if (process.env.SKIP_REGISTRATION !== undefined)
     out.skipRegistration = process.env.SKIP_REGISTRATION !== 'false';
   // ponytail: numeric SHARD_COUNT -> shardCount, 'auto' -> shards auto

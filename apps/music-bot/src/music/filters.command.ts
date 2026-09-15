@@ -5,7 +5,7 @@ import {
   Subcommand,
   createCommandGroupDecorator,
 } from '@discord.ts/common';
-import { Cooldown, RequireGuild } from '@discord.ts/core';
+import { Cooldown, RequireGuild, SameVoice } from '@discord.ts/core';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, Message } from 'discord.js';
 import { LavalinkService, lavalinkService } from './lavalink.service.js';
 import { MusicService, musicService } from './music.service.js';
@@ -17,6 +17,7 @@ type Ctx = ChatInputCommandInteraction | Message;
 @Injectable()
 @Filters({ prefix: true })
 @RequireGuild()
+@SameVoice()
 export class FiltersCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
   private readonly music: MusicService = musicService;
