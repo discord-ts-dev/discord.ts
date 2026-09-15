@@ -45,12 +45,14 @@ describe('@discord.ts/cli', () => {
   });
 
   test('--help and -h print usage and exit 0', async () => {
-    for (const flag of ['--help', '-h']) {
-      const { deps, out, exits } = harness();
-      await main(['bun', 'cli.js', flag], deps);
-      assert.equal(out.length, 1);
-      assert.deepEqual(exits, [0]);
-    }
+    await Promise.all(
+      ['--help', '-h'].map(async (flag) => {
+        const { deps, out, exits } = harness();
+        await main(['bun', 'cli.js', flag], deps);
+        assert.equal(out.length, 1);
+        assert.deepEqual(exits, [0]);
+      }),
+    );
   });
 
   test('unknown command reports and exits 1', async () => {
