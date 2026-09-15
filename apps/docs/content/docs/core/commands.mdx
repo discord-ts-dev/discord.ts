@@ -1,18 +1,19 @@
 ---
 title: Commands
-description: Slash, subcommand, group, and context menu. One handler per surface.
+description: Slash commands, subcommands, groups, and context menus.
 ---
 
-## SlashCommand
+## Command
 
 Declare a `/name` handler. Method-level only. The class stays plain `@Injectable()`.
 
 ```ts
-import { Injectable, SlashCommand, Context } from '@discord.ts/common';
+import { Injectable, Command, Context } from '@discord.ts/common';
+import type { ChatInputCommandInteraction } from 'discord.js';
 
 @Injectable()
 export class RollCommand {
-  @SlashCommand({ name: 'roll', description: 'Roll dice' })
+  @Command({ name: 'roll', description: 'Roll dice' })
   async handle(@Context() interaction: ChatInputCommandInteraction) {
     await interaction.reply('rolled');
   }
@@ -26,53 +27,49 @@ export class RollCommand {
 | `nsfw`                     | `boolean`                            | Age-restricted channel only.                     |
 | `defaultMemberPermissions` | `string \| number \| bigint \| null` | Caller permission floor.                         |
 | `contexts`                 | `InteractionContextType[]`           | Where the command shows.                         |
+| `dmPermission`             | `boolean`                            | Allow use in DMs.                                |
+| `nameLocalizations`        | `LocalizationMap`                    | Localized names.                                 |
+| `descriptionLocalizations` | `LocalizationMap`                    | Localized descriptions.                          |
 
-## Command (unified)
+## Localization
 
-One handler on slash and prefix. At least one of `slash` / `prefix` must be `true`.
+Metadata localizations come from two sources, merged per locale. Explicit maps win.
 
-```ts
-@Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
-async handle(@Context() ctx: CommandContext) {
-  await ctx.reply('pong');
-}
-```
+Catalog keys live in the `commands` namespace of `@discord.ts/i18n`:
 
-The raw `ChatInputCommandInteraction | Message` union still injects when the param
-type asks for it. Prefer `CommandContext`: one `reply`, one `user`, one
-`voiceChannelId`, `unwrap()` for surface-specific escapes.
+| Key                                                                        | Use                         |
+| -------------------------------------------------------------------------- | --------------------------- |
+| `commands:<name>.name` / `.description`                                    | Top-level command or group. |
+| `commands:<name>.subcommands.<sub>.name` / `.description`                  | Subcommand.                 |
+| `commands:<name>.groups.<group>.name` / `.description`                     | Subcommand group.           |
+| `commands:<name>.options.<option>.name` / `.description`                   | Option.                     |
+| `commands:<name>.subcommands.<sub>.options.<option>.name` / `.description` | Option of a subcommand.     |
 
-| Field     | Notes                                           |
-| --------- | ----------------------------------------------- |
-| `slash`   | Register as slash command.                      |
-| `prefix`  | Register as prefix command under the same name. |
-| `aliases` | Extra text triggers for the prefix surface.     |
+Only Discord locale codes are read (`en-US`, `id`, `ja`, ...). Locale dirs Discord does not
+recognize are skipped with one boot warning. Option and choice names can also carry explicit
+`nameLocalizations` / `descriptionLocalizations` maps on the decorator.
 
 ## Subcommand and group
 
 Children of a command or group. Make a group with the factory, then add `@Subcommand()` methods.
 
 ```ts
-import {
-  createCommandGroupDecorator,
-  Subcommand,
-  CommandContext,
-  Context,
-} from '@discord.ts/common';
+import { createCommandGroupDecorator, Subcommand, Context } from '@discord.ts/common';
+import type { ChatInputCommandInteraction } from 'discord.js';
 
 const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily quests' });
 
 @Injectable()
-@Quest({ prefix: true })
+@Quest()
 export class QuestCommand {
   @Subcommand({ name: 'rr', description: 'Reroll your quest' })
-  async reroll(@Context() ctx: CommandContext) {
-    await ctx.reply('Rerolled.');
+  async reroll(@Context() interaction: ChatInputCommandInteraction) {
+    await interaction.reply('Rerolled.');
   }
 }
 ```
 
-Group flags pick surfaces: `slash` defaults `true`, `prefix` defaults `false`. A method-level `@Quest({ subgroup })` nests via the parent chain. A `@Subcommand()` on a `@Command()` parent nests on every surface the parent enables. Discovery validates names, limits, and duplicates and throws one aggregated error before any REST call.
+A method-level `@Quest({ subgroup })` nests via the parent chain. Discovery validates names, limits, and duplicates and throws one aggregated error before any REST call.
 
 ## ContextMenu
 
@@ -89,3 +86,18 @@ async handle(@Context() interaction: MessageContextMenuCommandInteraction) {
 | ------ | -------------------------------------------- |
 | `name` | Display name.                                |
 | `type` | `ApplicationCommandType.User` or `.Message`. |
+
+## Migrating from prefix commands
+
+The prefix surface is removed. Map the old pieces:
+
+| Before                                    | After                                                   |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `@PrefixCommand({ name: 'echo' })`        | `@Command({ name: 'echo', description: '...' })`        |
+| `@PrefixArgs() args: string[]`            | `@Options() dto: Dto` with option decorators            |
+| `@Command({ slash: true, prefix: true })` | `@Command({ ... })` — every command is a slash command. |
+| `@SlashCommand({ ... })`                  | `@Command({ ... })`                                     |
+| `prefix` in `discord.config.ts`           | Delete it.                                              |
+| `CommandContext`                          | `ChatInputCommandInteraction` via `@Context()`.         |
+| Prefix aliases and sub-routes             | Slash choices and autocomplete.                         |
+| `setPrefix()` guild setting               | Gone; commands are `/name` everywhere.                  |

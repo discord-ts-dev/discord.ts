@@ -30,13 +30,6 @@ describe('paginate', () => {
     assert.equal(captured.edits.length, 1);
   });
 
-  test('single page replies on a prefix message', async () => {
-    const { target, captured } = fakeTarget({ message: true });
-    await paginate(target as never, [pages[0] as EmbedBuilder]);
-    assert.equal(captured.replies.length, 1);
-    assert.equal(captured.replies[0] && embedTitle(captured.replies[0]), 'Page 1');
-  });
-
   test('multi-page starts on page 1 and cycles with next/prev', async () => {
     const { target, captured } = fakeTarget({
       plan: (ids) => [ids[1] as string, ids[1] as string, ids[0] as string],
@@ -65,12 +58,6 @@ describe('paginate', () => {
     const { target, captured } = fakeTarget({ plan: () => ['discord-ts:confirm:yes:x'] });
     await paginate(target as never, pages);
     assert.deepEqual(captured.updates, []);
-  });
-
-  test('prefix message with multiple pages gets no fetchReply', async () => {
-    const { target, captured } = fakeTarget({ message: true, plan: () => [] });
-    await paginate(target as never, pages);
-    assert.equal((captured.replies[0] as { fetchReply?: boolean }).fetchReply, undefined);
   });
 
   test('answered interaction edits the initial page', async () => {

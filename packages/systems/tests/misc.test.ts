@@ -5,7 +5,6 @@ import {
   getSettings,
   isCommandEnabled,
   setCommandEnabled,
-  setPrefix,
 } from '../src/index.js';
 
 describe('help', () => {
@@ -21,11 +20,9 @@ describe('help', () => {
 });
 
 describe('guild settings', () => {
-  test('defaults, prefix, toggles', async () => {
+  test('defaults and toggles', async () => {
     const s = new MemoryStore();
     expect(await getSettings(s, 'g')).toEqual({});
-    await setPrefix(s, 'g', '!');
-    expect((await getSettings(s, 'g')).prefix).toBe('!');
     expect(await isCommandEnabled(s, 'g', 'Hunt')).toBe(true);
     await setCommandEnabled(s, 'g', 'hunt', false);
     expect(await isCommandEnabled(s, 'g', 'HUNT')).toBe(false);

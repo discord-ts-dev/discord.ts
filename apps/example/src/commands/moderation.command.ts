@@ -1,4 +1,4 @@
-import { Command, CommandContext, Context, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Injectable, Options } from '@discord.ts/common';
 import {
   Cooldown,
   RequireBotPermissions,
@@ -6,7 +6,7 @@ import {
   RequirePermissions,
 } from '@discord.ts/core';
 import { confirm, paginate } from '@discord.ts/ux';
-import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import { EmbedBuilder, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
 import type {
   ClearDto,
   TargetReasonDto,
@@ -34,9 +34,12 @@ import {
 @Injectable()
 @RequireGuild()
 export class ModerationCommand {
-  @Command({ name: 'warn', description: 'Warn a member', slash: true, prefix: true })
+  @Command({ name: 'warn', description: 'Warn a member' })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
-  async warn(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
+  async warn(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: TargetReasonDto,
+  ): Promise<void> {
     const guild = guildOf(ctx);
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user. Mention or id.');
@@ -52,11 +55,12 @@ export class ModerationCommand {
   @Command({
     name: 'warnings',
     description: 'List warnings for a member',
-    slash: true,
-    prefix: true,
   })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
-  async warnings(@Context() ctx: CommandContext, @Options() dto: WarningsDto): Promise<void> {
+  async warnings(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: WarningsDto,
+  ): Promise<void> {
     const guild = guildOf(ctx);
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
@@ -85,10 +89,13 @@ export class ModerationCommand {
     await paginate(ctx, pages);
   }
 
-  @Command({ name: 'kick', description: 'Kick a member', slash: true, prefix: true })
+  @Command({ name: 'kick', description: 'Kick a member' })
   @RequirePermissions(PermissionFlagsBits.KickMembers)
   @RequireBotPermissions(PermissionFlagsBits.KickMembers)
-  async kick(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
+  async kick(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: TargetReasonDto,
+  ): Promise<void> {
     const guild = guildOf(ctx);
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
@@ -108,11 +115,14 @@ export class ModerationCommand {
     auditAndLog(ctx, 'kick', userId, reason);
   }
 
-  @Command({ name: 'ban', description: 'Ban a member (asks confirm)', slash: true, prefix: true })
+  @Command({ name: 'ban', description: 'Ban a member (asks confirm)' })
   @RequirePermissions(PermissionFlagsBits.BanMembers)
   @RequireBotPermissions(PermissionFlagsBits.BanMembers)
   @Cooldown(3)
-  async ban(@Context() ctx: CommandContext, @Options() dto: TargetReasonDto): Promise<void> {
+  async ban(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: TargetReasonDto,
+  ): Promise<void> {
     const guild = guildOf(ctx);
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
@@ -135,10 +145,13 @@ export class ModerationCommand {
     auditAndLog(ctx, 'ban', userId, reason);
   }
 
-  @Command({ name: 'unban', description: 'Unban a user id', slash: true, prefix: true })
+  @Command({ name: 'unban', description: 'Unban a user id' })
   @RequirePermissions(PermissionFlagsBits.BanMembers)
   @RequireBotPermissions(PermissionFlagsBits.BanMembers)
-  async unban(@Context() ctx: CommandContext, @Options() dto: UnbanDto): Promise<void> {
+  async unban(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: UnbanDto,
+  ): Promise<void> {
     const guild = guildOf(ctx);
     const reason = dto.reason ?? 'No reason';
     try {
@@ -153,12 +166,13 @@ export class ModerationCommand {
   @Command({
     name: 'timeout',
     description: 'Timeout a member in minutes',
-    slash: true,
-    prefix: true,
   })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
   @RequireBotPermissions(PermissionFlagsBits.ModerateMembers)
-  async timeout(@Context() ctx: CommandContext, @Options() dto: TimeoutDto): Promise<void> {
+  async timeout(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: TimeoutDto,
+  ): Promise<void> {
     const guild = guildOf(ctx);
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
@@ -180,13 +194,14 @@ export class ModerationCommand {
   @Command({
     name: 'clear',
     description: 'Bulk delete messages (asks confirm)',
-    slash: true,
-    prefix: true,
   })
   @RequirePermissions(PermissionFlagsBits.ManageMessages)
   @RequireBotPermissions(PermissionFlagsBits.ManageMessages)
   @Cooldown(5)
-  async clear(@Context() ctx: CommandContext, @Options() dto: ClearDto): Promise<void> {
+  async clear(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: ClearDto,
+  ): Promise<void> {
     const ok = await confirm(ctx, {
       embeds: [modEmbed('clear?', 0x3498db).setDescription(`Delete ${dto.count} messages?`)],
     });
@@ -207,9 +222,9 @@ export class ModerationCommand {
     }
   }
 
-  @Command({ name: 'logs', description: 'Recent moderation audit', slash: true, prefix: true })
+  @Command({ name: 'logs', description: 'Recent moderation audit' })
   @RequirePermissions(PermissionFlagsBits.ModerateMembers)
-  async logs(@Context() ctx: CommandContext): Promise<void> {
+  async logs(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const guild = guildOf(ctx);
     const list = audit
       .filter((a) => a.guildId === guild.id)

@@ -2,7 +2,7 @@ import type { ColorResolvable } from 'discord.js';
 
 // ponytail: copied inventory from Shiroko config.ts (emoji/color/icon set).
 export const botConfig = {
-  defaultLanguage: 'EnglishUS',
+  defaultLanguage: 'en-US',
   deleteErrorAfter: '5s',
   emoji: {
     done: '✅',

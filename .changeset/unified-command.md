@@ -3,4 +3,4 @@
 '@discord.ts/core': minor
 ---
 
-Add unified Command decorator, group JSON, option extras, and boot validator
+Add the `@Command` decorator, group JSON, option extras, and boot validator

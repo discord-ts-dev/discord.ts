@@ -10,11 +10,9 @@ export default defineConfig({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildModeration,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
   ],
   development: [],
   skipRegistration: true,
-  prefix: '!',
   // ponytail: sharding is opt-in. `bun src/main.ts --shards` reads these.
   shardFile: './src/main.ts',
   respawn: true,

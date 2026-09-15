@@ -18,7 +18,7 @@ export class PremiumScopeDto {
 export class LanguageDto {
   @StringOption({
     name: 'lang',
-    description: 'e.g. EnglishUS, Vietnamese, Japanese',
+    description: 'e.g. en-US, id, ja',
     required: false,
   })
   lang?: string;

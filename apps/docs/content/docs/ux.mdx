@@ -1,9 +1,9 @@
 ---
 title: UX
-description: Confirm dialogs, embed pagers, one error style. Dual surface.
+description: Confirm dialogs, embed pagers, one error style.
 ---
 
-`@discord.ts/ux`. Works on interactions and prefix messages. Detects surface via `isMessage()`.
+`@discord.ts/ux`. Works on any repliable interaction: command, button, or select.
 
 ## Confirm
 
@@ -18,7 +18,7 @@ if (ok) await interaction.followUp('banned');
 
 | Arg         | Default | Notes                                |
 | ----------- | ------- | ------------------------------------ |
-| `target`    | —       | Interaction or prefix message.       |
+| `target`    | —       | Repliable interaction.               |
 | `question`  | —       | `string` or `{ content?, embeds? }`. |
 | `timeoutMs` | `15000` | Collector lifetime.                  |
 
@@ -36,7 +36,7 @@ await paginate(interaction, [page1, page2, page3], 60_000);
 
 | Arg         | Default | Notes                                 |
 | ----------- | ------- | ------------------------------------- |
-| `target`    | —       | Interaction or prefix message.        |
+| `target`    | —       | Repliable interaction.                |
 | `pages`     | —       | `EmbedBuilder[]`. Empty returns void. |
 | `timeoutMs` | `60000` | Collector lifetime.                   |
 

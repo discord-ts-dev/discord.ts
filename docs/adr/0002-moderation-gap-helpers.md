@@ -2,6 +2,9 @@
 
 Date: 2026-09-14
 
+Status: accepted. The prefix DTO and dual-surface parts are superseded by
+ADR 0008; the bot guard and example-side helpers still hold.
+
 ## Context
 
 The moderation example needed ten `discord.js` features with no OOP/DI/decorator

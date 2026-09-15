@@ -1,18 +1,19 @@
 import { SetMetadata } from '../di.js';
+import type { LocalizationMap } from 'discord.js';
 import { COMMAND_GROUP_METADATA, SUBCOMMAND_METADATA } from '../constants.js';
 
 export interface CommandGroupMeta {
   name: string;
   description: string;
-  /** Register member subcommands as slash subs. Default true. */
-  slash?: boolean;
-  /** Register member subcommands as prefix sub-routes. Default false. */
-  prefix?: boolean;
+  nameLocalizations?: LocalizationMap;
+  descriptionLocalizations?: LocalizationMap;
 }
 
 export interface SubcommandMeta {
   name: string;
   description: string;
+  nameLocalizations?: LocalizationMap;
+  descriptionLocalizations?: LocalizationMap;
 }
 
 // Top-level group: @MyGroup() on class. Sub-group: @MyGroup({ subgroup }) on method is handled by discovery via parent chain.

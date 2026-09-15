@@ -6,21 +6,20 @@ description: Pure helpers. No client, no framework deps.
 `@discord.ts/utils`. Zero framework deps. Pure string checks.
 
 ```ts
-import { parseMentionId, userIdOf, isSnowflake, isMessage } from '@discord.ts/utils';
+import { parseMentionId, isSnowflake, userIdOf } from '@discord.ts/utils';
 
 parseMentionId('<@123>'); // '123'
 parseMentionId('<@&456>'); // role id
 parseMentionId('<#789>'); // channel id
 ```
 
-| Function              | Input                                             | Output                                           |
-| --------------------- | ------------------------------------------------- | ------------------------------------------------ |
-| `parseMentionId(raw)` | mention or raw digits                             | id or `undefined`                                |
-| `userIdOf(raw)`       | slash `User` object or prefix mention / id string | id or `undefined`                                |
-| `isSnowflake(id)`     | string                                            | `true` for strict 17–20 digits                   |
-| `isMessage(target)`   | unknown                                           | `true` for prefix `Message` vs slash interaction |
+| Function              | Input                                | Output                         |
+| --------------------- | ------------------------------------ | ------------------------------ |
+| `parseMentionId(raw)` | mention or raw digits                | id or `undefined`              |
+| `userIdOf(raw)`       | `User` object or mention / id string | id or `undefined`              |
+| `isSnowflake(id)`     | string                               | `true` for strict 17–20 digits |
 
-Use `isSnowflake()` when a real Discord id shape is required. `parseMentionId()` is lenient on length. `isMessage()` checks for `content` + `author` keys, which is how `ux` picks reply vs `editReply` paths.
+Use `isSnowflake()` when a real Discord id shape is required. `parseMentionId()` is lenient on length.
 
 ## Amounts
 

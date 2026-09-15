@@ -6,7 +6,7 @@ description: Type-safe slash options with DTOs. Required check, class-validator,
 ## Context and Options
 
 ```ts
-@SlashCommand({ name: 'roll', description: 'Roll dice' })
+@Command({ name: 'roll', description: 'Roll dice' })
 async handle(
   @Context() interaction: ChatInputCommandInteraction,
   @Options() dto: RollDto,
@@ -15,11 +15,10 @@ async handle(
 }
 ```
 
-| Param           | Use                                                                                       |
-| --------------- | ----------------------------------------------------------------------------------------- |
-| `@Context()`    | The `CommandContext` wrapper for the current call (raw interaction/message also injects). |
-| `@Options()`    | Validated slash-options DTO.                                                              |
-| `@PrefixArgs()` | Raw `string[]` for prefix calls. See prefix page.                                         |
+| Param        | Use                                                                   |
+| ------------ | --------------------------------------------------------------------- |
+| `@Context()` | The current `ChatInputCommandInteraction` (or component interaction). |
+| `@Options()` | Validated slash-options DTO.                                          |
 
 ## DTO fields
 
@@ -60,16 +59,16 @@ export class RollDto {
 | `@MentionableOption()` | mentionable |
 | `@AttachmentOption()`  | attachment  |
 
-Each field accepts `name`, `description`, `required`, plus `autocomplete`, `choices`, `minValue` / `maxValue`, `minLength` / `maxLength`, and `channelTypes` where they apply. `applyOptions()` maps the DTO to a `SlashCommandBuilder` automatically.
+Each field accepts `name`, `description`, `required`, plus `autocomplete`, `choices`, `minValue` / `maxValue`, `minLength` / `maxLength`, and `channelTypes` where they apply. Fields and choices also accept explicit `nameLocalizations` / `descriptionLocalizations`. Catalog keys for option metadata are documented on the commands page. `applyOptions()` maps the DTO to a `SlashCommandBuilder` automatically.
 
 ## Validation
 
-Required fields plus `class-validator` rules plus `@UsePipes()` run on each call. Fail replies ephemeral and blocks the handler. Prefix calls fill the same DTO positionally: trailing words join into the final string field, mentions coerce to ids. DTOs with no `class-validator` decorators pass validation untouched.
+Required fields plus `class-validator` rules plus `@UsePipes()` run on each call. Fail replies ephemeral and blocks the handler. DTOs with no `class-validator` decorators pass validation untouched.
 
 ```ts
 import { UsePipes } from '@discord.ts/common';
 
-@SlashCommand({ name: 'ban', description: 'Ban a member' })
+@Command({ name: 'ban', description: 'Ban a member' })
 @UsePipes(/* your ValidationPipe */)
-async handle(@Context() ctx: CommandContext, @Options() dto: BanDto) {}
+async handle(@Context() interaction: ChatInputCommandInteraction, @Options() dto: BanDto) {}
 ```

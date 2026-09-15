@@ -1,0 +1,141 @@
+{
+  "autoplay": {
+    "description": "Aktifkan/nonaktifkan mode putar otomatis"
+  },
+  "clearqueue": {
+    "description": "Bersihkan antrian"
+  },
+  "join": {
+    "description": "Bergabung ke saluran suara"
+  },
+  "leave": {
+    "description": "Tinggalkan saluran suara"
+  },
+  "loop": {
+    "description": "Ulangi lagu saat ini atau antrian"
+  },
+  "lyric": {
+    "description": "Dapatkan lirik lagu"
+  },
+  "nowplaying": {
+    "description": "Tampilkan lagu yang sedang diputar"
+  },
+  "pause": {
+    "description": "Jeda lagu saat ini"
+  },
+  "playnext": {
+    "description": "Tambahkan lagu untuk diputar selanjutnya dalam antrian"
+  },
+  "play": {
+    "description": "Putar lagu dari YouTube, Spotify, SoundCloud atau tautan"
+  },
+  "queue": {
+    "description": "Tampilkan antrian saat ini"
+  },
+  "remove": {
+    "description": "Hapus lagu dari antrian"
+  },
+  "replay": {
+    "description": "Putar ulang lagu saat ini"
+  },
+  "resume": {
+    "description": "Lanjutkan lagu saat ini"
+  },
+  "search": {
+    "description": "Cari lagu"
+  },
+  "seek": {
+    "description": "Lompat ke waktu tertentu dalam lagu"
+  },
+  "shuffle": {
+    "description": "Acak antrian"
+  },
+  "skip": {
+    "description": "Lewati lagu saat ini atau ke lagu tertentu dalam antrian"
+  },
+  "volume": {
+    "description": "Atur volume pemain"
+  },
+  "help": {
+    "description": "Tampilkan menu bantuan"
+  },
+  "ping": {
+    "description": "Tampilkan latensi bot"
+  },
+  "premium": {
+    "description": "Tampilkan kemajuan premium"
+  },
+  "language": {
+    "description": "Lihat/edit bahasa bot"
+  },
+  "data": {
+    "description": "Lihat data pengguna"
+  },
+  "eval": {
+    "description": "Jalankan kode javascript"
+  },
+  "register": {
+    "description": "Daftar untuk pengguna/guild"
+  },
+  "restart": {
+    "description": "Mulai ulang bot"
+  },
+  "playlist-add": {
+    "description": "Tambahkan lagu ke playlist"
+  },
+  "playlist-create": {
+    "description": "Buat playlist"
+  },
+  "playlist-delete": {
+    "description": "Hapus playlist"
+  },
+  "playlist-load": {
+    "description": "Gunakan playlist"
+  },
+  "playlist": {
+    "description": "Tampilkan playlist"
+  },
+  "playlist-remove": {
+    "description": "Hapus lagu dari playlist"
+  },
+  "playlist-steal": {
+    "description": "Curi playlist"
+  },
+  "filters": {
+    "subcommands": {
+      "8d": {
+        "description": "Aktifkan/nonaktifkan filter 8d"
+      },
+      "bassboost": {
+        "description": "Aktifkan/nonaktifkan filter bassboost"
+      },
+      "karaoke": {
+        "description": "Aktifkan/nonaktifkan filter karaoke"
+      },
+      "lowpass": {
+        "description": "Aktifkan/nonaktifkan filter lowpass"
+      },
+      "nightcore": {
+        "description": "Aktifkan/nonaktifkan filter nightcore"
+      },
+      "pitch": {
+        "description": "Aktifkan/nonaktifkan filter pitch"
+      },
+      "reset": {
+        "description": "Reset filter yang aktif"
+      },
+      "rotation": {
+        "description": "Aktifkan/nonaktifkan filter rotation"
+      },
+      "speed": {
+        "description": "Ubah kecepatan lagu"
+      },
+      "tremolo": {
+        "description": "Aktifkan/nonaktifkan filter tremolo"
+      },
+      "vibrato": {
+        "description": "Aktifkan/nonaktifkan filter vibrato"
+      }
+    }
+  }
+}
