@@ -2,8 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "types": ["bun", "node"]
+    "allowImportingTsExtensions": true
   },
   "include": [
     "packages/*/tests/**/*.ts",

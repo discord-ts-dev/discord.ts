@@ -1,6 +1,4 @@
-// ponytail: stdlib fetch only, no @actions/* deps.
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+// ponytail: Bun.file and Bun fetch only, no @actions/* deps.
 
 const API = 'https://api.github.com';
 
@@ -50,7 +48,7 @@ async function prFiles(owner, repo, num, token) {
 async function main() {
   const token = process.env.GITHUB_TOKEN;
   const [owner, repo] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
-  const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+  const event = await Bun.file(process.env.GITHUB_EVENT_PATH).json();
   const num = event.issue?.number ?? event.pull_request?.number;
   const isPR = event.pull_request !== undefined;
   const files = isPR ? await prFiles(owner, repo, num, token) : [];
@@ -61,6 +59,6 @@ async function main() {
   if (!res.ok) throw new Error(`add labels failed: ${res.status}`);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   await main();
 }

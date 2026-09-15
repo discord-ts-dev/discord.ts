@@ -1,17 +1,13 @@
 // ponytail: regex runner, real AST codemod only if a refactor needs it.
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+// ponytail: node:path join stays, Glob returns relative paths.
 import { join } from 'node:path';
 
 type Transform = (source: string, path: string, args: Record<string, string>) => string | null;
 
-function walk(dir: string, out: string[] = []): string[] {
-  for (const e of readdirSync(dir)) {
-    if (e === 'node_modules' || e === 'dist' || e.startsWith('.')) continue;
-    const p = join(dir, e);
-    if (statSync(p).isDirectory()) walk(p, out);
-    else if (p.endsWith('.ts')) out.push(p);
-  }
-  return out;
+function walk(dir: string): string[] {
+  return [...new Bun.Glob('**/*.ts').scanSync({ cwd: dir })]
+    .filter((rel) => !rel.split('/').some((s) => s === 'node_modules' || s === 'dist'))
+    .map((rel) => join(dir, rel));
 }
 
 function parseArgs(rest: string[]): Record<string, string> {
@@ -29,7 +25,7 @@ function selfCheck(): void {
   if (!files.some((f) => f.endsWith('run.ts'))) throw new Error('codemod runner missing');
 }
 
-const [name, dir, ...rest] = process.argv.slice(2);
+const [name, dir, ...rest] = Bun.argv.slice(2);
 const args = parseArgs(rest);
 if (!name || !dir) {
   console.error('usage: bun run codemod <name> <dir> [--write] [--from X --to Y]');
@@ -40,13 +36,13 @@ const codemodModule = (await import(`./${name}.ts`)) as { transform: Transform }
 const write = rest.includes('--write');
 let changed = 0;
 for (const file of walk(dir)) {
-  const src = readFileSync(file, 'utf8');
+  const src = await Bun.file(file).text();
   const next = codemodModule.transform(src, file, args);
   if (next !== null && next !== src) {
     changed++;
     // ponytail: warn level, no-console allows warn/error only
     console.warn(`${write ? 'wrote' : 'would change'}: ${file}`);
-    if (write) writeFileSync(file, next);
+    if (write) await Bun.write(file, next);
   }
 }
 console.warn(`${changed} file(s) ${write ? 'updated' : 'need update'} by ${name}`);

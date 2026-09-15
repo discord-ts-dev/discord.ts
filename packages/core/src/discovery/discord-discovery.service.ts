@@ -1,5 +1,4 @@
 import { Client, ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
-import { styleText } from 'node:util';
 import {
   AUTOCOMPLETE_METADATA,
   BUTTON_METADATA,
@@ -32,6 +31,10 @@ import type {
   SelectEntry,
   SlashEntry,
 } from './handler.types.js';
+
+// ponytail: Bun.color instead of node:util styleText, one reset code.
+const paint = (name: string, text: string): string =>
+  `${Bun.color(name, 'ansi') ?? ''}${text}\x1b[0m`;
 
 // Standalone scan: instances -> methods -> metadata. No Nest dep.
 // Routing lives in DiscordRoutingService; this service owns scan state, JSON, login.
@@ -153,20 +156,20 @@ export class DiscordDiscoveryService {
     for (const s of this.slash) {
       const name = s.sub ? `/${s.top} ${s.sub}` : `/${s.top}`;
       this.logger.route(
-        `Slash ${styleText('green', name)} -> ${s.instance.constructor.name}.${s.method}`,
+        `Slash ${paint('green', name)} -> ${s.instance.constructor.name}.${s.method}`,
       );
     }
     for (const m of this.menus)
       this.logger.route(
-        `Menu ${styleText('green', m.name)} -> ${m.instance.constructor.name}.${m.method}`,
+        `Menu ${paint('green', m.name)} -> ${m.instance.constructor.name}.${m.method}`,
       );
     for (const p of this.prefix)
       this.logger.route(
-        `Prefix ${styleText('green', `!${p.name}`)} -> ${p.instance.constructor.name}.${p.method}`,
+        `Prefix ${paint('green', `!${p.name}`)} -> ${p.instance.constructor.name}.${p.method}`,
       );
     for (const e of this.events)
       this.logger.route(
-        `Event ${styleText('yellow', e.event)} -> ${e.instance.constructor.name}.${e.method}`,
+        `Event ${paint('yellow', e.event)} -> ${e.instance.constructor.name}.${e.method}`,
       );
     this.logger.log(
       `Discovered ${this.slash.length} slash, ${this.menus.length} menus, ${this.buttons.length} buttons, ${this.selects.length} selects, ${this.modals.length} modals, ${this.events.length} events, ${this.prefix.length} prefix`,
