@@ -27,6 +27,11 @@ describe('templates', () => {
       expect(template.name.length).toBeGreaterThan(0);
     }
   });
+
+  test('grid layouts demand exactly four texts', async () => {
+    expect(await renderMeme('grid', ['a', 'b', 'c'])).toBeNull();
+    expect(await renderMeme('grid', ['a', 'b', 'c', 'd'])).not.toBeNull();
+  });
 });
 
 describe('renderMeme', () => {

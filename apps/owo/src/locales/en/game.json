@@ -335,6 +335,81 @@
   "memegen": {
     "fail": "Could not draw that meme."
   },
+  "upgrade": {
+    "maxed": "Your hunting luck is maxed out.",
+    "fail": "You need {cost} pawcoins for the next upgrade. Balance: {balance}.",
+    "done": "Upgraded to level {level}. Hunt success: {chance}%."
+  },
+  "sacrifice": {
+    "fail": "You have none of that animal to sacrifice.",
+    "done": "Sacrificed {count} {animal} ({rarity}) for **{xp}** XP."
+  },
+  "autohunt": {
+    "title": "Autohunt",
+    "status": "Charges: **{charges}**\nNext charge in ~{next} min.",
+    "price": "One charge costs {price} pawcoins.",
+    "fail": "You cannot afford that many charges.",
+    "bought": "You now have **{charges}** autohunt charges."
+  },
+  "beehive": {
+    "title": "Beehive",
+    "status": "Bees: **{bees}**\nHoney: **{honey}** / {cap}",
+    "rates": "A bee costs {price} pawcoins, makes {rate} honey/hour, honey sells for {honey} each.",
+    "fail": "You need {price} pawcoins for another bee.",
+    "bought": "You now have **{bees}** bee(s).",
+    "collected": "Collected {collected} honey. Stored: {honey}.",
+    "sold": "Sold {collected} honey for **{coins}** pawcoins.",
+    "empty": "No honey to sell. Collect first."
+  },
+  "trade": {
+    "bad-target": "Pick someone else to trade with.",
+    "no-item": "You do not own that many.",
+    "offer": "<@{from}> offers {count} x **{item}** to <@{to}>.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "expired": "That offer expired.",
+    "not-yours": "This offer is not for you.",
+    "done": "Trade done: {count} x **{item}** moved from <@{from}> to <@{to}>.",
+    "declined": "<@{user}> declined the offer."
+  },
+  "giveaway": {
+    "title": "Giveaway",
+    "body": "**{prize}**\n{winners} winner(s), ends in {minutes} min. Hosted by <@{host}>.",
+    "enter": "Enter",
+    "entered": "You are in! Entries: {entries}.",
+    "already": "You already entered.",
+    "expired": "That giveaway is over.",
+    "ended": "Giveaway over: **{prize}** goes to {winners} ({entries} entries). Hosted by <@{host}>.",
+    "no-winners": "nobody (no entries)"
+  },
+  "emote": {
+    "needs-target": "That emote needs a target user.",
+    "unknown": "Unknown emote.",
+    "target": "<@{from}> {verb} <@{to}> {emoji}",
+    "self": "<@{from}> {verb} {emoji}"
+  },
+  "define": {
+    "title": "Definition: {word}",
+    "fail": "I could not find that word."
+  },
+  "translate": {
+    "title": "{from} -> {to}",
+    "fail": "Translation failed. Try again later."
+  },
+  "captcha": {
+    "set": "New members will be asked to verify for {role}.",
+    "unset": "Verification is not configured here.",
+    "dm": "Welcome! Press the button to verify and get access.",
+    "button": "Verify",
+    "verified": "Verified. Welcome in!",
+    "fail": "Verification failed. Ask an admin."
+  },
+  "broadcast": {
+    "set": "Announcements will post in <#{channel}>.",
+    "announced": "Announced in {count} server(s).",
+    "gave": "Gave {amount} pawcoins to {count} user(s).",
+    "dmed": "DMed {count} user(s)."
+  },
   "reset": {
     "confirm": "Wipe {what} for {user}?",
     "done": "Wiped {what} for {user}.",

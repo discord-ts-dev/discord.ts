@@ -2,12 +2,10 @@ import { defineConfig } from '@discord.ts/core';
 import { GatewayIntentBits } from 'discord.js';
 
 export default defineConfig({
-  // ponytail: MessageContent is privileged (dev portal). Uncomment both
-  // intents to enable the guild word filter (/censor). The listener no-ops
-  // without MessageContent, so the bot boots either way.
-  intents: [
-    GatewayIntentBits.Guilds /* GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent */,
-  ],
+  // ponytail: GuildMembers (join verification) and MessageContent (word
+  // filter) both need portal toggles; asking for them without the toggle
+  // fails login, so they stay commented. Enable in the portal, then here.
+  intents: [GatewayIntentBits.Guilds],
   development: [],
   // ponytail: deploy separately, like apps/example. `bun run deploy`.
   skipRegistration: true,

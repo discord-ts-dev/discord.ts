@@ -129,3 +129,36 @@ export async function rulesOf(store: Store, guildId: string): Promise<string | n
 export async function setRules(store: Store, guildId: string, text: string): Promise<void> {
   await store.set(rulesKey(guildId), text);
 }
+
+// --- broadcast ---
+
+// ponytail: whole-array write per change. One write per guild setup, not per
+// message; a SQL index replaces this when guilds number in the thousands.
+const announceKey = (guildId: string) => `announce:${guildId}`;
+const ANNOUNCE_ALL = 'announce:all';
+
+export async function announceChannelOf(store: Store, guildId: string): Promise<string | null> {
+  return store.get(announceKey(guildId));
+}
+
+export async function setAnnounceChannel(
+  store: Store,
+  guildId: string,
+  channelId: string | null,
+): Promise<void> {
+  if (channelId === null) {
+    await store.del(announceKey(guildId));
+    const guilds = (await announceGuilds(store)).filter((id) => id !== guildId);
+    await store.set(ANNOUNCE_ALL, JSON.stringify(guilds));
+    return;
+  }
+  await store.set(announceKey(guildId), channelId);
+  const guilds = new Set(await announceGuilds(store));
+  guilds.add(guildId);
+  await store.set(ANNOUNCE_ALL, JSON.stringify([...guilds]));
+}
+
+export async function announceGuilds(store: Store): Promise<string[]> {
+  const raw = await store.get(ANNOUNCE_ALL);
+  return raw ? (JSON.parse(raw) as string[]) : [];
+}

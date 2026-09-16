@@ -13,7 +13,7 @@ import { store as appStore } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { denyInteraction } from './deny.js';
 
-/** Commands a guild may turn off. Kept in sync with the command classes and `/help`. */
+/** Player-facing commands a guild may turn off with /disable. Admin and owner commands are not toggleable. */
 export const TOGGLEABLE = [
   'hunt',
   'zoo',
@@ -56,6 +56,14 @@ export const TOGGLEABLE = [
   'patreon',
   'emoji',
   'memegen',
+  'sacrifice',
+  'upgrade',
+  'autohunt',
+  'beehive',
+  'trade',
+  'emote',
+  'define',
+  'translate',
 ] as const;
 
 /**

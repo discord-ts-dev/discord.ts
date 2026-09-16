@@ -9,6 +9,7 @@ import { RARITIES } from '../game/roster.js';
 import { pickAnimal, rollCatch } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
+import { huntChance, upgradeLevel } from '../game/upgrades.js';
 import { addAnimal } from '../game/zoo.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
 
@@ -18,7 +19,8 @@ export class HuntCommand {
   @Command({ name: 'hunt', description: 'Catch a wild animal for your zoo' })
   @Cooldown(GAME.huntCooldownSeconds)
   async hunt(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
-    if (!rollCatch(GAME.catchChance)) {
+    const level = await upgradeLevel(store, ctx.user.id);
+    if (!rollCatch(huntChance(GAME.catchChance, level))) {
       await ctx.reply(tt(ctx, 'game:hunt.escaped'));
       return;
     }

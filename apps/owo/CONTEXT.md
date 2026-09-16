@@ -83,3 +83,23 @@ _Avoid_: gear, sword
 **Premium**:
 Store-backed tiers (free, supporter, patron) granting daily and shop perks. Shown and granted as `/patreon`.
 _Avoid_: VIP, subscription
+
+**Trade**:
+A button-accepted offer of items between two users. Expires unclaimed.
+_Avoid_: swap, exchange
+
+**Giveaway**:
+A timed prize draw. Users enter with a button; a sweep task draws unique winners.
+_Avoid_: raffle, contest
+
+**Beehive**:
+A passive honey economy: bees produce over time, capped per bee, sold for pawcoins.
+_Avoid_: farm, apiary
+
+**Autohunt**:
+Bought charges that hunt on a timer. Same odds as manual hunting.
+_Avoid_: idle bot, macro
+
+**Captcha**:
+Join verification: a DM button that grants the configured role.
+_Avoid_: gate, verify
