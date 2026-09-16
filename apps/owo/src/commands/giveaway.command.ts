@@ -10,7 +10,7 @@ import {
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { COLORS } from '../game/config.js';
 import { enterGiveaway, startGiveaway } from '../game/giveaway.js';
 import { store } from '../game/store.js';

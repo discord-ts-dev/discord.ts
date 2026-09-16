@@ -2,7 +2,7 @@ import { Command, Context, Injectable, Options } from '@discord.ts/common';
 import { RequireGuild, RequirePermissions } from '@discord.ts/core';
 import { userIdOf } from '@discord.ts/utils';
 import { MessageFlags, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { isPaused, setPaused, warnUser, warningsOf } from '../game/warns.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';

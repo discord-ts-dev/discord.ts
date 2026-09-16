@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import { initI18n } from '@discord.ts/i18n';
+import { MessageFlags } from 'discord.js';
 import { BannedGuard } from '../src/guards/player.guard.js';
 import { banOf, banUser, bans, unbanUser } from '../src/game/bans.js';
 import { FileStore } from '../src/game/store.js';
@@ -47,6 +48,6 @@ describe('BannedGuard', () => {
     );
     expect(can).toBe(false);
     expect(replies[0]?.['content']).toContain('spam');
-    expect(replies[0]?.['ephemeral']).toBe(true);
+    expect(replies[0]?.['flags']).toBe(MessageFlags.Ephemeral);
   });
 });

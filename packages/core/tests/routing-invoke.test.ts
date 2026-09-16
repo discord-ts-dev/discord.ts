@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
+import { MessageFlags } from 'discord.js';
 import { IsInt } from 'class-validator';
 import { PARAM_OPTIONS_METADATA, StringOption, UseGuards, UsePipes } from '@discord.ts/common';
 import type { Handler } from '../src/discovery/handler.types.js';
@@ -63,7 +64,7 @@ describe('DiscordRoutingService pipes and guards', () => {
     await invokeWith(h, handler, interaction);
     assert.deepEqual(h.calls, []);
     assert.match((replies[0] as { content: string }).content, /Missing required option "q"/);
-    assert.equal((replies[0] as { ephemeral?: boolean }).ephemeral, true);
+    assert.equal((replies[0] as { flags?: number }).flags, MessageFlags.Ephemeral);
   });
 
   test('blocks on class-validator failures', async () => {
@@ -82,7 +83,7 @@ describe('DiscordRoutingService pipes and guards', () => {
     await invokeWith(h, handler, interaction);
     assert.deepEqual(h.calls, []);
     assert.match((replies[0] as { content: string }).content, /integer/);
-    assert.equal((replies[0] as { ephemeral?: boolean }).ephemeral, true);
+    assert.equal((replies[0] as { flags?: number }).flags, MessageFlags.Ephemeral);
   });
 
   test('lets plain DTOs without validator decorators through', async () => {

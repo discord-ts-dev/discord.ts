@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
+import { MessageFlags } from 'discord.js';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { RequireGuild } from '../src/guards/guards.decorator.js';
 import { GuildGuard } from '../src/guards/guild.guard.js';
@@ -38,6 +39,6 @@ describe('RequireGuild', () => {
     );
     assert.equal(await guard.canActivate(outside), false);
     assert.match((seen[0] as { content: string }).content, /server/);
-    assert.equal((seen[0] as { ephemeral: boolean }).ephemeral, true);
+    assert.equal((seen[0] as { flags: number }).flags, MessageFlags.Ephemeral);
   });
 });

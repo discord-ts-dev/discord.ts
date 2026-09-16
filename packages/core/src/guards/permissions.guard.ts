@@ -1,4 +1,5 @@
 import { REQUIRED_PERMISSIONS_METADATA, type CanActivate } from '@discord.ts/common';
+import { replyEphemeral, type EphemeralTarget } from '@discord.ts/ux';
 import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
@@ -16,7 +17,7 @@ export class PermissionsGuard implements CanActivate {
         | undefined) ??
       [];
     if (!required.length) return true;
-    const ix = context.getArgByIndex<Record<string, unknown>>(0);
+    const ix = context.getArgByIndex<Record<string, unknown> & EphemeralTarget>(0);
     const perms =
       (ix['memberPermissions'] as { has(p: unknown): boolean } | null | undefined) ??
       (ix['member'] as { permissions?: { has(p: unknown): boolean } } | null | undefined)
@@ -24,16 +25,7 @@ export class PermissionsGuard implements CanActivate {
     const missing = required.filter((p) => !perms || !perms.has(p));
     if (!missing.length) return true;
     const names = new PermissionsBitField(missing).toArray().join(', ');
-    try {
-      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
-      if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
-        await (reply as (m: unknown) => Promise<unknown>).call(ix, {
-          content: `Missing permissions: ${names || 'unknown'}.`,
-          ephemeral: true,
-        });
-    } catch {
-      // ignore, handler already blocked
-    }
+    await replyEphemeral(ix, `Missing permissions: ${names || 'unknown'}.`);
     return false;
   }
 }

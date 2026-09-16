@@ -8,7 +8,7 @@ import {
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { COLORS, SHOP_ITEMS } from '../game/config.js';
 import { weaponById } from '../game/battle.js';
 import {

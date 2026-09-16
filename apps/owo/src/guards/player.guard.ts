@@ -3,9 +3,9 @@ import type { DiscordExecutionContext } from '@discord.ts/core';
 import type { Store } from '@discord.ts/systems';
 import { banOf } from '../game/bans.js';
 import { store as appStore } from '../game/store.js';
+import { replyEphemeral, type EphemeralTarget } from '@discord.ts/ux';
 import { tt } from '../game/text.js';
 import { isPaused } from '../game/warns.js';
-import { denyInteraction } from './deny.js';
 import { EnabledGuard } from './enabled.guard.js';
 
 /** Bot-level ban: a banned user cannot run player commands. */
@@ -18,7 +18,7 @@ export class BannedGuard implements CanActivate {
     if (!userId) return true;
     const ban = await banOf(this.store, userId);
     if (!ban) return true;
-    await denyInteraction(ix, tt(ix, 'game:ban.blocked', { reason: ban.reason }));
+    await replyEphemeral(ix as EphemeralTarget, tt(ix, 'game:ban.blocked', { reason: ban.reason }));
     return false;
   }
 }
@@ -32,7 +32,7 @@ export class PausedGuard implements CanActivate {
     const userId = interactionUserId(ix);
     if (!userId) return true;
     if (!(await isPaused(this.store))) return true;
-    await denyInteraction(ix, tt(ix, 'game:paused'));
+    await replyEphemeral(ix as EphemeralTarget, tt(ix, 'game:paused'));
     return false;
   }
 }

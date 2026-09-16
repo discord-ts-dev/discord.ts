@@ -2,7 +2,7 @@ import { Command, Context, Injectable, Options } from '@discord.ts/common';
 import { RequireOwner } from '@discord.ts/core';
 import { userIdOf } from '@discord.ts/utils';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { COLORS } from '../game/config.js';
 import {
   isPremiumTier,

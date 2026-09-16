@@ -1,7 +1,7 @@
 import { Command, Context, Injectable } from '@discord.ts/common';
 import { getBalance } from '@discord.ts/systems';
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { GAME } from '../game/config.js';
 import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';

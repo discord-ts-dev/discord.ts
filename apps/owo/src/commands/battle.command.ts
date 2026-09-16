@@ -10,7 +10,8 @@ import {
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { readBet, replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
+import { readBet } from './bet.js';
 import {
   applyMove,
   battleReward,

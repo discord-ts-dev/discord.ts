@@ -8,7 +8,7 @@ import {
 import { inventory } from '@discord.ts/systems';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { purchase } from './purchase.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { WEAPONS, weaponById } from '../game/battle.js';
 import { COLORS } from '../game/config.js';
 import { equippedWeaponId, recordOf, setEquippedWeapon, weaponItemId } from '../game/loadout.js';

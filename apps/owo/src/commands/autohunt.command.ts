@@ -6,7 +6,7 @@ import {
   createCommandGroupDecorator,
 } from '@discord.ts/common';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import {
   AUTOHUNT_INTERVAL_MS,
   AUTOHUNT_PRICE,

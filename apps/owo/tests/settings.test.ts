@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import { initI18n } from '@discord.ts/i18n';
+import { MessageFlags } from 'discord.js';
 import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
 import { DiscordExecutionContext } from '@discord.ts/core';
 import { setCommandEnabled } from '@discord.ts/systems';
@@ -52,7 +53,10 @@ describe('EnabledGuard', () => {
       contextFor({ guild: { id: 'g1' }, reply: async (m: unknown) => replies.push(m) }),
     );
     expect(can).toBe(false);
-    expect(replies[0]).toEqual({ content: expect.stringContaining('disabled'), ephemeral: true });
+    expect(replies[0]).toEqual({
+      content: expect.stringContaining('disabled'),
+      flags: MessageFlags.Ephemeral,
+    });
   });
 
   test('leaves other guilds and DMs alone', async () => {
