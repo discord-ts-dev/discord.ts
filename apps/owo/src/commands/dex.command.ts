@@ -6,13 +6,13 @@ import { RARITIES, ROSTER, type Rarity } from '../game/roster.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { getZoo, zooTotals } from '../game/zoo.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 
 const RARITY_ORDER: Rarity[] = ['common', 'uncommon', 'rare', 'legendary'];
 const PAGE_SIZE = 12;
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class DexCommand {
   @Command({ name: 'dex', description: 'Dex: every species, caught or not' })
   async dex(@Context() ctx: ChatInputCommandInteraction): Promise<void> {

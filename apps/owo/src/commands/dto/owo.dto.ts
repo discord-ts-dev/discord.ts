@@ -89,7 +89,7 @@ export class ToggleDto {
   command!: string;
 }
 
-export class SlotsDto {
+export class BetDto {
   @StringOption({ name: 'amount', description: 'Bet size: 100, 1.5k, all', required: true })
   amount!: string;
 }
@@ -106,6 +106,15 @@ export class OwoifyDto {
   text!: string;
 }
 
+export class MathDto {
+  @StringOption({
+    name: 'expression',
+    description: 'Expression: + - * / % ^ and parentheses',
+    required: true,
+  })
+  expression!: string;
+}
+
 export class EightballDto {
   @StringOption({ name: 'question', description: 'Your question', required: true })
   question!: string;
@@ -119,9 +128,35 @@ export class ShipDto {
   second!: User | string;
 }
 
-export class CookieDto {
-  @UserOption({ name: 'user', description: 'Cookie receiver', required: true })
+export class BanDto {
+  @UserOption({ name: 'user', description: 'User to ban from Paw', required: true })
   user!: User | string;
+
+  @StringOption({ name: 'reason', description: 'Why (shown to the user)', required: false })
+  reason?: string;
+}
+
+export class TargetDto {
+  @UserOption({ name: 'user', description: 'Target user', required: true })
+  user!: User | string;
+}
+
+export class GiveAnimalDto {
+  @UserOption({ name: 'user', description: 'Receiver', required: true })
+  user!: User | string;
+
+  @StringOption({
+    name: 'animal',
+    description: 'Species to grant',
+    required: true,
+    choices: ROSTER.map((animal) => ({ name: animal.name, value: animal.id })),
+  })
+  animal!: string;
+
+  @IntegerOption({ name: 'count', description: 'How many (1-100)', required: false })
+  @Min(1)
+  @Max(100)
+  count?: number;
 }
 
 export class ResetDto {

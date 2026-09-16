@@ -2,7 +2,6 @@ import {
   COMMAND_GROUP_METADATA,
   COMMAND_METADATA,
   SUBCOMMAND_METADATA,
-  UseGuards,
   type CanActivate,
   type CommandGroupMeta,
   type CommandMeta,
@@ -12,27 +11,41 @@ import { isCommandEnabled, type Store } from '@discord.ts/systems';
 import type { DiscordExecutionContext } from '@discord.ts/core';
 import { store as appStore } from '../game/store.js';
 import { tt } from '../game/text.js';
+import { denyInteraction } from './deny.js';
 
 /** Commands a guild may turn off. Kept in sync with the command classes and `/help`. */
 export const TOGGLEABLE = [
   'hunt',
   'zoo',
   'profile',
+  'level',
   'daily',
   'balance',
   'coinflip',
+  'slots',
+  'blackjack',
+  'drop',
   'top',
   'me',
   'shop',
   'sell',
   'dex',
   'quest',
-  'slots',
   'lottery',
   'owoify',
   'eightball',
   'ship',
   'cookie',
+  'pray',
+  'marry',
+  'accept',
+  'decline',
+  'divorce',
+  'math',
+  'avatar',
+  'color',
+  'ping',
+  'invite',
 ] as const;
 
 /**
@@ -60,20 +73,7 @@ export class EnabledGuard implements CanActivate {
           | undefined);
     if (!meta?.name) return true;
     if (await isCommandEnabled(this.store, guild.id, meta.name)) return true;
-    try {
-      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
-      if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
-        await reply.call(ix, {
-          content: tt(ix, 'game:settings.command-disabled', { command: meta.name }),
-          ephemeral: true,
-        });
-    } catch {
-      // ignore reply failures, handler already blocked
-    }
+    await denyInteraction(ix, tt(ix, 'game:settings.command-disabled', { command: meta.name }));
     return false;
   }
 }
-
-/** Class decorator: put a command behind the guild toggle. */
-export const GuildToggleable = (): ClassDecorator =>
-  UseGuards(EnabledGuard) as unknown as ClassDecorator;

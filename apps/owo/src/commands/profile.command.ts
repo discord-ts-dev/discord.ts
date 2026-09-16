@@ -8,11 +8,11 @@ import { xpToNext } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { getZoo, zooTotals } from '../game/zoo.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { UserTargetDto } from './dto/owo.dto.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class ProfileCommand {
   @Command({ name: 'profile', description: 'Show pawcoins, level, and zoo summary' })
   async profile(

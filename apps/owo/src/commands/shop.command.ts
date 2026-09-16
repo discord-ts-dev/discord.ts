@@ -14,13 +14,13 @@ import { RARITIES } from '../game/roster.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { addAnimal } from '../game/zoo.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { ShopItemDto } from './dto/owo.dto.js';
 
 const Shop = createCommandGroupDecorator({ name: 'shop', description: 'Paw shop and bag' });
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 @Shop()
 export class ShopCommand {
   @Subcommand({ name: 'list', description: 'List shop items' })

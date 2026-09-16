@@ -59,3 +59,15 @@ _Avoid_: switch, flag
 **Owoify**:
 A text transform: r and l become w, case kept. Generic uwu-speak, not OwO-specific.
 _Avoid_: uwu, censor
+
+**Drop**:
+Pawcoins thrown into a channel. Exactly one claim wins within its time window.
+_Avoid_: giveaway, tip
+
+**Marriage**:
+A mutual one-to-one bond. Proposed, accepted or declined, ended by divorce.
+_Avoid_: wedding, couple
+
+**Ban**:
+A bot-level block on one user. Distinct from Discord guild bans.
+_Avoid_: blacklist, timeout

@@ -6,12 +6,12 @@ import { credit } from '../game/economy.js';
 import { claimQuest, ensureQuest, QUESTS, reroll } from '../game/quests.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 
 const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily quests' });
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 @Quest()
 export class QuestCommand {
   @Subcommand({ name: 'view', description: 'Show your quest and progress' })

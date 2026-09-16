@@ -4,16 +4,16 @@ import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { cookieKey } from '../game/social.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
-import type { CookieDto } from './dto/owo.dto.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
+import type { TargetDto } from './dto/owo.dto.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class CookieCommand {
   @Command({ name: 'cookie', description: 'Give a cookie to someone' })
   async cookie(
     @Context() ctx: ChatInputCommandInteraction,
-    @Options() dto: CookieDto,
+    @Options() dto: TargetDto,
   ): Promise<void> {
     const target = userIdOf(dto.user);
     if (!target) {

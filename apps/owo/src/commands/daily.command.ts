@@ -5,10 +5,10 @@ import { COLORS, GAME } from '../game/config.js';
 import { WEALTH_BOARD, XP_BOARD } from '../game/economy.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class DailyCommand {
   @Command({ name: 'daily', description: 'Claim your daily pawcoins' })
   async daily(@Context() ctx: ChatInputCommandInteraction): Promise<void> {

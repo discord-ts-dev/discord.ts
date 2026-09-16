@@ -118,6 +118,84 @@
     "disabled": "`/{command}` is disabled in this server.",
     "command-disabled": "`/{command}` is disabled in this server."
   },
+  "ban": {
+    "blocked": "You are banned from Paw: {reason}",
+    "done": "Banned <@{user}> from Paw: {reason}",
+    "lifted": "Unbanned <@{user}>.",
+    "not-banned": "<@{user}> is not banned.",
+    "status-banned": "Banned: {reason} (since <t:{at}:R>)",
+    "list-title": "Bot bans",
+    "list-empty": "Nobody is banned.",
+    "list-line": "<@{user}> — {reason} (<t:{at}:R>)",
+    "fail": "I could not resolve that user."
+  },
+  "blackjack": {
+    "title": "Blackjack",
+    "hit": "Hit",
+    "stand": "Stand",
+    "player": "Your hand ({value})",
+    "dealer": "Dealer ({value})",
+    "bet": "Bet",
+    "bust": "Bust! The dealer takes it.",
+    "blackjack": "Blackjack! Paid 3:2.",
+    "win": "You win!",
+    "push": "Push. Your bet comes back.",
+    "lose": "The dealer takes it.",
+    "balance": "Paid {payout}. Balance: {balance}.",
+    "expired": "That game expired. Start a new one with /blackjack.",
+    "not-yours": "This is not your game."
+  },
+  "drop": {
+    "dropped": "**{amount}** pawcoins dropped! First to grab takes them.",
+    "button": "Grab it!",
+    "claimed": "<@{user}> grabbed **{amount}** pawcoins! Balance: {balance}.",
+    "taken": "Too late — somebody grabbed it first.",
+    "gone": "This drop expired."
+  },
+  "marry": {
+    "proposed": "You proposed to {user}. They can `/accept` you.",
+    "wed": "{a} and {b} are now married!",
+    "declined": "You declined {user}'s proposal.",
+    "divorced": "You and {user} are divorced.",
+    "divorce-confirm": "Divorce {user}?",
+    "self": "You cannot marry yourself.",
+    "already-married": "One of you is already married.",
+    "target-married": "That person is already married.",
+    "already-pending": "You already have a proposal pending.",
+    "no-proposal": "There is no proposal like that.",
+    "not-married": "You are not married.",
+    "fail": "I could not resolve that user."
+  },
+  "level": {
+    "title": "{user}'s level",
+    "xp": "XP"
+  },
+  "math": {
+    "title": "Math",
+    "empty": "Give me an expression.",
+    "invalid": "That is not a valid expression.",
+    "divide-by-zero": "Division by zero is not allowed.",
+    "too-long": "That expression is too long (max 100 chars)."
+  },
+  "avatar": {
+    "title": "{user}'s avatar"
+  },
+  "color": {
+    "title": "Random color"
+  },
+  "ping": {
+    "pinging": "Pinging...",
+    "pong": "Pong! Round trip {roundTrip}ms, gateway {ws}ms."
+  },
+  "invite": {
+    "title": "Invite Paw",
+    "body": "Use the link above to add Paw to a server.",
+    "unavailable": "Invite link is unavailable."
+  },
+  "giveanimal": {
+    "done": "Gave {count} {animal} ({rarity}) to {user}. They now have x{total}.",
+    "fail": "I could not resolve that user or animal."
+  },
   "eightball": {
     "title": "Magic 8 ball",
     "answer": "{question}\n\n**{answer}**"
@@ -130,6 +208,9 @@
   "cookie": {
     "done": "You gave a cookie to {user}. They now have {count} cookies.",
     "fail": "I could not resolve that user."
+  },
+  "pray": {
+    "done": "You prayed. Total prayers: {count}."
   },
   "reset": {
     "confirm": "Wipe {what} for {user}?",

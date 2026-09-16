@@ -1,11 +1,11 @@
 import { Command, Context, Injectable, Options } from '@discord.ts/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 import { owoify } from '../game/social.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { OwoifyDto } from './dto/owo.dto.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class OwoifyCommand {
   @Command({ name: 'owoify', description: 'Rewrite text in fluent owo' })
   async owoify(

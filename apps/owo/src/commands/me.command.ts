@@ -6,10 +6,10 @@ import { WEALTH_BOARD, XP_BOARD, ZOO_BOARD } from '../game/economy.js';
 import { levelFromXp } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class MeCommand {
   @Command({ name: 'me', description: 'Your ranks across the boards' })
   async me(@Context() ctx: ChatInputCommandInteraction): Promise<void> {

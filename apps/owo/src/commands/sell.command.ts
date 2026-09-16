@@ -7,11 +7,11 @@ import { animalById } from '../game/roster.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { getZoo, setZoo } from '../game/zoo.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { SellDto } from './dto/owo.dto.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class SellCommand {
   @Command({ name: 'sell', description: 'Sell zoo animals for pawcoins' })
   async sell(@Context() ctx: ChatInputCommandInteraction, @Options() dto: SellDto): Promise<void> {

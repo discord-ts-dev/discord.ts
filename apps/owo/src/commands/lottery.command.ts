@@ -10,7 +10,7 @@ import { COLORS, GAME } from '../game/config.js';
 import { buyTickets, lotteryState } from '../game/lottery.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { LotteryBuyDto } from './dto/owo.dto.js';
 
 const Lottery = createCommandGroupDecorator({
@@ -19,7 +19,7 @@ const Lottery = createCommandGroupDecorator({
 });
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 @Lottery()
 export class LotteryCommand {
   @Subcommand({ name: 'buy', description: 'Buy tickets into the pot' })

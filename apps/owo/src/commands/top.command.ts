@@ -6,7 +6,7 @@ import { WEALTH_BOARD, XP_BOARD, ZOO_BOARD } from '../game/economy.js';
 import { levelFromXp } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { TopDto } from './dto/owo.dto.js';
 
 const LIMIT = 10;
@@ -14,7 +14,7 @@ const LIMIT = 10;
 const BOARDS = [XP_BOARD, WEALTH_BOARD, ZOO_BOARD] as const;
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class TopCommand {
   @Command({ name: 'top', description: 'Leaderboards: XP, wealth, or zoo size' })
   async top(@Context() ctx: ChatInputCommandInteraction, @Options() dto: TopDto): Promise<void> {

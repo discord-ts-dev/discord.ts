@@ -4,11 +4,11 @@ import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'di
 import { COLORS } from '../game/config.js';
 import { shipPercent } from '../game/social.js';
 import { tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { ShipDto } from './dto/owo.dto.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class ShipCommand {
   @Command({ name: 'ship', description: 'Measure the love between two users' })
   async ship(@Context() ctx: ChatInputCommandInteraction, @Options() dto: ShipDto): Promise<void> {

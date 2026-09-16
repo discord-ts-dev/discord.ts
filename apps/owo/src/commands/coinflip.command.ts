@@ -1,19 +1,18 @@
 import { Command, Context, Injectable, Options } from '@discord.ts/common';
 import { Cooldown } from '@discord.ts/core';
-import { getBalance } from '@discord.ts/systems';
-import { parseAmount } from '@discord.ts/utils';
-import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
+import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
+import { readBet } from './bet.js';
 import { COLORS } from '../game/config.js';
 import { credit } from '../game/economy.js';
 import { advanceQuest } from '../game/quests.js';
 import { flip } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 import type { CoinflipDto } from './dto/owo.dto.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class CoinflipCommand {
   @Command({ name: 'coinflip', description: 'Bet pawcoins on a coin flip' })
   @Cooldown(3)
@@ -22,20 +21,13 @@ export class CoinflipCommand {
     @Options() dto: CoinflipDto,
   ): Promise<void> {
     const userId = ctx.user.id;
-    const balance = await getBalance(store, userId);
-    const parsed = parseAmount(dto.amount, balance);
-    if (!parsed.ok) {
-      await ctx.reply({
-        content: tt(ctx, `game:bet.${parsed.reason}`, { balance: fmt(balance) }),
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
+    const bet = await readBet(ctx, dto.amount);
+    if (bet === null) return;
 
     const choice = dto.choice === 'tails' ? 'tails' : 'heads';
     const result = flip();
     const won = result === choice;
-    const next = await credit(store, userId, won ? parsed.value : -parsed.value);
+    const next = await credit(store, userId, won ? bet : -bet);
     await advanceQuest(store, userId, 'flip');
 
     const embed = new EmbedBuilder()
@@ -45,7 +37,7 @@ export class CoinflipCommand {
         tt(ctx, won ? 'game:coinflip.win' : 'game:coinflip.lose', {
           result,
           choice,
-          amount: fmt(parsed.value),
+          amount: fmt(bet),
         }),
       )
       .setFooter({ text: tt(ctx, 'game:coinflip.balance', { balance: fmt(next) }) });

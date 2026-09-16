@@ -10,10 +10,10 @@ import { pickAnimal, rollCatch } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { addAnimal } from '../game/zoo.js';
-import { GuildToggleable } from '../guards/enabled.guard.js';
+import { PlayerGuarded } from '../guards/player.guard.js';
 
 @Injectable()
-@GuildToggleable()
+@PlayerGuarded()
 export class HuntCommand {
   @Command({ name: 'hunt', description: 'Catch a wild animal for your zoo' })
   @Cooldown(GAME.huntCooldownSeconds)
