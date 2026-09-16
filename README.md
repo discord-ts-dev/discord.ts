@@ -51,8 +51,14 @@ Glossary map at `CONTEXT-MAP.md`. Skills config in `AGENTS.md`.
 
 ## Release
 
-Changesets on `main` open a Version PR. Merge publishes to npm with provenance.
-Touch `packages/*`? Run `bunx changeset`. Tags like `@discord.ts/core@0.2.0` are publish output.
+Changesets on `main` open a Version PR. Touch `packages/*`? Run `bunx changeset`.
+Tags like `@discord.ts/core@0.2.0` are publish output.
+
+Publishing stays off until npm credentials exist: the first publish of a scoped
+package cannot use OIDC (npm answers 404 until the package exists with a
+trusted publisher), so add an npm automation token with
+`gh secret set NPM_TOKEN --body ...` and `gh variable set PUBLISH_ENABLED --body true`.
+Until then merging the Version PR bumps versions without publishing.
 
 Remote cache is Vercel-backed and inert until secrets exist: create a token at
 vercel.com (Storage → Remote Cache), then
