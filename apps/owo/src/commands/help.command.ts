@@ -16,6 +16,12 @@ const HELP: HelpEntry[] = [
   { name: 'coinflip', description: 'Bet pawcoins on a coin flip', category: 'Economy' },
   { name: 'slots', description: 'Spin the slot machine', category: 'Economy' },
   { name: 'blackjack', description: 'Play blackjack against the dealer', category: 'Economy' },
+  {
+    name: 'battle',
+    description: 'Battle another user with your strongest animal',
+    category: 'Battle',
+  },
+  { name: 'weapons', description: 'Buy, equip, and inspect battle weapons', category: 'Battle' },
   { name: 'drop', description: 'Drop pawcoins for anyone to grab', category: 'Economy' },
   {
     name: 'lottery',
@@ -40,8 +46,33 @@ const HELP: HelpEntry[] = [
   { name: 'avatar', description: 'Show a user avatar', category: 'Utility' },
   { name: 'color', description: 'Show a random color', category: 'Utility' },
   { name: 'invite', description: 'Get the invite link for Paw', category: 'Utility' },
+  { name: 'stats', description: 'Show Paw stats', category: 'Utility' },
+  { name: 'shard', description: 'Show shard status', category: 'Utility' },
+  { name: 'guildlink', description: 'Create an invite for this server', category: 'Utility' },
+  { name: 'help', description: 'Show this command list', category: 'General' },
+  {
+    name: 'checklist',
+    description: 'Your personal checklist: add, done, remove, list',
+    category: 'Utility',
+  },
+  { name: 'suggest', description: 'Post a suggestion with vote reactions', category: 'Utility' },
+  { name: 'survey', description: 'Start a quick button poll', category: 'Utility' },
+  { name: 'rules', description: 'Show this server rules', category: 'Utility' },
+  { name: 'vote', description: 'Vote for Paw on the bot lists', category: 'Utility' },
+  { name: 'patreon', description: 'Support Paw and see premium perks', category: 'Utility' },
+  { name: 'emoji', description: 'Copy a custom emoji into this server', category: 'Utility' },
+  {
+    name: 'memegen',
+    description: 'Draw a quick meme: caption, drake, distracted, more',
+    category: 'Utility',
+  },
   { name: 'enable', description: 'Turn a command back on in this server', category: 'Settings' },
   { name: 'disable', description: 'Turn a command off in this server', category: 'Settings' },
+  {
+    name: 'censor',
+    description: 'Guild word filter: add, remove, or list words',
+    category: 'Settings',
+  },
   { name: 'give', description: 'Grant pawcoins to a user (manage server)', category: 'Admin' },
   {
     name: 'giveanimal',
@@ -51,12 +82,26 @@ const HELP: HelpEntry[] = [
   { name: 'ban', description: 'Ban a user from Paw (manage server)', category: 'Admin' },
   { name: 'unban', description: 'Lift a Paw ban (manage server)', category: 'Admin' },
   { name: 'banstatus', description: 'Show Paw bans (manage server)', category: 'Admin' },
+  { name: 'echo', description: 'Make the bot say something (manage server)', category: 'Admin' },
+  {
+    name: 'reply',
+    description: 'Reply to a message as the bot (manage server)',
+    category: 'Admin',
+  },
+  { name: 'warn', description: 'Warn a user (manage server)', category: 'Admin' },
+  { name: 'warnings', description: 'Show warnings for a user (manage server)', category: 'Admin' },
+  {
+    name: 'pausebot',
+    description: 'Pause or resume Paw for everyone (manage server)',
+    category: 'Admin',
+  },
+  { name: 'setrules', description: 'Set this server rules (manage server)', category: 'Admin' },
+  { name: 'settier', description: 'Grant a premium tier to a user (bot owner)', category: 'Admin' },
   {
     name: 'reset',
     description: 'Wipe pawcoins or zoo for a user (manage server)',
     category: 'Admin',
   },
-  { name: 'help', description: 'Show this command list', category: 'General' },
 ];
 
 @Injectable()

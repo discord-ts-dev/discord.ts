@@ -5,10 +5,10 @@ import {
   Subcommand,
   createCommandGroupDecorator,
 } from '@discord.ts/common';
-import { addScore, buy, getBalance, inventory, useItem } from '@discord.ts/systems';
+import { getBalance, inventory, useItem } from '@discord.ts/systems';
 import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
+import { purchase } from './purchase.js';
 import { COLORS, SHOP_ITEMS } from '../game/config.js';
-import { WEALTH_BOARD } from '../game/economy.js';
 import { pickAnimal } from '../game/rng.js';
 import { RARITIES } from '../game/roster.js';
 import { store } from '../game/store.js';
@@ -55,23 +55,22 @@ export class ShopCommand {
       });
       return;
     }
-    const result = await buy(store, ctx.user.id, { id: item.id, price: item.price });
+    const result = await purchase(ctx, { id: item.id, name: item.name, price: item.price });
     if (!result.ok) {
       await ctx.reply({
         content: tt(ctx, 'game:shop.buy-fail', {
           name: item.name,
-          price: fmt(item.price),
+          price: fmt(result.price),
           balance: fmt(result.balance),
         }),
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
-    await addScore(store, WEALTH_BOARD, ctx.user.id, -item.price);
     await ctx.reply({
       content: tt(ctx, 'game:shop.buy-ok', {
         name: item.name,
-        price: fmt(item.price),
+        price: fmt(result.price),
         balance: fmt(result.balance),
       }),
     });

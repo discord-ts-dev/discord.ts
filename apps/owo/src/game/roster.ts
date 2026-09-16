@@ -21,6 +21,9 @@ export const RARITIES: Record<Rarity, RarityDef> = {
   legendary: { label: 'Legendary', weight: 3, sellPrice: 2000, color: 0xfee75c },
 };
 
+/** Weakest to strongest. Derived from the table so it can never drift. */
+export const RARITY_ORDER = Object.keys(RARITIES) as Rarity[];
+
 /** Own roster. Clean-room: no data copied from the original bot. */
 export const ROSTER: Animal[] = [
   { id: 'rat', name: 'Rat', emoji: '🐀', rarity: 'common' },

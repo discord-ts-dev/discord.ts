@@ -25,6 +25,8 @@ export const TOGGLEABLE = [
   'slots',
   'blackjack',
   'drop',
+  'battle',
+  'weapons',
   'top',
   'me',
   'shop',
@@ -46,6 +48,14 @@ export const TOGGLEABLE = [
   'color',
   'ping',
   'invite',
+  'checklist',
+  'suggest',
+  'survey',
+  'rules',
+  'vote',
+  'patreon',
+  'emoji',
+  'memegen',
 ] as const;
 
 /**

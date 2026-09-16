@@ -212,6 +212,129 @@
   "pray": {
     "done": "You prayed. Total prayers: {count}."
   },
+  "battle": {
+    "title": "Battle",
+    "bad-opponent": "Pick someone else to fight.",
+    "no-animal": "You have no animals to fight with. Hunt first.",
+    "opponent-no-animal": "That user has no animals to fight with.",
+    "opponent-broke": "That user cannot cover the bet.",
+    "not-yours": "This is not your battle.",
+    "not-your-turn": "Not your turn. Waiting on <@{user}>.",
+    "busy": "Hold on, the turn is resolving.",
+    "expired": "That battle expired.",
+    "fighter": "{user} — {animal} {active}",
+    "your-turn": "(your turn)",
+    "crit": "critical!",
+    "stunned": "and stunned the enemy!",
+    "move": {
+      "attack": "Attack",
+      "defend": "Defend",
+      "special": "Special"
+    },
+    "line": {
+      "attack": "<@{user}> attacks for {damage} {crit}",
+      "defend": "<@{user}> braces for the next hit.",
+      "special": "<@{user}> swings their weapon for {damage} {crit} {stun}"
+    },
+    "finished": "{winner} wins with {animal}! Pot **{pot}** pawcoins. Balance: {balance}."
+  },
+  "weapons": {
+    "title": "Weapons",
+    "line": "{emoji} **{name}** — +{atk} atk, {price} pawcoins {effect} {marks}",
+    "effect": {
+      "crit": "(crit)",
+      "stun": "(stun)",
+      "lifesteal": "(lifesteal)"
+    },
+    "owned": "· owned",
+    "equipped": "· equipped",
+    "record": "Record: {wins}W {losses}L",
+    "unknown": "Unknown weapon.",
+    "bought": "Bought **{name}** for {price} pawcoins. Balance: {balance}.",
+    "not-owned": "You do not own **{name}**.",
+    "equipped-ok": "Equipped **{name}**.",
+    "unequipped": "Fighting bare-handed."
+  },
+  "paused": "Paw is paused right now. Try again later.",
+  "fail": {
+    "user": "I could not resolve that user.",
+    "purchase": "You need {price} pawcoins for **{name}**. Balance: {balance}."
+  },
+  "admin": {
+    "no-channel": "This command needs a text channel.",
+    "echo-sent": "Sent.",
+    "reply-sent": "Replied.",
+    "reply-fail": "Could not find that message here.",
+    "warned": "Warned <@{user}> ({count} total): {reason}",
+    "no-warnings": "<@{user}> has no warnings.",
+    "paused": "Paw is paused. Player commands are blocked.",
+    "resumed": "Paw is running again."
+  },
+  "info": {
+    "stats-title": "Paw stats",
+    "uptime": "Uptime",
+    "guilds": "Servers",
+    "users": "Cached users",
+    "memory": "Heap",
+    "gateway": "Gateway",
+    "shard-line": "Shards {ids} of {count}.",
+    "no-shards": "Running without sharding.",
+    "invite": "Invite: {url}",
+    "invite-fail": "Could not create an invite. Check my permissions."
+  },
+  "suggest": {
+    "title": "Suggestion",
+    "footer": "by {user}"
+  },
+  "survey": {
+    "title": "Survey",
+    "footer": "{total} vote(s)",
+    "expired": "That survey is gone."
+  },
+  "rules": {
+    "title": "Server rules",
+    "none": "No rules set yet. An admin can use /setrules.",
+    "saved": "Rules saved."
+  },
+  "vote": {
+    "body": "Vote for Paw on the bot list to earn a reward: https://top.gg/"
+  },
+  "patreon": {
+    "title": "Support Paw",
+    "body": "Premium tiers support development. Ask an admin to grant one on your server.",
+    "your-tier": "Your tier",
+    "perks": "Perks",
+    "no-perks": "none yet"
+  },
+  "premium": {
+    "tier": {
+      "free": "Free",
+      "supporter": "Supporter",
+      "patron": "Patron"
+    },
+    "example": "Example: a 1,000 pawcoin item costs {price} for Patrons.",
+    "set": "Set {user}'s tier to {tier}.",
+    "unknown": "Unknown tier."
+  },
+  "checklist": {
+    "title": "Checklist",
+    "empty": "Your checklist is empty. Add one with /checklist add."
+  },
+  "censor": {
+    "added": "Added `{word}` to the filter ({count} words).",
+    "removed": "Removed `{word}` from the filter ({count} words).",
+    "list": "Filtered words: {words}",
+    "empty": "The word filter is empty.",
+    "notice": "🫢 <@{user}> that word is filtered here."
+  },
+  "emoji": {
+    "bad": "Give me a custom emoji mention to copy.",
+    "copied": "Added {emoji} as `{name}`.",
+    "fail": "Could not add that emoji. Check my permissions and emoji slots."
+  },
+  "memegen": {
+    "fail": "Could not draw that meme."
+  },
   "reset": {
     "confirm": "Wipe {what} for {user}?",
     "done": "Wiped {what} for {user}.",

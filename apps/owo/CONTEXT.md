@@ -71,3 +71,15 @@ _Avoid_: wedding, couple
 **Ban**:
 A bot-level block on one user. Distinct from Discord guild bans.
 _Avoid_: blacklist, timeout
+
+**Battle**:
+A turn-based duel between two users' strongest animals. One move per press.
+_Avoid_: fight, duel
+
+**Weapon**:
+A bought item that adds attack and may carry an effect: crit, stun, or lifesteal.
+_Avoid_: gear, sword
+
+**Premium**:
+Store-backed tiers (free, supporter, patron) granting daily and shop perks. Shown and granted as `/patreon`.
+_Avoid_: VIP, subscription
