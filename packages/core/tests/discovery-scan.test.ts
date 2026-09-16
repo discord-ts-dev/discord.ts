@@ -68,7 +68,11 @@ describe('scan of subcommands without a class group', () => {
       run(): void {}
     }
     (Group() as ClassDecorator)(Probe);
-    apply(MethodGroup({ nameLocalizations: { fr: 'jour' } }) as MethodDecorator, Probe.prototype, 'run');
+    apply(
+      MethodGroup({ nameLocalizations: { fr: 'jour' } }) as MethodDecorator,
+      Probe.prototype,
+      'run',
+    );
     apply(Subcommand({ name: 'three', description: 'Three' }), Probe.prototype, 'run');
     const discovery = service();
     discovery.init([new Probe()]);
