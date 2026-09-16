@@ -1,0 +1,147 @@
+{
+  "hunt": {
+    "title": "Hunt",
+    "caught": "You caught {animal} ({rarity})! Zoo count: x{count}. +{xp} XP",
+    "escaped": "The trail went cold... the animal escaped. Try again soon."
+  },
+  "zoo": {
+    "title": "{user}'s zoo",
+    "empty": "This zoo is empty. Hunt to catch your first animal.",
+    "totals": "{unique} species caught, {total} animals in total.",
+    "line": "{emoji} {name} — x{count}"
+  },
+  "dex": {
+    "title": "Dex",
+    "missing": "not caught yet",
+    "totals": "{unique}/{total} species caught.",
+    "line": "{emoji} {name} — {count}"
+  },
+  "profile": {
+    "title": "{user}'s profile",
+    "balance": "Balance",
+    "level": "Level {level}",
+    "zoo": "Zoo",
+    "rank": "XP rank",
+    "titleField": "Title",
+    "unranked": "Unranked",
+    "none": "None",
+    "zooValue": "{unique} species, {total} animals"
+  },
+  "me": {
+    "title": "{user}'s ranks",
+    "xp": "XP rank",
+    "wealth": "Wealth rank",
+    "zoo": "Zoo rank",
+    "unranked": "Unranked"
+  },
+  "daily": {
+    "title": "Daily",
+    "claimed": "Claimed **{amount}** pawcoins. Streak: {streak} day(s). +{xp} XP",
+    "already": "Already claimed today. Streak: {streak} day(s). Come back tomorrow."
+  },
+  "balance": {
+    "title": "{user}'s balance",
+    "line": "**{amount}** pawcoins"
+  },
+  "bet": {
+    "invalid": "That bet is not a number. Try `100`, `2k`, or `all`.",
+    "non-positive": "Bet must be more than zero.",
+    "exceeds-balance": "You do not have that much. Balance: {balance}."
+  },
+  "coinflip": {
+    "title": "Coinflip",
+    "win": "The coin lands **{result}**. You picked {choice} and won {amount}!",
+    "lose": "The coin lands **{result}**. You picked {choice} and lost {amount}.",
+    "balance": "New balance: {balance} pawcoins."
+  },
+  "slots": {
+    "title": "Slots",
+    "win": "x{multiplier} payout: you won {amount}. Balance: {balance}.",
+    "lose": "No win this spin. Balance: {balance}."
+  },
+  "lottery": {
+    "info-title": "Lottery",
+    "info": "Pot: **{pot}** pawcoins. Your tickets: {tickets}.",
+    "buy-ok": "Bought {count} ticket(s). Pot: {pot}. Balance: {balance}.",
+    "buy-fail-balance": "Tickets cost {price} each. Your balance: {balance}.",
+    "buy-fail-count": "Pick a positive whole number of tickets.",
+    "last": "Last winner: <@{winner}> won {pot} pawcoins.",
+    "no-last": "No draw yet."
+  },
+  "sell": {
+    "title": "Sold",
+    "done": "Sold {count} {animal} for **{proceeds}** pawcoins. Balance: {balance}.",
+    "fail": "You have none of that animal to sell."
+  },
+  "quest": {
+    "title": "Daily quest",
+    "hunt": "Catch 5 animals",
+    "sell": "Sell 5 animals",
+    "flip": "Play 5 coinflips",
+    "progress": "Progress",
+    "reward": "Reward",
+    "done": "Done! Claim with /quest claim.",
+    "claimed": "Claimed **{reward}** pawcoins. Balance: {balance}.",
+    "not-done": "That quest is not finished yet.",
+    "reroll-ok": "New quest: {label}",
+    "reroll-fail": "You already rerolled today.",
+    "reroll-none": "No quest yet. Use /quest view first."
+  },
+  "top": {
+    "title": "{board} leaderboard",
+    "board-xp": "XP",
+    "board-wealth": "Wealth",
+    "board-zoo": "Zoo size",
+    "empty": "Nothing on this board yet. Be the first.",
+    "line": "{n}. <@{member}> — {score} XP (level {level})",
+    "line-plain": "{n}. <@{member}> — {score}",
+    "your-rank": "Your rank: #{rank} with {score}.",
+    "unranked": "You are not on the board yet."
+  },
+  "shop": {
+    "title": "Shop",
+    "list-line": "**{name}** — {price} pawcoins\n{description}",
+    "balance": "Your balance: {balance} pawcoins.",
+    "unknown-item": "Unknown item.",
+    "buy-ok": "Bought **{name}** for {price} pawcoins. Balance: {balance}.",
+    "buy-fail": "You need {price} pawcoins for **{name}**. Balance: {balance}.",
+    "use-ok": "Used **{name}**.",
+    "use-fail": "You do not own **{name}**.",
+    "lootbox": "The lootbox bursts open: {animal} ({rarity})! Zoo count: x{count}.",
+    "title-owned": "You now wear the {title} title.",
+    "inventory-title": "{user}'s items",
+    "inventory-empty": "Your bag is empty. Buy something with `/shop list`.",
+    "inventory-line": "**{name}** x{count}"
+  },
+  "settings": {
+    "enabled": "`/{command}` is enabled in this server.",
+    "disabled": "`/{command}` is disabled in this server.",
+    "command-disabled": "`/{command}` is disabled in this server."
+  },
+  "eightball": {
+    "title": "Magic 8 ball",
+    "answer": "{question}\n\n**{answer}**"
+  },
+  "ship": {
+    "title": "Ship",
+    "fail": "I could not resolve both users.",
+    "result": "{a} + {b} = **{percent}%**\n{bar}"
+  },
+  "cookie": {
+    "done": "You gave a cookie to {user}. They now have {count} cookies.",
+    "fail": "I could not resolve that user."
+  },
+  "reset": {
+    "confirm": "Wipe {what} for {user}?",
+    "done": "Wiped {what} for {user}.",
+    "fail": "I could not resolve that user."
+  },
+  "give": {
+    "done": "Gave **{amount}** pawcoins to <@{user}>. Their balance: {balance}.",
+    "fail": "I could not resolve that user."
+  },
+  "help": {
+    "title": "Paw commands",
+    "footer": "Paw — a clean-room OwO-style bot on discord.ts"
+  }
+}
