@@ -76,7 +76,6 @@ export async function loadDiscordConfig(
       `non-standard App layout, missing: ${structure.missing.join(', ')}. See apps/example.`,
     );
   const merged = {
-    prefix: '!',
     development: [],
     skipRegistration: false,
     ...withoutUndefined(file),

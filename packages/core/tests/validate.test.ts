@@ -18,7 +18,6 @@ function base(partial: Partial<DiscoveryState> = {}): DiscoveryState {
     modals: [],
     autocompletes: [],
     events: [],
-    prefix: [],
     ...partial,
   };
 }
@@ -29,7 +28,7 @@ function slash(over: Partial<SlashEntry> = {}): SlashEntry {
     method: 'run',
     top: 'ping',
     topDescription: 'Pong',
-    meta: { name: 'ping', description: 'Pong' },
+    flags: {},
     ...over,
   };
 }
@@ -46,7 +45,7 @@ function expectsError(state: DiscoveryState, ...fragments: string[]): void {
 }
 
 describe('validateDiscoveryState accepts a healthy app', () => {
-  test('plain, grouped and prefixed entries pass', () => {
+  test('plain and grouped entries pass', () => {
     validateDiscoveryState(
       base({
         slash: [
@@ -69,7 +68,6 @@ describe('validateDiscoveryState accepts a healthy app', () => {
           },
         ],
         buttons: [{ instance: new Probe() as never, method: 'run', customId: 'ok' }],
-        prefix: [{ instance: new Probe() as never, method: 'run', name: 'echo', aliases: ['e'] }],
         events: [{ instance: new Probe() as never, method: 'run', event: 'ready', once: false }],
         autocompletes: [{ instance: new Probe() as never, method: 'run', commandName: 'ping' }],
       }),
@@ -108,7 +106,7 @@ describe('slash validation', () => {
           slash({
             top: 'ping',
             topDescription: '',
-            meta: { name: 'ping', description: 'Pong', nsfw: true },
+            flags: { nsfw: true },
           }),
         ],
       }),
@@ -129,7 +127,7 @@ describe('slash validation', () => {
   });
 });
 
-describe('menu, component and prefix validation', () => {
+describe('menu and component validation', () => {
   test('rejects bad menu names, nsfw and duplicates', () => {
     const menu = (name: string, nsfw?: boolean) => ({
       instance: new Probe() as never,
@@ -157,28 +155,6 @@ describe('menu, component and prefix validation', () => {
       'button customId must be 1-100 chars',
       'select customId must be 1-100 chars',
       'modal customId must be 1-100 chars',
-    );
-  });
-
-  test('rejects bad prefix names, sub-routes and duplicate triggers', () => {
-    expectsError(
-      base({
-        prefix: [
-          { instance: new Probe() as never, method: 'run', name: 'two words', aliases: [] },
-          {
-            instance: new Probe() as never,
-            method: 'run',
-            name: 'ok',
-            aliases: [],
-            sub: 'bad sub',
-          },
-          { instance: new Probe() as never, method: 'run', name: 'dup', aliases: ['d'] },
-          { instance: new Probe() as never, method: 'run', name: 'other', aliases: ['d'] },
-        ],
-      }),
-      'prefix name must be one word',
-      'prefix sub-route "bad sub" must be one word',
-      'duplicate prefix trigger "d " (also in Probe.run)',
     );
   });
 

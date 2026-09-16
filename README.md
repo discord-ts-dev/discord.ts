@@ -8,9 +8,9 @@ NestJS-style Discord bot framework without NestJS. OOP, DI, lifecycle, decorator
 ```ts
 @Injectable()
 export class PingCommand {
-  @Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
-  async handle(@Context() ctx: CommandContext) {
-    await ctx.reply('pong');
+  @Command({ name: 'ping', description: 'Reply with pong' })
+  async handle(@Context() interaction: ChatInputCommandInteraction) {
+    await interaction.reply('pong');
   }
 }
 ```
@@ -19,7 +19,7 @@ export class PingCommand {
 
 - `packages/common` — `@discord.ts/common`: metadata keys, decorators, types, logger
 - `packages/core` — `@discord.ts/core`: module, discovery, routing, sync, guards, config
-- `packages/utils` — `@discord.ts/utils`: pure helpers, mentions, ids, message guards
+- `packages/utils` — `@discord.ts/utils`: pure helpers, mentions, ids, durations
 - `packages/systems` — `@discord.ts/systems`: store, scheduler, daily, quests, leaderboard, shop
 - `packages/ux` — `@discord.ts/ux`: confirm dialogs, pagers
 - `packages/cli` — `@discord.ts/cli`: the `discord` runner
@@ -37,11 +37,10 @@ DISCORD_TOKEN=... bun run dev
 
 ## Features
 
-- `@SlashCommand` / `@Subcommand` + group factory, `@ContextMenu`, `@Button` + selects, `@Modal`, `@Autocomplete`, `@OnEvent` / `@OnceEvent`
+- `@Command` / `@Subcommand` + group factory, `@ContextMenu`, `@Button` + selects, `@Modal`, `@Autocomplete`, `@OnEvent` / `@OnceEvent`
 - `@Context()` + `@Options()` DTO with `@StringOption()` etc, required check, `class-validator`, `@UsePipes()`
-- `CommandContext` wrapper: one `reply` / `user` / `voiceChannelId` over slash and prefix; raw union still injects
+- Command and option metadata localizations from `@discord.ts/i18n` catalogs, plus explicit `LocalizationMap` fields
 - `@UseGuards()` plus `@Cooldown(seconds)` and `@RequirePermissions(...)`
-- `@PrefixCommand()` + `@PrefixArgs()` text commands
 - Auto slash sync (global or `development` guilds), `skipRegistration`, `deployWithModule()` for CI
 - `confirm()` and `paginate()` UX helpers, sharding passthrough
 

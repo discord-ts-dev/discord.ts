@@ -30,12 +30,11 @@ buildHelp([{ name: 'ping', description: 'Pong' }]);
 
 ## Guild settings
 
-Per-guild prefix and per-command toggles in `guild:` keys.
+Per-guild per-command toggles in `guild:` keys.
 
 ```ts
-import { getSettings, setPrefix, setCommandEnabled, isCommandEnabled } from '@discord.ts/systems';
+import { getSettings, setCommandEnabled, isCommandEnabled } from '@discord.ts/systems';
 
-await setPrefix(store, guildId, '?');
 await setCommandEnabled(store, guildId, 'shop', false);
 await isCommandEnabled(store, guildId, 'shop'); // false
 ```

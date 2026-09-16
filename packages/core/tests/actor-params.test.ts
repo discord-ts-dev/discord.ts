@@ -62,6 +62,6 @@ describe('Locale args', () => {
   test('interaction locale wins, then guild preferred, then default', () => {
     assert.equal(buildArgs(localeHandler(), { locale: 'vi' })[1], 'vi');
     assert.equal(buildArgs(localeHandler(), { guild: { preferredLocale: 'ja' } })[1], 'ja');
-    assert.equal(buildArgs(localeHandler(), {}, undefined, 'fr')[1], 'fr');
+    assert.equal(buildArgs(localeHandler(), {}, 'fr')[1], 'fr');
   });
 });

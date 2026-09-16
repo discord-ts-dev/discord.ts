@@ -8,9 +8,9 @@ import * as utils from '@discord.ts/utils';
 import * as ux from '@discord.ts/ux';
 
 const surfaces = {
-  common: [common, ['CommandContext', 'SlashCommand', 'DiscordLogger']],
+  common: [common, ['Command', 'DiscordLogger']],
   core: [core, ['DiscordModule', 'bootstrapApp', 'Cooldown']],
-  i18n: [i18n, ['t', 'initI18n', 'resolveLocale']],
+  i18n: [i18n, ['t', 'initI18n', 'resolveLocale', 'lookup']],
   systems: [systems, ['MemoryStore', 'claimDaily', 'awardVote']],
   utils: [utils, ['parseMentionId', 'parseAmount', 'containsBlocked']],
   ux: [ux, ['confirm', 'paginate', 'pickOne', 'errorEmbed']],

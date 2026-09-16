@@ -1,10 +1,15 @@
-import { Command, CommandContext, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireGuild, RequireOwner, RequirePermissions } from '@discord.ts/core';
 import { availableLocales, t } from '@discord.ts/i18n';
 import { confirm } from '@discord.ts/ux';
 // ponytail: node:vm has no Bun equivalent; Bun runs the module natively.
 import { runInNewContext } from 'node:vm';
-import { EmbedBuilder, PermissionFlagsBits, type Guild as DiscordGuild } from 'discord.js';
+import {
+  EmbedBuilder,
+  PermissionFlagsBits,
+  type ChatInputCommandInteraction,
+  type Guild as DiscordGuild,
+} from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
 import { PremiumService, premiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
@@ -22,12 +27,10 @@ export class AdminCommand {
   @Command({
     name: 'language',
     description: 'Show or change bot language',
-    slash: true,
-    prefix: true,
   })
   @RequirePermissions(PermissionFlagsBits.Administrator)
   async language(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
     @Options() dto: LanguageDto,
   ): Promise<void> {
@@ -47,9 +50,12 @@ export class AdminCommand {
     await ctx.reply(t('success.language_change', undefined, match));
   }
 
-  @Command({ name: 'addpremium', description: 'Grant premium (owner)', slash: true, prefix: true })
+  @Command({ name: 'addpremium', description: 'Grant premium (owner)' })
   @RequireOwner()
-  async addpremium(@Context() ctx: CommandContext, @Options() dto: GrantPremiumDto): Promise<void> {
+  async addpremium(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: GrantPremiumDto,
+  ): Promise<void> {
     const plan = dto.plan === 'month' ? 'Premium' : 'TrialPremium';
     this.premium.grant(dto.scope as 'guild' | 'user', cleanId(dto.target), plan);
     await ctx.reply(`${botConfig.emoji.done}`);
@@ -58,12 +64,10 @@ export class AdminCommand {
   @Command({
     name: 'revokepremium',
     description: 'Revoke premium (owner)',
-    slash: true,
-    prefix: true,
   })
   @RequireOwner()
   async revokepremium(
-    @Context() ctx: CommandContext,
+    @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: ScopeTargetDto,
   ): Promise<void> {
     const ok = this.premium.revoke(dto.scope as 'guild' | 'user', cleanId(dto.target));
@@ -73,25 +77,32 @@ export class AdminCommand {
   @Command({
     name: 'register',
     description: 'Register guild/user row (dev)',
-    slash: true,
-    prefix: true,
   })
   @RequireOwner()
-  async register(@Context() ctx: CommandContext, @Options() dto: ScopeTargetDto): Promise<void> {
+  async register(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: ScopeTargetDto,
+  ): Promise<void> {
     const created = this.premium.ensure(dto.scope as 'guild' | 'user', cleanId(dto.target));
     await ctx.reply(created ? `${botConfig.emoji.done}` : 'Already exists.');
   }
 
-  @Command({ name: 'data', description: 'Show stored row (dev)', slash: true, prefix: true })
+  @Command({ name: 'data', description: 'Show stored row (dev)' })
   @RequireOwner()
-  async data(@Context() ctx: CommandContext, @Options() dto: ScopeTargetDto): Promise<void> {
+  async data(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: ScopeTargetDto,
+  ): Promise<void> {
     const row = this.premium.dump(dto.scope as 'guild' | 'user', cleanId(dto.target));
     await ctx.reply(`\`\`\`json\n${JSON.stringify(row, null, 2).slice(0, 1900)}\n\`\`\``);
   }
 
-  @Command({ name: 'eval', description: 'Evaluate code (owner)', slash: true, prefix: true })
+  @Command({ name: 'eval', description: 'Evaluate code (owner)' })
   @RequireOwner()
-  async evalJs(@Context() ctx: CommandContext, @Options() dto: EvalDto): Promise<void> {
+  async evalJs(
+    @Context() ctx: ChatInputCommandInteraction,
+    @Options() dto: EvalDto,
+  ): Promise<void> {
     const started = Date.now();
     try {
       const output = runInNewContext(dto.code, { process, console, Math, Date }, { timeout: 5000 });
@@ -116,10 +127,10 @@ export class AdminCommand {
     }
   }
 
-  @Command({ name: 'restart', description: 'Restart bot (owner)', slash: true, prefix: true })
+  @Command({ name: 'restart', description: 'Restart bot (owner)' })
   @Cooldown(30)
   @RequireOwner()
-  async restart(@Context() ctx: CommandContext): Promise<void> {
+  async restart(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const ok = await confirm(ctx, 'Confirm restart?');
     if (!ok) {
       await ctx.reply('Restart cancelled.');

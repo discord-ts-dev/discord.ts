@@ -28,7 +28,6 @@ export function setup(
     modals: [],
     autocompletes: [],
     events: [],
-    prefix: [],
   };
   const client = {
     on(event: string, fn: (...a: unknown[]) => unknown) {
@@ -40,7 +39,7 @@ export function setup(
   };
   const routing = new DiscordRoutingService(
     client as never,
-    { prefix: '!', intl: undefined, i18n: undefined } as never,
+    { i18n: undefined } as never,
     discovery as never as DiscordDiscoveryService,
     opts.guards ?? new Map(),
     opts.pipes ?? new Map(),
@@ -69,5 +68,4 @@ export async function flush(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-export const MESSAGE_CREATE = Events.MessageCreate;
 export const INTERACTION_CREATE = Events.InteractionCreate;

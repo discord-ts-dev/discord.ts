@@ -7,7 +7,6 @@ import type {
   Handler,
   MenuEntry,
   ModalEntry,
-  PrefixEntry,
   SelectEntry,
   SlashEntry,
 } from './handler.types.js';
@@ -20,7 +19,6 @@ export interface DiscoveryState {
   modals: ModalEntry[];
   autocompletes: AutocompleteEntry[];
   events: EventEntry[];
-  prefix: PrefixEntry[];
 }
 
 const NAME = /^[\p{Ll}\p{Nd}_-]{1,32}$/u;
@@ -38,12 +36,13 @@ function flagsKey(m: {
   nsfw?: boolean;
   defaultMemberPermissions?: string | number | bigint | null;
   contexts?: unknown;
+  dmPermission?: boolean;
 }): string {
   const perms =
     typeof m.defaultMemberPermissions === 'bigint'
       ? m.defaultMemberPermissions.toString()
       : JSON.stringify(m.defaultMemberPermissions ?? null);
-  return `${m.nsfw ?? null}|${perms}|${JSON.stringify(m.contexts ?? null)}`;
+  return `${m.nsfw ?? null}|${perms}|${JSON.stringify(m.contexts ?? null)}|${m.dmPermission ?? null}`;
 }
 
 function checkOptionField(where: string, key: string, f: OptionFieldMeta, errs: string[]): void {
@@ -127,8 +126,8 @@ export function validateDiscoveryState(s: DiscoveryState): void {
     const first = slashKeys.get(key);
     if (first) errs.push(`${w}: duplicate ${label} (also in ${first})`);
     else slashKeys.set(key, w);
-    const top = tops.get(e.top) ?? { flags: flagsKey(e.meta), hasPlain: false, hasSub: false };
-    if (top.flags !== flagsKey(e.meta))
+    const top = tops.get(e.top) ?? { flags: flagsKey(e.flags), hasPlain: false, hasSub: false };
+    if (top.flags !== flagsKey(e.flags))
       errs.push(
         `${w}: /${e.top} mixes nsfw/permissions/contexts with ${top.flags ? 'another entry' : 'defaults'}`,
       );
@@ -156,20 +155,6 @@ export function validateDiscoveryState(s: DiscoveryState): void {
   custom('button', s.buttons);
   custom('select', s.selects);
   custom('modal', s.modals);
-  const triggers = new Map<string, string>();
-  const claim = (w: string, t: string) => {
-    const first = triggers.get(t);
-    if (first) errs.push(`${w}: duplicate prefix trigger "${t}" (also in ${first})`);
-    else triggers.set(t, w);
-  };
-  for (const p of s.prefix) {
-    const w = who(p);
-    if (!p.name || /\s/.test(p.name)) errs.push(`${w}: prefix name must be one word`);
-    if (p.sub !== undefined && /\s/.test(p.sub))
-      errs.push(`${w}: prefix sub-route "${p.sub}" must be one word`);
-    claim(w, `${p.name} ${p.sub ?? ''}`);
-    for (const a of p.aliases) claim(w, `${a} ${p.sub ?? ''}`);
-  }
   for (const e of s.events) if (!e.event) errs.push(`${who(e)}: event is empty`);
   const topNames = new Set(s.slash.map((e) => e.top));
   for (const a of s.autocompletes)

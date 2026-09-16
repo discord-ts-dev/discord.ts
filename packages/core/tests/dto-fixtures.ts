@@ -72,17 +72,3 @@ export class AllDto {
   @AttachmentOption({ name: 'f', description: 'f', required: false })
   f?: string;
 }
-
-export class Coercions {
-  @IntegerOption({ name: 'i', description: 'i', required: false })
-  i?: unknown;
-
-  @NumberOption({ name: 'n', description: 'n', required: false })
-  n?: unknown;
-
-  @BooleanOption({ name: 'b', description: 'b', required: false })
-  b?: unknown;
-
-  @UserOption({ name: 'u', description: 'u', required: false })
-  u?: unknown;
-}

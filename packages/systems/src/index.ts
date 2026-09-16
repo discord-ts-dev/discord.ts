@@ -9,7 +9,7 @@ export { addProgress, assignQuest, completeQuest, getQuest, rerollQuest } from '
 export type { QuestState, QuestWindow } from './quest.js';
 export { addBalance, buy, getBalance, inventory, useItem } from './shop.js';
 export type { BuyResult, ShopItem } from './shop.js';
-export { getSettings, isCommandEnabled, setCommandEnabled, setPrefix } from './guild-settings.js';
+export { getSettings, isCommandEnabled, setCommandEnabled } from './guild-settings.js';
 export type { GuildSettings } from './guild-settings.js';
 export { awardVote } from './vote.js';
 export { buildHelp } from './help.js';
