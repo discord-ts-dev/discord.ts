@@ -1,0 +1,50 @@
+---
+title: Word filter and censor flows
+description: Boundary matching vs substring filtering — pick deliberately.
+---
+
+`@discord.ts/utils` ships word-boundary, case-insensitive matching:
+
+```ts
+import { containsBlocked, maskBlocked } from '@discord.ts/utils';
+
+containsBlocked('hello spam', ['spam']); // true
+containsBlocked('spammer', ['spam']); // false — whole word only
+maskBlocked('hello spam', ['spam']); // 'hello ***'
+```
+
+Use these when the list means _words_: a blocklist where `spam` should not match `spammer`.
+
+An OwO-style guild censor is a different semantic: substring filtering. It catches fragments inside words, which is what makes it feel aggressive. The framework does not ship that on purpose — write it app-side:
+
+```ts
+const censorKey = (guildId: string) => `censor:${guildId}`;
+
+export async function censoredWords(store: Store, guildId: string): Promise<string[]> {
+  const raw = await store.get(censorKey(guildId));
+  return raw ? (JSON.parse(raw) as string[]) : [];
+}
+```
+
+Wire it to a message listener (this recipe mirrors how Paw does it):
+
+```ts
+@Injectable()
+export class CensorListener {
+  @OnEvent(Events.MessageCreate)
+  async onMessage(@Context() message: Message): Promise<void> {
+    if (!message.guild || message.author.bot) return;
+    // no-op unless the operator opts into the privileged MessageContent intent
+    if (!message.client.options.intents.has(GatewayIntentBits.MessageContent)) return;
+    const words = await censoredWords(store, message.guild.id);
+    const text = message.content.toLowerCase();
+    if (!words.some((word) => text.includes(word))) return;
+    await message.delete().catch(() => undefined);
+  }
+}
+```
+
+Two things to keep straight:
+
+- Substring filtering produces false positives (`spam` matches `spammer`); boundary matching produces false negatives. That is a product decision, not a helper choice.
+- A `MessageCreate` listener needs the privileged **Message Content** intent in `discord.config.ts`.

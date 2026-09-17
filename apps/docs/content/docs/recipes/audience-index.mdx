@@ -1,0 +1,38 @@
+---
+title: Audience index
+description: Track known users for broadcasts — and know its ceiling.
+---
+
+Commands that message everyone (`broadcast`, `msgusers`, `giveall`) need an index of users the bot has seen. The small-scale pattern is one capped JSON array under a single key, written on every interaction:
+
+```ts
+import type { Store } from '@discord.ts/systems';
+
+const KEY = 'users';
+const CAP = 10_000;
+
+export async function rememberUser(store: Store, userId: string, cap = CAP): Promise<void> {
+  const raw = await store.get(KEY);
+  const users = raw ? (JSON.parse(raw) as string[]) : [];
+  const next = [userId, ...users.filter((id) => id !== userId)].slice(0, cap);
+  await store.set(KEY, JSON.stringify(next));
+}
+```
+
+Wire it to any interaction:
+
+```ts
+@OnEvent(Events.InteractionCreate)
+async onInteraction(@Context() interaction: { user?: { id?: string } }): Promise<void> {
+  const userId = interaction.user?.id;
+  if (userId) await rememberUser(store, userId);
+}
+```
+
+Know the limits before you rely on it:
+
+- Every call reads and writes the whole array; at tens of thousands of users it dominates the interaction path.
+- One key means one writer. Sharded or multi-process bots will lose updates — move to a `zadd`-backed sorted set or a real database.
+- FIFO eviction makes "known users" approximate. Say so in the command output.
+
+The framework does not ship this as a capability: the single-key shape is a scaling trap, so it stays an app-side choice (ADR 0009).

@@ -24,4 +24,4 @@ await store.incrBy('bal:123', 50);
 | `zrank(key, member, reverse?)`       | 0-based rank or `null`.                                               |
 | `del(key)`                           | Delete string and sorted keys.                                        |
 
-Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. Daily payouts land in `bal:` so they are spendable in the shop.
+Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. Daily payouts land in `bal:` so they are spendable in the shop. App-defined guild values extend the settings prefix as `guild:<id>:<name>` — see the [guild config recipe](/docs/recipes/guild-config).

@@ -15,7 +15,7 @@ const voter = parseVotePayload(body); // string | null
 if (voter) await awardVote(store, voter, 100); // stamps vote: + adds balance
 ```
 
-No signature check here. Verify webhook secrets at the HTTP layer before calling `awardVote()`.
+No signature check here. Verify webhook secrets at the HTTP layer before calling `awardVote()`. The full handler is in the [vote webhook recipe](/docs/recipes/vote-webhook).
 
 ## Help
 
@@ -38,3 +38,5 @@ import { getSettings, setCommandEnabled, isCommandEnabled } from '@discord.ts/sy
 await setCommandEnabled(store, guildId, 'shop', false);
 await isCommandEnabled(store, guildId, 'shop'); // false
 ```
+
+Other per-guild values (verification role, announcement channel, rules) use `guild:<id>:<name>` keys — see the [guild config recipe](/docs/recipes/guild-config).
