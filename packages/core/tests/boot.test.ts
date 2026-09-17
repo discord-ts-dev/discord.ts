@@ -1,26 +1,26 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
-import { Module, PrefixCommand, SlashCommand } from '@discord.ts/common';
+import { Command, Module } from '@discord.ts/common';
 import { DiscordModule, createRuntime } from '../src/index.js';
 
 describe('Boot scan', () => {
-  test('finds slash and prefix handlers from providers', async () => {
+  test('finds command handlers from providers', async () => {
     class PingProbe {
       ping(): void {}
 
-      echo(): void {}
+      roll(): void {}
     }
     const pingDesc = Object.getOwnPropertyDescriptor(PingProbe.prototype, 'ping');
-    SlashCommand({ name: 'ping', description: 'Reply with pong' })(
+    Command({ name: 'ping', description: 'Reply with pong' })(
       PingProbe.prototype,
       'ping',
       pingDesc as PropertyDescriptor,
     );
-    const echoDesc = Object.getOwnPropertyDescriptor(PingProbe.prototype, 'echo');
-    PrefixCommand({ name: 'echo', description: 'Repeat' })(
+    const rollDesc = Object.getOwnPropertyDescriptor(PingProbe.prototype, 'roll');
+    Command({ name: 'roll', description: 'Roll dice' })(
       PingProbe.prototype,
-      'echo',
-      echoDesc as PropertyDescriptor,
+      'roll',
+      rollDesc as PropertyDescriptor,
     );
 
     class ProbeApp {}
@@ -35,11 +35,7 @@ describe('Boot scan', () => {
     try {
       assert.deepStrictEqual(
         discovery.slash.map((s) => s.top),
-        ['ping'],
-      );
-      assert.deepStrictEqual(
-        discovery.prefix.map((p) => p.name),
-        ['echo'],
+        ['ping', 'roll'],
       );
     } finally {
       await discovery.stop();

@@ -9,33 +9,9 @@ import {
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
-type ConfirmTarget =
-  | (RepliableInteraction & {
-      editReply(msg: unknown): Promise<{ createMessageComponentCollector(o: unknown): unknown }>;
-      reply(msg: unknown): Promise<unknown>;
-      replied?: boolean;
-      deferred?: boolean;
-    })
-  // ponytail: structural slot for CommandContext, no dep on common
-  | {
-      reply(msg: unknown): Promise<unknown>;
-      editReply(msg: unknown): Promise<unknown>;
-      replied?: boolean;
-      deferred?: boolean;
-    }
-  | {
-      reply(msg: unknown): Promise<{
-        createMessageComponentCollector(o: unknown): {
-          on(e: string, fn: (i: unknown) => void): void;
-          stop(): void;
-        };
-      }>;
-    };
+type ConfirmTarget = RepliableInteraction;
 
-const isMessage = (t: ConfirmTarget): boolean =>
-  'content' in (t as object) && 'author' in (t as object);
-
-/** Yes/No dialog. Accepts text or an embed payload, interaction or prefix message. True on confirm. */
+/** Yes/No dialog. Accepts text or an embed payload. True on confirm. */
 export async function confirm(
   target: ConfirmTarget,
   question: string | { content?: string; embeds?: EmbedBuilder[] },
@@ -56,9 +32,8 @@ export async function confirm(
     editReply(m: unknown): Promise<{ createMessageComponentCollector(o: unknown): unknown }>;
     reply(m: unknown): Promise<unknown>;
   };
-  const msg = isMessage(target)
-    ? await ix.reply(payload)
-    : ix.replied || ix.deferred
+  const msg =
+    ix.replied || ix.deferred
       ? await ix.editReply(payload)
       : await ix.reply({ ...payload, fetchReply: true });
   return new Promise((resolve) => {

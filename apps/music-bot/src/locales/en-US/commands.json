@@ -1,0 +1,141 @@
+{
+  "autoplay": {
+    "description": "Toggle autoplay mode"
+  },
+  "clearqueue": {
+    "description": "Clear queue"
+  },
+  "join": {
+    "description": "Join voice channel"
+  },
+  "leave": {
+    "description": "Leave voice channel"
+  },
+  "loop": {
+    "description": "Loop current song or queue"
+  },
+  "lyric": {
+    "description": "Get song lyrics"
+  },
+  "nowplaying": {
+    "description": "Show currently playing song"
+  },
+  "pause": {
+    "description": "Pause current song"
+  },
+  "playnext": {
+    "description": "Add song to play next in queue"
+  },
+  "play": {
+    "description": "Play a song from YouTube, Spotify, SoundCloud or link"
+  },
+  "queue": {
+    "description": "Show current queue"
+  },
+  "remove": {
+    "description": "Remove a song from queue"
+  },
+  "replay": {
+    "description": "Replay current song"
+  },
+  "resume": {
+    "description": "Resume current song"
+  },
+  "search": {
+    "description": "Search for a song"
+  },
+  "seek": {
+    "description": "Seek to a specific time in song"
+  },
+  "shuffle": {
+    "description": "Shuffle queue"
+  },
+  "skip": {
+    "description": "Skip current song or to specific song in queue"
+  },
+  "volume": {
+    "description": "Set player volume"
+  },
+  "help": {
+    "description": "Display help menu"
+  },
+  "ping": {
+    "description": "Display bot latency"
+  },
+  "premium": {
+    "description": "Display premium progress"
+  },
+  "language": {
+    "description": "View/edit bot language"
+  },
+  "data": {
+    "description": "View user data"
+  },
+  "eval": {
+    "description": "Run javascript code"
+  },
+  "register": {
+    "description": "Register for user/guild"
+  },
+  "restart": {
+    "description": "Restart bot"
+  },
+  "playlist-add": {
+    "description": "Add song to playlist"
+  },
+  "playlist-create": {
+    "description": "Create playlist"
+  },
+  "playlist-delete": {
+    "description": "Delete playlist"
+  },
+  "playlist-load": {
+    "description": "Use playlist"
+  },
+  "playlist": {
+    "description": "Show playlist"
+  },
+  "playlist-remove": {
+    "description": "Remove song from playlist"
+  },
+  "playlist-steal": {
+    "description": "Steal playlist"
+  },
+  "filters": {
+    "subcommands": {
+      "8d": {
+        "description": "Toggle 8d filter"
+      },
+      "bassboost": {
+        "description": "Toggle bassboost filter"
+      },
+      "karaoke": {
+        "description": "Toggle karaoke filter"
+      },
+      "lowpass": {
+        "description": "Toggle lowpass filter"
+      },
+      "nightcore": {
+        "description": "Toggle nightcore filter"
+      },
+      "pitch": {
+        "description": "Toggle pitch filter"
+      },
+      "reset": {
+        "description": "Reset active filters"
+      },
+      "rotation": {
+        "description": "Toggle rotation filter"
+      },
+      "speed": {
+        "description": "Change song speed"
+      },
+      "tremolo": {
+        "description": "Toggle tremolo filter"
+      },
+      "vibrato": {
+        "description": "Toggle vibrato filter"
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, test } from 'bun:test';
-import { availableLocales, initI18n, resolveLocale, t } from '../src/index.js';
+import { availableLocales, initI18n, lookup, resolveLocale, t } from '../src/index.js';
 
 function fixtures(): string {
   const root = mkdtempSync(join(tmpdir(), 'i18n-'));
@@ -29,6 +29,13 @@ describe('locale catalogs', () => {
   test('t() falls back to the default locale, then echoes', () => {
     assert.equal(t('errors.oops', { what: 'x' }, 'vi'), 'bad x');
     assert.equal(t('missing.key', undefined, 'en'), 'missing.key');
+  });
+
+  test('lookup reads one locale without default fallback', () => {
+    assert.equal(lookup('common:hello', 'vi'), 'chao {name}');
+    assert.equal(lookup('common:hello', 'en'), 'hi {name}');
+    assert.equal(lookup('errors.oops', 'vi'), undefined);
+    assert.equal(lookup('missing.key', 'en'), undefined);
   });
 
   test('resolveLocale prefers interaction, then guild, then fallback', () => {

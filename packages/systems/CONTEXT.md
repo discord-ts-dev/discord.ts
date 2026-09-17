@@ -19,7 +19,7 @@ Ubiquitous language. Glossary only. No implementation.
   via `rerollQuest()`, cashed out via `completeQuest()`.
 - **Shop**: balance plus inventory. Bought via `buy()`, consumed via
   `useItem()`, topped up via `addBalance()`.
-- **Guild settings**: per-guild prefix and per-command enable flags.
+- **Guild settings**: per-guild per-command enable flags.
   Read via `getSettings()`, toggled via `setCommandEnabled()`.
 - **Vote reward**: currency awarded for a bot-list vote webhook. Awarded via
   `awardVote()`; the payload parse is a pure helper in `utils`.

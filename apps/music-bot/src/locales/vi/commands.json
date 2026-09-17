@@ -1,0 +1,141 @@
+{
+  "autoplay": {
+    "description": "Bật/tắt chế độ tự động phát"
+  },
+  "clearqueue": {
+    "description": "Xóa hàng chờ"
+  },
+  "join": {
+    "description": "Tham gia kênh thoại"
+  },
+  "leave": {
+    "description": "Rời khỏi kênh thoại"
+  },
+  "loop": {
+    "description": "Lặp lại bài hát hiện tại hoặc hàng chờ"
+  },
+  "lyric": {
+    "description": "Lấy lời bài hát"
+  },
+  "nowplaying": {
+    "description": "Hiển thị bài hát đang phát hiện tại"
+  },
+  "pause": {
+    "description": "Tạm dừng bài hát hiện tại"
+  },
+  "playnext": {
+    "description": "Thêm bài hát để phát tiếp theo trong hàng chờ"
+  },
+  "play": {
+    "description": "Phát một bài hát từ YouTube, Spotify, SoundCloud hoặc link"
+  },
+  "queue": {
+    "description": "Hiển thị hàng chờ hiện tại"
+  },
+  "remove": {
+    "description": "Xóa một bài hát khỏi hàng chờ"
+  },
+  "replay": {
+    "description": "Phát lại bài hát hiện tại"
+  },
+  "resume": {
+    "description": "Tiếp tục phát bài hát hiện tại"
+  },
+  "search": {
+    "description": "Tìm kiếm một bài hát"
+  },
+  "seek": {
+    "description": "Tua đến một thời điểm nhất định trong bài hát"
+  },
+  "shuffle": {
+    "description": "Trộn hàng chờ"
+  },
+  "skip": {
+    "description": "Bỏ qua bài hát hiện tại hoặc đến một bài hát cụ thể trong hàng chờ"
+  },
+  "volume": {
+    "description": "Đặt âm lượng của trình phát"
+  },
+  "help": {
+    "description": "Hiển thị menu trợ giúp"
+  },
+  "ping": {
+    "description": "Hiển thị độ trễ của bot"
+  },
+  "premium": {
+    "description": "Hiển thị tiến trình premium"
+  },
+  "language": {
+    "description": "Xem/chỉnh sửa ngôn ngữ của bot"
+  },
+  "data": {
+    "description": "Xem data người dùng"
+  },
+  "eval": {
+    "description": "Chạy code javascript"
+  },
+  "register": {
+    "description": "Đăng kí cho người dùng/guild"
+  },
+  "restart": {
+    "description": "Khởi động lại bot"
+  },
+  "playlist-add": {
+    "description": "Thêm bài hát vào playlist"
+  },
+  "playlist-create": {
+    "description": "Tạo playlist"
+  },
+  "playlist-delete": {
+    "description": "Xóa playlist"
+  },
+  "playlist-load": {
+    "description": "Sử dụng playlist"
+  },
+  "playlist": {
+    "description": "Hiển thị playlist"
+  },
+  "playlist-remove": {
+    "description": "Xóa bài hát khỏi playlist"
+  },
+  "playlist-steal": {
+    "description": "Ăn trộm playlist"
+  },
+  "filters": {
+    "subcommands": {
+      "8d": {
+        "description": "Bật/tắt bộ lọc 8d"
+      },
+      "bassboost": {
+        "description": "Bật/tắt bộ lọc bassboost"
+      },
+      "karaoke": {
+        "description": "Bật/tắt bộ lọc karaoke"
+      },
+      "lowpass": {
+        "description": "Bật/tắt bộ lọc lowpass"
+      },
+      "nightcore": {
+        "description": "Bật/tắt bộ lọc nightcore"
+      },
+      "pitch": {
+        "description": "Bật/tắt bộ lọc pitch"
+      },
+      "reset": {
+        "description": "Đặt lại các bộ lọc đang hoạt động"
+      },
+      "rotation": {
+        "description": "Bật/tắt bộ lọc rotation"
+      },
+      "speed": {
+        "description": "Thay đổi tốc độ của bài hát"
+      },
+      "tremolo": {
+        "description": "Bật/tắt bộ lọc tremolo"
+      },
+      "vibrato": {
+        "description": "Bật/tắt bộ lọc vibrato"
+      }
+    }
+  }
+}

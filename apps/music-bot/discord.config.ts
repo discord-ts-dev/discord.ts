@@ -10,18 +10,16 @@ export default defineConfig({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent,
   ],
   development: [],
   skipRegistration: true,
-  prefix: '!',
   shardFile: './src/main.ts',
   respawn: true,
   // ponytail: owner ids unlock @RequireOwner commands. Prefer DISCORD_OWNER_IDS env.
   owners: [],
   i18n: {
-    defaultLocale: 'EnglishUS',
+    defaultLocale: 'en-US',
     localesDir: './src/locales',
-    languages: ['EnglishUS', 'Indonesian', 'Japanese', 'Korean', 'Vietnamese'],
+    languages: ['en-US', 'id', 'ja', 'ko', 'vi'],
   },
 });

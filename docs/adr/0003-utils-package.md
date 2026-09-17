@@ -2,6 +2,9 @@
 
 Date: 2026-09-14
 
+Status: accepted. The prefix-coercion consumer is gone per ADR 0008; the
+helpers stay.
+
 ## Context
 
 Mention and id parsing lived in two places: `core` prefix DTO fill and the

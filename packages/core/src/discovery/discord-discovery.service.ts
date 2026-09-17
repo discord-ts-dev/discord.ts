@@ -6,19 +6,24 @@ import {
   COMMAND_METADATA,
   type CommandGroupMeta,
   CONTEXT_MENU_METADATA,
+  type CommandFlags,
   type CommandMeta,
   type DiscordModuleOptions,
   DiscordLogger,
   MODAL_METADATA,
   ON_EVENT_METADATA,
-  PREFIX_COMMAND_METADATA,
   SELECT_METADATA,
-  SLASH_COMMAND_METADATA,
   SUBCOMMAND_METADATA,
-  type SlashCommandMeta,
+  type SubcommandMeta,
 } from '@discord.ts/common';
 import { DiscordSyncService } from './discord-sync.service.js';
 import { applyOptions, optionsDto } from './discord-args.js';
+import {
+  applyLocalizations,
+  explicitPair,
+  localizedPair,
+  unknownLocales,
+} from './discord-localize.js';
 import { validateDiscoveryState } from './discord-validate.js';
 import type {
   AutocompleteEntry,
@@ -27,7 +32,6 @@ import type {
   Handler,
   MenuEntry,
   ModalEntry,
-  PrefixEntry,
   SelectEntry,
   SlashEntry,
 } from './handler.types.js';
@@ -46,7 +50,6 @@ export class DiscordDiscoveryService {
   readonly modals: ModalEntry[] = [];
   readonly autocompletes: AutocompleteEntry[] = [];
   readonly events: EventEntry[] = [];
-  readonly prefix: PrefixEntry[] = [];
   private readonly logger = new DiscordLogger('Discovery');
 
   constructor(
@@ -58,6 +61,11 @@ export class DiscordDiscoveryService {
   init(instances: object[]): void {
     this.scan(instances);
     validateDiscoveryState(this);
+    const unknown = unknownLocales();
+    if (unknown.length)
+      this.logger.warn(
+        `i18n locales not recognized by Discord, skipped for command metadata: ${unknown.join(', ')}`,
+      );
     this.logRoutes();
   }
 
@@ -73,12 +81,16 @@ export class DiscordDiscoveryService {
 
   buildJson(): unknown[] {
     const tops = new Map<string, SlashCommandBuilder>();
-    const groups = new Map<string, Map<string, { desc: string; subs: SlashEntry[] }>>();
+    const groups = new Map<
+      string,
+      Map<string, { localizations?: SlashEntry['groupLocalizations']; subs: SlashEntry[] }>
+    >();
     const topOf = (s: SlashEntry): SlashCommandBuilder => {
       let b = tops.get(s.top);
       if (!b) {
         b = new SlashCommandBuilder().setName(s.top).setDescription(s.topDescription);
-        this.applyCommandFlags(b, s.meta);
+        applyLocalizations(b, localizedPair(`commands:${s.top}`, s.topLocalizations));
+        this.applyCommandFlags(b, s.flags);
         tops.set(s.top, b);
       }
       return b;
@@ -86,15 +98,17 @@ export class DiscordDiscoveryService {
     for (const s of this.slash) {
       const b = topOf(s);
       if (!s.sub) {
-        applyOptions(b, optionsDto(s));
+        applyOptions(b, optionsDto(s), `commands:${s.top}`);
         continue;
       }
+      const subKey = `commands:${s.top}.subcommands.${s.sub}`;
       if (!s.group) {
         const dto = optionsDto(s);
         const desc = s.subDescription ?? s.sub ?? '';
         b.addSubcommand((sub) => {
           sub.setName(s.sub as string).setDescription(desc);
-          applyOptions(sub as unknown as SlashCommandBuilder, dto);
+          applyLocalizations(sub, localizedPair(subKey, s.subLocalizations));
+          applyOptions(sub as unknown as SlashCommandBuilder, dto, subKey);
           return sub;
         });
         continue;
@@ -104,10 +118,7 @@ export class DiscordDiscoveryService {
         byGroup = new Map();
         groups.set(s.top, byGroup);
       }
-      const g = byGroup.get(s.group) ?? {
-        desc: s.groupDescription ?? s.group,
-        subs: [] as SlashEntry[],
-      };
+      const g = byGroup.get(s.group) ?? { localizations: s.groupLocalizations, subs: [] };
       g.subs.push(s);
       byGroup.set(s.group, g);
     }
@@ -115,14 +126,21 @@ export class DiscordDiscoveryService {
       const b = tops.get(top);
       if (!b) continue;
       for (const [group, g] of byGroup) {
+        const desc = g.subs[0]?.groupDescription ?? group;
         b.addSubcommandGroup((grp) => {
-          grp.setName(group).setDescription(g.desc);
+          grp.setName(group).setDescription(desc);
+          applyLocalizations(
+            grp,
+            localizedPair(`commands:${top}.groups.${group}`, g.localizations),
+          );
           for (const s of g.subs) {
+            const subKey = `commands:${top}.subcommands.${s.sub}`;
             const dto = optionsDto(s);
-            const desc = s.subDescription ?? s.sub ?? '';
+            const subDesc = s.subDescription ?? s.sub ?? '';
             grp.addSubcommand((sub) => {
-              sub.setName(s.sub as string).setDescription(desc);
-              applyOptions(sub as unknown as SlashCommandBuilder, dto);
+              sub.setName(s.sub as string).setDescription(subDesc);
+              applyLocalizations(sub, localizedPair(subKey, s.subLocalizations));
+              applyOptions(sub as unknown as SlashCommandBuilder, dto, subKey);
               return sub;
             });
           }
@@ -142,13 +160,17 @@ export class DiscordDiscoveryService {
   }
 
   private applyCommandFlags(
-    b: Pick<SlashCommandBuilder, 'setNSFW' | 'setDefaultMemberPermissions' | 'setContexts'>,
-    meta: SlashCommandMeta,
+    b: Pick<
+      SlashCommandBuilder,
+      'setNSFW' | 'setDefaultMemberPermissions' | 'setContexts' | 'setDMPermission'
+    >,
+    flags: CommandFlags,
   ): void {
-    if (meta.nsfw !== undefined) b.setNSFW(meta.nsfw);
-    if (meta.defaultMemberPermissions !== undefined)
-      b.setDefaultMemberPermissions(meta.defaultMemberPermissions);
-    if (meta.contexts !== undefined) b.setContexts(...meta.contexts);
+    if (flags.nsfw !== undefined) b.setNSFW(flags.nsfw);
+    if (flags.defaultMemberPermissions !== undefined)
+      b.setDefaultMemberPermissions(flags.defaultMemberPermissions);
+    if (flags.contexts !== undefined) b.setContexts(...flags.contexts);
+    if (flags.dmPermission !== undefined) b.setDMPermission(flags.dmPermission);
   }
 
   // ponytail: Nest RoutesResolver style, one line per route plus summary
@@ -163,16 +185,12 @@ export class DiscordDiscoveryService {
       this.logger.route(
         `Menu ${paint('green', m.name)} -> ${m.instance.constructor.name}.${m.method}`,
       );
-    for (const p of this.prefix)
-      this.logger.route(
-        `Prefix ${paint('green', `!${p.name}`)} -> ${p.instance.constructor.name}.${p.method}`,
-      );
     for (const e of this.events)
       this.logger.route(
         `Event ${paint('yellow', e.event)} -> ${e.instance.constructor.name}.${e.method}`,
       );
     this.logger.log(
-      `Discovered ${this.slash.length} slash, ${this.menus.length} menus, ${this.buttons.length} buttons, ${this.selects.length} selects, ${this.modals.length} modals, ${this.events.length} events, ${this.prefix.length} prefix`,
+      `Discovered ${this.slash.length} slash, ${this.menus.length} menus, ${this.buttons.length} buttons, ${this.selects.length} selects, ${this.modals.length} modals, ${this.events.length} events`,
     );
   }
 
@@ -190,73 +208,62 @@ export class DiscordDiscoveryService {
         if (typeof fn !== 'function') continue;
         const base = { instance, method: name } as Handler;
 
-        const unified = Reflect.getMetadata(COMMAND_METADATA, fn) as CommandMeta | undefined;
-        const legacy = Reflect.getMetadata(SLASH_COMMAND_METADATA, fn) as
-          | SlashCommandMeta
-          | undefined;
-        // ponytail: legacy SLASH key fallback, remove next major
-        const cmd: CommandMeta | undefined =
-          unified ?? (legacy ? { ...legacy, slash: true, prefix: false } : undefined);
-        if (cmd && !cmd.slash && !cmd.prefix)
-          throw new Error(
-            `[discord.ts] @Command ${instance.constructor.name}.${name}: set slash or prefix to true.`,
-          );
-        const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as
-          | { name: string; description: string }
-          | undefined;
+        const cmd = Reflect.getMetadata(COMMAND_METADATA, fn) as CommandMeta | undefined;
+        const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as SubcommandMeta | undefined;
         const methodGroup = Reflect.getMetadata(COMMAND_GROUP_METADATA, fn) as
-          | { name: string }
+          | Partial<CommandGroupMeta>
           | undefined;
-        // SlashCommandMeta carries no slash/prefix/aliases surface flags.
-        const toSlashMeta = (c: CommandMeta): SlashCommandMeta => ({
-          name: c.name,
-          description: c.description,
-          nsfw: c.nsfw,
-          defaultMemberPermissions: c.defaultMemberPermissions,
-          contexts: c.contexts,
-        });
-        if (cmd?.slash && !sub) {
+        if (cmd && !sub) {
           this.slash.push({
             ...base,
             top: cmd.name,
             topDescription: cmd.description,
-            meta: toSlashMeta(cmd),
+            topLocalizations: explicitPair(cmd),
+            flags: cmd,
           });
         } else if (sub && (group ?? methodGroup)) {
           const top = group?.name ?? cmd?.name ?? methodGroup?.name ?? sub.name;
           const topDescription = group?.description ?? cmd?.description ?? sub.description;
-          // ponytail: class group owns both surfaces. Prefix has no nesting,
-          // so only the class flag (not method subgroups) feeds prefix routes.
-          if (group?.slash !== false)
-            this.slash.push({
-              ...base,
-              top,
-              topDescription,
-              group: group && methodGroup ? methodGroup.name : undefined,
-              groupDescription: group?.description,
-              sub: sub.name,
-              subDescription: sub.description,
-              meta: cmd ? toSlashMeta(cmd) : { name: top, description: topDescription },
-            });
-          if (group?.prefix === true)
-            this.prefix.push({ ...base, name: group.name, aliases: [], sub: sub.name });
-        } else if (sub && cmd?.slash) {
+          this.slash.push({
+            ...base,
+            top,
+            topDescription,
+            topLocalizations: group
+              ? explicitPair(group)
+              : cmd
+                ? explicitPair(cmd)
+                : methodGroup
+                  ? {
+                      name: methodGroup.nameLocalizations,
+                      description: sub.descriptionLocalizations,
+                    }
+                  : explicitPair(sub),
+            group: group && methodGroup ? methodGroup.name : undefined,
+            groupDescription: group?.description,
+            groupLocalizations:
+              group && methodGroup
+                ? {
+                    name: methodGroup.nameLocalizations,
+                    description: group.descriptionLocalizations,
+                  }
+                : undefined,
+            sub: sub.name,
+            subDescription: sub.description,
+            subLocalizations: explicitPair(sub),
+            flags: cmd ?? {},
+          });
+        } else if (sub && cmd) {
           this.slash.push({
             ...base,
             top: cmd.name,
             topDescription: cmd.description,
+            topLocalizations: explicitPair(cmd),
             sub: sub.name,
             subDescription: sub.description,
-            meta: toSlashMeta(cmd),
+            subLocalizations: explicitPair(sub),
+            flags: cmd,
           });
         }
-        if (cmd?.prefix)
-          this.prefix.push({
-            ...base,
-            name: cmd.name,
-            aliases: cmd.aliases ?? [],
-            sub: sub?.name,
-          });
 
         const menu = Reflect.getMetadata(CONTEXT_MENU_METADATA, fn) as
           | { name: string; type: MenuEntry['type'] }
@@ -287,12 +294,6 @@ export class DiscordDiscoveryService {
           | { event: string; once: boolean }
           | undefined;
         if (ev) this.events.push({ ...base, ...ev });
-
-        const pre = Reflect.getMetadata(PREFIX_COMMAND_METADATA, fn) as
-          | { name: string; aliases?: string[] }
-          | undefined;
-        if (pre)
-          this.prefix.push({ ...base, name: pre.name, aliases: pre.aliases ?? [], sub: sub?.name });
       }
     }
   }

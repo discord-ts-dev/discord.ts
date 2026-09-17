@@ -14,8 +14,6 @@ export interface Captured {
 }
 
 export interface FakeOptions {
-  /** Prefix-message shape: has content + author. */
-  message?: boolean;
   replied?: boolean;
   deferred?: boolean;
   /** Given the customIds in the sent buttons, the ids to collect, in order. Defaults to none. */
@@ -33,7 +31,7 @@ export function customIdsOf(payload: unknown): string[] {
   return (row?.components ?? []).map((c) => c.data.custom_id);
 }
 
-/** Fake interaction/message target with a synchronous component collector. */
+/** Fake interaction target with a synchronous component collector. */
 export function fakeTarget(opts: FakeOptions = {}) {
   const captured: Captured = { replies: [], edits: [], updates: [], nudges: [] };
   const msg = {
@@ -70,9 +68,5 @@ export function fakeTarget(opts: FakeOptions = {}) {
     replied: opts.replied ?? false,
     deferred: opts.deferred ?? false,
   };
-  if (opts.message) {
-    target['content'] = 'hello';
-    target['author'] = { id: 'u1' };
-  }
   return { target, captured, msg };
 }

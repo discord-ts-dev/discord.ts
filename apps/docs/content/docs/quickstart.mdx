@@ -23,12 +23,7 @@ import { defineConfig } from '@discord.ts/core';
 export default defineConfig({
   token: 'test-token',
   clientId: 'test-client',
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-  prefix: '!',
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 ```
 
@@ -37,13 +32,14 @@ Env wins over file: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`, `S
 ## 3. Declare
 
 ```ts
-import { Injectable, Command, Context, CommandContext } from '@discord.ts/common';
+import { Injectable, Command, Context } from '@discord.ts/common';
+import type { ChatInputCommandInteraction } from 'discord.js';
 
 @Injectable()
 export class PingCommand {
-  @Command({ name: 'ping', description: 'Reply with pong', slash: true, prefix: true })
-  async handle(@Context() ctx: CommandContext) {
-    await ctx.reply('pong');
+  @Command({ name: 'ping', description: 'Reply with pong' })
+  async handle(@Context() interaction: ChatInputCommandInteraction) {
+    await interaction.reply('pong');
   }
 }
 ```

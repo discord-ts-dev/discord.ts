@@ -76,7 +76,6 @@ describe('loadDiscordConfig', () => {
     await withEnv({}, async () => {
       const cfg = await loadDiscordConfig({ cwd: tmp(), skipValidation: true });
       assert.deepEqual(cfg, {
-        prefix: '!',
         development: [],
         skipRegistration: false,
       });
@@ -87,13 +86,13 @@ describe('loadDiscordConfig', () => {
     const cwd = tmp();
     fs.writeFileSync(
       path.join(cwd, 'discord.config.ts'),
-      `export default { token: 'file-token', clientId: 'file-client', prefix: '?', owners: ['file-owner'] };\n`,
+      `export default { token: 'file-token', clientId: 'file-client', respawn: false, owners: ['file-owner'] };\n`,
     );
     await withEnv({ DISCORD_TOKEN: 'env-token', DISCORD_OWNER_IDS: 'a, b ,' }, async () => {
       const cfg = await loadDiscordConfig({ cwd });
       assert.equal(cfg.token, 'env-token');
       assert.equal(cfg.clientId, 'file-client');
-      assert.equal(cfg.prefix, '?');
+      assert.equal(cfg.respawn, false);
       assert.deepEqual(cfg.owners, ['a', 'b']);
     });
   });

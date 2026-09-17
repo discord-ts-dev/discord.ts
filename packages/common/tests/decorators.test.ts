@@ -10,6 +10,7 @@ import {
   COMMAND_METADATA,
   CONTEXT_MENU_METADATA,
   ChannelSelect,
+  Command,
   Context,
   ContextMenu,
   Guild,
@@ -26,13 +27,8 @@ import {
   PARAM_GUILD_METADATA,
   PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
-  PARAM_PREFIX_ARGS_METADATA,
-  PREFIX_COMMAND_METADATA,
-  PrefixArgs,
-  PrefixCommand,
   RoleSelect,
   SELECT_METADATA,
-  SlashCommand,
   StringSelect,
   UserSelect,
 } from '../src/index.js';
@@ -51,11 +47,11 @@ const descriptor = (): PropertyDescriptor =>
 
 const metaOf = (key: string): unknown => Reflect.getMetadata(key, Probe.prototype.run);
 
-describe('SlashCommand', () => {
-  test('publishes name and description under the unified command key', () => {
+describe('Command', () => {
+  test('publishes the metadata under the unified command key', () => {
     const meta = { name: 'ping', description: 'Reply with pong' };
-    loose(SlashCommand(meta))(Probe.prototype, 'run', descriptor());
-    assert.deepEqual(metaOf(COMMAND_METADATA), { ...meta, slash: true, prefix: false });
+    loose(Command(meta))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(COMMAND_METADATA), meta);
   });
 });
 
@@ -106,25 +102,6 @@ describe('event decorators', () => {
     assert.deepEqual(metaOf(ON_EVENT_METADATA), { event: 'messageCreate', once: false });
     loose(OnceEvent('ready'))(Probe.prototype, 'run', descriptor());
     assert.deepEqual(metaOf(ON_EVENT_METADATA), { event: 'ready', once: true });
-  });
-});
-
-describe('PrefixCommand and PrefixArgs', () => {
-  test('stores name, aliases and description', () => {
-    const meta = { name: 'echo', aliases: ['e'], description: 'Echo text' };
-    loose(PrefixCommand(meta))(Probe.prototype, 'run', descriptor());
-    assert.deepEqual(metaOf(PREFIX_COMMAND_METADATA), meta);
-  });
-
-  test('collects parameter indexes in order', () => {
-    looseParam(PrefixArgs())(Probe.prototype, 'run', 1);
-    looseParam(PrefixArgs())(Probe.prototype, 'run', 2);
-    assert.deepEqual(metaOf(PARAM_PREFIX_ARGS_METADATA), [1, 2]);
-  });
-
-  test('is a no-op without a method key', () => {
-    looseParam(PrefixArgs())(Probe.prototype, undefined, 0);
-    assert.equal(Reflect.getMetadata(PARAM_PREFIX_ARGS_METADATA, Probe.prototype), undefined);
   });
 });
 

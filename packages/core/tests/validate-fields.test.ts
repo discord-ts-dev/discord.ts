@@ -18,7 +18,6 @@ function base(partial: Partial<DiscoveryState> = {}): DiscoveryState {
     modals: [],
     autocompletes: [],
     events: [],
-    prefix: [],
     ...partial,
   };
 }
@@ -29,7 +28,7 @@ function slash(over: Partial<SlashEntry> = {}): SlashEntry {
     method: 'run',
     top: 'ping',
     topDescription: 'Pong',
-    meta: { name: 'ping', description: 'Pong' },
+    flags: {},
     ...over,
   };
 }
