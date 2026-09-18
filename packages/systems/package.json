@@ -1,6 +1,6 @@
 {
   "name": "@discord.ts/systems",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "discord.ts bot systems: store, scheduler, daily, quests, leaderboard, shop",
   "license": "MIT",
   "files": [

@@ -1,6 +1,6 @@
 {
   "name": "@discord.ts/utils",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "discord.ts pure helpers: mentions, ids, message guards",
   "license": "MIT",
   "files": [

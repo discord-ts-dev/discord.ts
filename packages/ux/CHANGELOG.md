@@ -1,5 +1,14 @@
 # @discord.ts/ux
 
+## 1.1.0
+
+### Minor Changes
+
+- 39094f4: Add `replyEphemeral()`: best-effort ephemeral replies that skip when the
+  interaction was already answered and never throw. Core guards and the routing
+  error path now share it instead of carrying six copies of the same reply block.
+- 6dc5e6c: Slash-only command surface. Remove prefix commands, `@PrefixCommand` / `@PrefixArgs`, `@SlashCommand`, `CommandContext`, the `prefix` config option, `setPrefix()`, `isMessage()`, the prefix DTO fill path, and the per-guild prefix setting. Handlers take the raw interaction via `@Context()`. Add metadata localizations: command and option `name_localizations` / `description_localizations` fill from `commands:<name>...` catalog keys (Discord locale codes only, one boot warning for others), explicit `LocalizationMap` fields override per locale, and commands gain `dmPermission`. `lookup()` reads one locale without default fallback.
+
 ## 1.0.0
 
 ### Major Changes
