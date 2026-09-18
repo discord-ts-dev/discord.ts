@@ -44,6 +44,8 @@ containsBlocked('hello spam', ['spam']); // true
 maskBlocked('hello spam', ['spam']); // 'hello ***'
 ```
 
+These match whole words. For substring filtering (an OwO-style censor), see the [word filter recipe](/docs/recipes/word-filter).
+
 ## Vote payload
 
 top.gg webhook bodies carry the voter id in `user`. Parsing is here; awarding is Store-backed, so it lives in `systems`.
@@ -53,3 +55,5 @@ import { parseVotePayload } from '@discord.ts/utils';
 
 const voter = parseVotePayload(body); // string | null
 ```
+
+For a webhook handler with auth and dedupe, see the [vote webhook recipe](/docs/recipes/vote-webhook).

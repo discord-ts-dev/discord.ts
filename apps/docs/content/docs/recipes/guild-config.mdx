@@ -1,0 +1,38 @@
+---
+title: Guild config beyond enable flags
+description: Extra per-guild values over Store, without widening GuildSettings.
+---
+
+`GuildSettings` deliberately holds one thing: the disabled-command list, read and written through `getSettings()` / `setCommandEnabled()` / `isCommandEnabled()`.
+
+Extra per-guild values — verification role, announcement channel, rules text — use the same key namespace with a suffix:
+
+```ts
+import type { Store } from '@discord.ts/systems';
+
+const guildKey = (guildId: string, name: string) => `guild:${guildId}:${name}`;
+
+export async function getGuildValue<T>(
+  store: Store,
+  guildId: string,
+  name: string,
+): Promise<T | null> {
+  const raw = await store.get(guildKey(guildId, name));
+  return raw === null ? null : (JSON.parse(raw) as T);
+}
+
+export async function setGuildValue<T>(
+  store: Store,
+  guildId: string,
+  name: string,
+  value: T,
+): Promise<void> {
+  await store.set(guildKey(guildId, name), JSON.stringify(value));
+}
+```
+
+Notes:
+
+- `guild:<id>` (settings) and `guild:<id>:<name>` (your values) are distinct keys and do not collide.
+- JSON-encode values so numbers and objects round-trip.
+- Whole-value read-modify-write: keep guild config small and written from one process.

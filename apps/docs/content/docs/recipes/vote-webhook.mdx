@@ -1,0 +1,28 @@
+---
+title: Vote webhook rewards
+description: Parse a bot-list vote and award it — the HTTP layer stays yours.
+---
+
+The parse is a pure helper and the award is Store-backed; both ship. The webhook handler itself is app-side because hosting and secrets are deployment decisions.
+
+```ts
+import { parseVotePayload } from '@discord.ts/utils';
+import { awardVote, type Store } from '@discord.ts/systems';
+
+export function voteHandler(store: Store, secret: string) {
+  return async (req: Request): Promise<Response> => {
+    if (req.headers.get('authorization') !== `Bearer ${secret}`) {
+      return new Response('unauthorized', { status: 401 });
+    }
+    const body = await req.json();
+    const userId = parseVotePayload(body);
+    if (!userId) return new Response('bad payload', { status: 400 });
+    await awardVote(store, userId, 100);
+    return new Response('ok');
+  };
+}
+```
+
+`awardVote(store, userId, amount)` credits the balance and writes a `vote:<userId>` timestamp you can read to dedupe weekend double-votes or gate a reminder.
+
+`parseVotePayload()` reads the top.gg body shape (`user`). It does **not** verify signatures — check the webhook secret in the HTTP layer before calling it.

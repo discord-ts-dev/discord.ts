@@ -10,6 +10,8 @@
     "utils",
     "systems",
     "ux",
-    "example"
+    "example",
+    "---Recipes---",
+    "recipes"
   ]
 }
