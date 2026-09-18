@@ -137,6 +137,23 @@ describe('FileStore sorted sets', () => {
     ]);
   });
 
+  test('equal scores order by member', async () => {
+    const s = new FileStore(tmpFile());
+    await s.zadd('lb', 10, 'c');
+    await s.zadd('lb', 10, 'a');
+    await s.zadd('lb', 10, 'b');
+    expect(await s.zrange('lb', 0, -1)).toEqual([
+      { member: 'a', score: 10 },
+      { member: 'b', score: 10 },
+      { member: 'c', score: 10 },
+    ]);
+    expect(await s.zrange('lb', 0, -1, true)).toEqual([
+      { member: 'c', score: 10 },
+      { member: 'b', score: 10 },
+      { member: 'a', score: 10 },
+    ]);
+  });
+
   test('zincrBy starts from zero and persists', async () => {
     const file = tmpFile();
     const s = new FileStore(file);

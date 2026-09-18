@@ -9,6 +9,7 @@
         "@discord.ts/common": "workspace:*",
         "@discord.ts/core": "workspace:*",
         "@discord.ts/i18n": "workspace:*",
+        "@discord.ts/redis": "workspace:*",
         "@discord.ts/systems": "workspace:*",
         "@discord.ts/utils": "workspace:*",
         "@discord.ts/ux": "workspace:*",
@@ -64,6 +65,8 @@
         "@discord.ts/cli": "workspace:*",
         "@discord.ts/common": "workspace:*",
         "@discord.ts/core": "workspace:*",
+        "@discord.ts/redis": "workspace:*",
+        "@discord.ts/systems": "workspace:*",
         "@discord.ts/utils": "workspace:*",
         "@discord.ts/ux": "workspace:*",
         "class-validator": "^0.15.1",
@@ -132,7 +135,7 @@
     },
     "packages/common": {
       "name": "@discord.ts/common",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": {
         "discord.js": "^14.0.0",
         "reflect-metadata": "^0.2.2",
@@ -148,7 +151,7 @@
     },
     "packages/core": {
       "name": "@discord.ts/core",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": {
         "@discord.ts/common": "workspace:*",
         "@discord.ts/i18n": "workspace:*",
@@ -169,7 +172,7 @@
     },
     "packages/i18n": {
       "name": "@discord.ts/i18n",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@discord.ts/common": "workspace:*",
       },
@@ -178,16 +181,27 @@
         "typescript": "^7.0.2",
       },
     },
+    "packages/redis": {
+      "name": "@discord.ts/redis",
+      "version": "0.1.0",
+      "dependencies": {
+        "@discord.ts/common": "workspace:*",
+        "@discord.ts/systems": "workspace:*",
+      },
+      "devDependencies": {
+        "typescript": "^7.0.2",
+      },
+    },
     "packages/systems": {
       "name": "@discord.ts/systems",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "devDependencies": {
         "typescript": "^7.0.2",
       },
     },
     "packages/utils": {
       "name": "@discord.ts/utils",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "discord.js": "^14.0.0",
       },
@@ -200,7 +214,7 @@
     },
     "packages/ux": {
       "name": "@discord.ts/ux",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": {
         "discord.js": "^14.0.0",
       },
@@ -272,6 +286,8 @@
     "@discord.ts/core": ["@discord.ts/core@workspace:packages/core"],
 
     "@discord.ts/i18n": ["@discord.ts/i18n@workspace:packages/i18n"],
+
+    "@discord.ts/redis": ["@discord.ts/redis@workspace:packages/redis"],
 
     "@discord.ts/systems": ["@discord.ts/systems@workspace:packages/systems"],
 

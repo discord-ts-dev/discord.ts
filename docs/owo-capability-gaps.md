@@ -35,7 +35,7 @@ Modules.
 4. **Author lock → `ux`** — [#47](https://github.com/discord-ts-dev/discord.ts/issues/47).
    Only `pickOne` has `allowedUserId`; five Paw button flows hand-roll checks.
 5. **`FileStore` → `systems`** — [#48](https://github.com/discord-ts-dev/discord.ts/issues/48).
-   The port shipped with no usable production adapter. ADR 0009's port exception; amends ADR 0004.
+   The production adapter shipped separately as `@discord.ts/redis` ([#52](https://github.com/discord-ts-dev/discord.ts/issues/52), ADR 0011); `FileStore` remains the single-process reference adapter. ADR 0009's port exception; amends ADR 0004.
 
 ## Systems dynamism review (2026-09-18)
 
@@ -44,7 +44,8 @@ generics, policy knobs, runner limits, and stored-value migrations. Verdicts
 apply ADR 0009 — capabilities, not a configurable game engine. Consumers
 counted in-repo: `apps/owo` is the only app on daily / shop / quests / boards;
 `apps/music-bot` and `apps/example` use none of them, and no app calls
-`awardVote` or `Store.update` yet.
+`awardVote` or `Store.update` yet. (Afterwards, ADR 0011 added
+`@discord.ts/redis`, and `apps/example` demos a leaderboard over it.)
 
 - **Hooks in helpers — reject.** `claimDaily` / `buy` take no callbacks
   (`packages/systems/src/daily.ts:21`, `shop.ts:45`), and side effects run
@@ -96,6 +97,10 @@ actual contract.
   Version fields and lazy upgrades; the port has no schema and no key scan.
 - **Audience index** — `apps/docs/content/docs/recipes/audience-index.mdx`.
   Capped single-key index for broadcasts; documented scaling ceiling, deliberately not a capability.
+- **Prisma for app data** — `apps/docs/content/docs/recipes/prisma.mdx`.
+  Provider-registry wiring, ready-listener hydration, and write-through around app tables.
+- **Drizzle over bun:sqlite** — `apps/docs/content/docs/recipes/drizzle.mdx`.
+  SQL-first app tables with the same provider shape; no native build step.
 
 ## Considered, deferred (single consumer)
 
@@ -121,6 +126,7 @@ canvas, trade/giveaway/marriage rules, relations and luck, economy policy
 ## Original P0–P2 list, resolved
 
 - **P0** — Store port: shipped (ADR 0004). Task runner: shipped (ADR 0005).
+  Production Store adapter: shipped (`@discord.ts/redis`, ADR 0011).
 - **P1** — daily/streak, `topN`/`rankOf`, amount parser: shipped.
   `weightedPick`: #44. Help from registry: #45. Guild enable guard: #46.
   Author-only guard: #47.

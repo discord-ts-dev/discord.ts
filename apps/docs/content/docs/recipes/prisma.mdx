@@ -1,0 +1,75 @@
+---
+title: Prisma for app data
+description: Postgres tables beside the systems Store, injected through the provider registry.
+---
+
+Prisma is app-side: your schema, your migrations, your queries. Use it for app-owned tables — guild config, playlists, premium — while the systems [Store](/docs/systems/store) keeps game state. The two coexist; neither knows about the other.
+
+```prisma
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Guild {
+  guildId         String  @id
+  announceChannel String?
+  welcomeRole     String?
+}
+```
+
+```ts
+// src/db.ts
+import { PrismaClient } from '@prisma/client';
+
+export const PRISMA = 'app:prisma';
+export type Prisma = PrismaClient;
+
+// Prisma connects on first query; construction only reads DATABASE_URL.
+export const prisma = new PrismaClient();
+```
+
+```ts
+// src/app.module.ts
+import { Module, type Provider } from '@discord.ts/common';
+import { DiscordModule } from '@discord.ts/core';
+import { PRISMA, prisma } from './db.js';
+import { ConfigCommand } from './commands/config.command.js';
+
+const database: Provider[] = process.env.DATABASE_URL
+  ? [{ provide: PRISMA, useValue: prisma }]
+  : [];
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [...database, ConfigCommand],
+})
+export class AppModule {}
+```
+
+```ts
+// src/commands/config.command.ts
+import { Command, Context, Inject, Injectable } from '@discord.ts/common';
+import type { ChatInputCommandInteraction } from 'discord.js';
+import { PRISMA, type Prisma } from '../db.js';
+
+@Injectable()
+export class ConfigCommand {
+  constructor(@Inject(PRISMA) private readonly prisma: Prisma) {}
+
+  @Command({ name: 'config', description: 'Show this guild‘s config' })
+  async show(@Context() interaction: ChatInputCommandInteraction): Promise<void> {
+    const guild = await this.prisma.guild.findUnique({
+      where: { guildId: interaction.guildId ?? '' },
+    });
+    await interaction.reply(guild?.announceChannel ?? 'No announcement channel set.');
+  }
+}
+```
+
+Notes:
+
+- The provider registry is synchronous, so value providers hand out an already-constructed client. There is no `useFactory` and no lifecycle hook: hydrate caches from a `@OnceEvent(Events.ClientReady)` listener, write through to Prisma in the same handler, and call `prisma.$disconnect()` wherever your process handles shutdown.
+- Gate the provider on `DATABASE_URL` (as above) when the bot must still boot without a database; consumers then guard on a missing token themselves or you register a null-object client instead.
+- `bunx prisma generate` before typecheck/build, and `bunx prisma migrate deploy` on deploy. Prisma 7 requires a driver adapter — see Prisma's upgrade guide if you move past the 6.x line this repo's music-bot uses.
