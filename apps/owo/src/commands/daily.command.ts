@@ -18,6 +18,7 @@ export class DailyCommand {
       amount: GAME.dailyAmount * dailyMultiplier(tier),
       streakBonus: GAME.dailyStreakBonus,
       timeZone: GAME.dailyTimeZone,
+      mirrorBoard: WEALTH_BOARD,
     });
 
     const embed = new EmbedBuilder().setColor(COLORS.gold).setTitle(tt(ctx, 'game:daily.title'));
@@ -28,7 +29,6 @@ export class DailyCommand {
     }
 
     await addScore(store, XP_BOARD, ctx.user.id, GAME.dailyXp);
-    await addScore(store, WEALTH_BOARD, ctx.user.id, result.amount);
     embed.setDescription(
       tt(ctx, 'game:daily.claimed', {
         amount: fmt(result.amount),

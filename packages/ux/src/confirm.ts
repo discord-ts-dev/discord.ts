@@ -6,6 +6,7 @@ import {
   type EmbedBuilder,
   type RepliableInteraction,
 } from 'discord.js';
+import { deliver } from './reply.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
@@ -25,17 +26,8 @@ export async function confirm(
     new ButtonBuilder().setCustomId(no).setLabel('Cancel').setStyle(ButtonStyle.Secondary),
   );
   const body = typeof question === 'string' ? { content: question } : question;
-  const payload = { ...body, components: [row] };
-  const ix = target as {
-    replied?: boolean;
-    deferred?: boolean;
-    editReply(m: unknown): Promise<{ createMessageComponentCollector(o: unknown): unknown }>;
-    reply(m: unknown): Promise<unknown>;
-  };
-  const msg =
-    ix.replied || ix.deferred
-      ? await ix.editReply(payload)
-      : await ix.reply({ ...payload, fetchReply: true });
+  const msg = await deliver(target, { ...body, components: [row] });
+  if (!msg) return false;
   return new Promise((resolve) => {
     const collector = (
       msg as unknown as {

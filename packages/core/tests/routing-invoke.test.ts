@@ -172,7 +172,7 @@ describe('DiscordRoutingService pipes and guards', () => {
     assert.deepEqual(h.calls, ['allowed']);
   });
 
-  test('uses guard instances from the map and honors replyError edge cases', async () => {
+  test('uses guard instances from the registry and honors replyError edge cases', async () => {
     const used: string[] = [];
     class MapGuard {
       canActivate(): boolean {
@@ -180,7 +180,7 @@ describe('DiscordRoutingService pipes and guards', () => {
         return true;
       }
     }
-    const h = setup({ guards: new Map([[MapGuard, new MapGuard()]]) });
+    const h = setup({ guards: [MapGuard] });
     const handler = handlerFor(h, 'run');
     onMethod(handler, UseGuards(MapGuard));
     await invokeWith(h, handler, {});

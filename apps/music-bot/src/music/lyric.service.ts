@@ -83,5 +83,3 @@ export class LyricService {
     return chunks;
   }
 }
-
-export const lyricService = new LyricService();

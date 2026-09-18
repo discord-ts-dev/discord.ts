@@ -33,10 +33,12 @@ describe('scan of subcommands without a class group', () => {
     apply(Subcommand({ name: 'one', description: 'One' }), Probe.prototype, 'run');
     const discovery = service();
     discovery.init([new Probe()]);
-    assert.equal(discovery.slash[0]?.top, 'plain');
-    assert.equal(discovery.slash[0]?.sub, 'one');
-    assert.equal(discovery.slash[0]?.group, undefined);
-    assert.equal(discovery.slash[0]?.topLocalizations, undefined);
+    const def = discovery.commands[0];
+    assert.equal(def?.name, 'plain');
+    assert.equal(def?.plain, undefined);
+    assert.equal(def?.subcommands[0]?.sub, 'one');
+    assert.equal(def?.subcommands[0]?.group, undefined);
+    assert.equal(def?.localizations, undefined);
   });
 
   test('a method-level group names the command when there is no @Command', () => {
@@ -51,8 +53,8 @@ describe('scan of subcommands without a class group', () => {
     apply(Subcommand({ name: 'two', description: 'Two' }), Probe.prototype, 'run');
     const discovery = service();
     discovery.init([new Probe()]);
-    assert.equal(discovery.slash[0]?.top, 'mg');
-    assert.deepEqual(discovery.slash[0]?.topLocalizations, {
+    assert.equal(discovery.commands[0]?.name, 'mg');
+    assert.deepEqual(discovery.commands[0]?.localizations, {
       name: { fr: 'mg-fr' },
       description: undefined,
     });
@@ -76,8 +78,8 @@ describe('scan of subcommands without a class group', () => {
     apply(Subcommand({ name: 'three', description: 'Three' }), Probe.prototype, 'run');
     const discovery = service();
     discovery.init([new Probe()]);
-    assert.equal(discovery.slash[0]?.group, 'mg');
-    assert.deepEqual(discovery.slash[0]?.groupLocalizations, {
+    assert.equal(discovery.commands[0]?.groups[0]?.name, 'mg');
+    assert.deepEqual(discovery.commands[0]?.groups[0]?.localizations, {
       name: { fr: 'jour' },
       description: { fr: 'Quêtes' },
     });

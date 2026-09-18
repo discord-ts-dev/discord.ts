@@ -60,3 +60,50 @@ describe('MemoryStore sorted sets', () => {
     expect(await s.zrange('lb', 0, -1, true)).toEqual([{ member: 'a', score: 99 }]);
   });
 });
+
+describe('MemoryStore atomic updates', () => {
+  test('update writes values, deletes nulls and preserves TTL', async () => {
+    const s = new MemoryStore();
+    await s.set('keep', '1', 40);
+    const out = await s.update(['keep', 'fresh'], (current) => {
+      expect(current).toEqual({ keep: '1', fresh: null });
+      return { result: 'ok' as const, writes: { keep: '2', fresh: 'x' } };
+    });
+    expect(out).toBe('ok');
+    expect(await s.get('keep')).toBe('2');
+    expect(await s.get('fresh')).toBe('x');
+    await Bun.sleep(60);
+    expect(await s.get('keep')).toBeNull();
+  });
+
+  test('update deletes a key written as null', async () => {
+    const s = new MemoryStore();
+    await s.set('gone', 'y');
+    const result = await s.update(['gone'], () => ({ result: true, writes: { gone: null } }));
+    expect(result).toBe(true);
+    expect(await s.get('gone')).toBeNull();
+  });
+
+  test('update applies zadds in the same pass', async () => {
+    const s = new MemoryStore();
+    await s.update([], () => ({
+      result: undefined,
+      zadds: [{ key: 'lb', score: 7, member: 'u' }],
+    }));
+    expect(await s.zscore('lb', 'u')).toBe(7);
+  });
+
+  test('incrBy keeps the key TTL', async () => {
+    const s = new MemoryStore();
+    await s.set('c', '1', 40);
+    expect(await s.incrBy('c', 2)).toBe(3);
+    await Bun.sleep(60);
+    expect(await s.get('c')).toBeNull();
+  });
+
+  test('zincrBy starts from zero and adds', async () => {
+    const s = new MemoryStore();
+    expect(await s.zincrBy('lb', 5, 'u')).toBe(5);
+    expect(await s.zincrBy('lb', -2, 'u')).toBe(3);
+  });
+});

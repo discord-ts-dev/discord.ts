@@ -2,12 +2,8 @@ import { Injectable, Logger } from '@discord.ts/common';
 import { LavalinkManager, type Player, type Track as LavTrack } from 'lavalink-client';
 import type { Client } from 'discord.js';
 import { applyLiveFilter, describeLiveFilter, resetLiveFilters } from './lavalink-filters.js';
-import type { Track } from './music.service.js';
-
-export interface LiveMirrors {
-  onTrackStart(guildId: string, track: Track): void;
-  onQueueEnd(guildId: string): void;
-}
+import type { LiveMirrors, PlaybackTransport } from './guild-player.js';
+import type { Track } from './track.js';
 
 function nodeOptions(): { host: string; port: number; authorization: string } | null {
   const host = process.env.LAVALINK_SERVER_HOST;
@@ -32,16 +28,16 @@ function toDisplay(raw: LavTrack, requesterId: string): Track {
 }
 
 // ponytail: real LavalinkManager transport. Manager exists only with
-// LAVALINK_SERVER_HOST + PASSWORD; every method is a no-op without it and
-// commands fall back to the memory queue. ReadyListener calls attach() with
-// the logged-in Client (raw forwarding + init + event mirrors).
+// LAVALINK_SERVER_HOST + PASSWORD; every method is a no-op without it and the
+// Guild player keeps its memory queue. The player calls attach() with the
+// logged-in Client (raw forwarding + init + event mirrors).
 @Injectable()
-export class LavalinkService {
-  private readonly log = new Logger(LavalinkService.name);
+export class LavalinkTransport implements PlaybackTransport {
+  private readonly log = new Logger(LavalinkTransport.name);
   private manager: LavalinkManager | null = null;
   private attached = false;
 
-  get useable(): boolean {
+  useable(): boolean {
     return this.manager?.useable ?? false;
   }
 
@@ -80,7 +76,7 @@ export class LavalinkService {
     });
     this.manager.on('queueEnd', (player) => {
       mirrors.onQueueEnd(player.guildId);
-      void this.autoplay(player);
+      void this.autoplayNext(player);
     });
     void this.manager
       .init({ id: client.user?.id ?? '', username: client.user?.username })
@@ -139,22 +135,20 @@ export class LavalinkService {
   }
 
   /** Queue raw tracks on the live player and start it when idle. */
-  async playNow(guildId: string, tracks: Track[], playNext = false): Promise<boolean> {
+  async play(guildId: string, tracks: Track[], playNext = false): Promise<void> {
     const player = this.playerOf(guildId);
-    if (!player) return false;
+    if (!player) return;
     const raw = tracks.map((t) => t.raw).filter((r): r is LavTrack => !!r);
-    if (!raw.length) return false;
+    if (!raw.length) return;
     try {
       player.queue.add(playNext ? raw.reverse() : raw, playNext ? 0 : undefined);
       if (!player.playing && !player.paused) await player.play();
-      return true;
     } catch (error) {
-      this.log.warn(`playNow failed: ${(error as Error).message}`);
-      return false;
+      this.log.warn(`play failed: ${(error as Error).message}`);
     }
   }
 
-  async pauseLive(guildId: string, paused: boolean): Promise<void> {
+  async pause(guildId: string, paused: boolean): Promise<void> {
     const player = this.playerOf(guildId);
     if (!player) return;
     try {
@@ -165,7 +159,7 @@ export class LavalinkService {
     }
   }
 
-  async skipLive(guildId: string): Promise<void> {
+  async skip(guildId: string): Promise<void> {
     try {
       await this.playerOf(guildId)?.skip();
     } catch {
@@ -173,7 +167,7 @@ export class LavalinkService {
     }
   }
 
-  async stopLive(guildId: string): Promise<void> {
+  async stop(guildId: string): Promise<void> {
     try {
       await this.playerOf(guildId)?.stopPlaying(true, false);
     } catch {
@@ -181,7 +175,7 @@ export class LavalinkService {
     }
   }
 
-  async seekLive(guildId: string, ms: number): Promise<void> {
+  async seek(guildId: string, ms: number): Promise<void> {
     try {
       await this.playerOf(guildId)?.seek(ms);
     } catch {
@@ -189,7 +183,7 @@ export class LavalinkService {
     }
   }
 
-  async volumeLive(guildId: string, level: number): Promise<void> {
+  async volume(guildId: string, level: number): Promise<void> {
     try {
       await this.playerOf(guildId)?.setVolume(level);
     } catch {
@@ -197,7 +191,7 @@ export class LavalinkService {
     }
   }
 
-  async repeatLive(guildId: string, mode: 'off' | 'track' | 'queue'): Promise<void> {
+  async repeat(guildId: string, mode: 'off' | 'track' | 'queue'): Promise<void> {
     try {
       await this.playerOf(guildId)?.setRepeatMode(mode);
     } catch {
@@ -205,7 +199,7 @@ export class LavalinkService {
     }
   }
 
-  setAutoplay(guildId: string, on: boolean): void {
+  autoplay(guildId: string, on: boolean): void {
     try {
       this.playerOf(guildId)?.set('autoplay', on);
     } catch {
@@ -213,11 +207,11 @@ export class LavalinkService {
     }
   }
 
-  positionOf(guildId: string): number {
+  position(guildId: string): number {
     return this.playerOf(guildId)?.position ?? 0;
   }
 
-  async applyFilter(guildId: string, name: string, enabled: boolean): Promise<void> {
+  async setFilter(guildId: string, name: string, enabled: boolean): Promise<void> {
     const player = this.playerOf(guildId);
     if (!player) return;
     try {
@@ -227,7 +221,7 @@ export class LavalinkService {
     }
   }
 
-  async resetFiltersLive(guildId: string): Promise<void> {
+  async resetFilters(guildId: string): Promise<void> {
     const player = this.playerOf(guildId);
     if (!player) return;
     try {
@@ -241,7 +235,7 @@ export class LavalinkService {
     return describeLiveFilter(name);
   }
 
-  private async autoplay(player: Player): Promise<void> {
+  private async autoplayNext(player: Player): Promise<void> {
     if (!player.get('autoplay')) return;
     try {
       const last = player.queue.previous.at(-1) ?? player.queue.current;
@@ -259,5 +253,3 @@ export class LavalinkService {
     }
   }
 }
-
-export const lavalinkService = new LavalinkService();

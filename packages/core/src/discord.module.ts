@@ -1,6 +1,15 @@
 import { Client } from 'discord.js';
-import { MODULE_METADATA, type DiscordModuleOptions, type Type } from '@discord.ts/common';
+import {
+  DISCORD_CLIENT,
+  DISCORD_MODULE_OPTIONS,
+  DISCORD_OWNERS,
+  MODULE_METADATA,
+  type DiscordModuleOptions,
+  type Provider,
+  type Type,
+} from '@discord.ts/common';
 import { loadDiscordConfig } from './config.js';
+import { ProviderRegistry } from './provider-registry.js';
 import { DiscordDiscoveryService } from './discovery/discord-discovery.service.js';
 import { DiscordRoutingService } from './discovery/discord-routing.service.js';
 import { DiscordSyncService } from './discovery/discord-sync.service.js';
@@ -44,10 +53,10 @@ export class DiscordModule {
   }
 }
 
-function moduleMeta(target: object): { imports?: unknown[]; providers?: Type[] } {
+function moduleMeta(target: object): { imports?: unknown[]; providers?: Provider[] } {
   return (Reflect.getMetadata(MODULE_METADATA, target) ?? {}) as {
     imports?: unknown[];
-    providers?: Type[];
+    providers?: Provider[];
   };
 }
 
@@ -60,7 +69,7 @@ function findDiscordDef(imports: unknown[] = []): SyncDef | AsyncDef | undefined
 export async function resolveDiscordOptions(
   appModule: Type<unknown>,
   opts: { skipValidation?: boolean } = {},
-): Promise<{ options: DiscordModuleOptions; providers: Type[] }> {
+): Promise<{ options: DiscordModuleOptions; providers: Provider[] }> {
   const meta = moduleMeta(appModule);
   const def = findDiscordDef(meta.imports);
   const providers = meta.providers ?? [];
@@ -103,23 +112,22 @@ export async function createRuntime(
   const client = buildClient(options);
   const sync = new DiscordSyncService(options);
   const discovery = new DiscordDiscoveryService(client, options, sync);
-  const cooldown = new CooldownGuard();
-  const permissions = new PermissionsGuard();
-  const botPermissions = new BotPermissionsGuard();
-  const guild = new GuildGuard();
-  const owner = new OwnerGuard(options.owners ?? []);
-  const guards = new Map<unknown, { canActivate(ctx: unknown): unknown }>([
-    [CooldownGuard, cooldown as unknown as { canActivate(ctx: unknown): unknown }],
-    [PermissionsGuard, permissions as unknown as { canActivate(ctx: unknown): unknown }],
-    [BotPermissionsGuard, botPermissions as unknown as { canActivate(ctx: unknown): unknown }],
-    [GuildGuard, guild as unknown as { canActivate(ctx: unknown): unknown }],
-    [OwnerGuard, owner as unknown as { canActivate(ctx: unknown): unknown }],
-    [VoiceGuard, new VoiceGuard() as unknown as { canActivate(ctx: unknown): unknown }],
-    [SameVoiceGuard, new SameVoiceGuard() as unknown as { canActivate(ctx: unknown): unknown }],
+  const registry = new ProviderRegistry([
+    { provide: DISCORD_CLIENT, useValue: client },
+    { provide: DISCORD_MODULE_OPTIONS, useValue: options },
+    { provide: DISCORD_OWNERS, useValue: options.owners ?? [] },
+    CooldownGuard,
+    PermissionsGuard,
+    BotPermissionsGuard,
+    GuildGuard,
+    OwnerGuard,
+    VoiceGuard,
+    SameVoiceGuard,
+    ...providers,
   ]);
-  const instances: object[] = [...providers.map((P) => new (P as Type<object>)() as object)];
+  const instances = registry.list();
   discovery.init(instances);
-  const routing = new DiscordRoutingService(client, options, discovery, guards);
+  const routing = new DiscordRoutingService(client, options, discovery, registry);
   routing.subscribe();
   return { options, client, sync, discovery, routing, instances };
 }

@@ -1,5 +1,5 @@
 import type { ApplicationCommandType, LocalizationMap } from 'discord.js';
-import type { CommandFlags, ContextMenuMeta } from '@discord.ts/common';
+import type { ContextMenuMeta } from '@discord.ts/common';
 
 export interface Handler {
   instance: Record<string, (...args: never[]) => unknown>;
@@ -9,19 +9,6 @@ export interface Handler {
 export interface LocalizationPair {
   name?: LocalizationMap;
   description?: LocalizationMap;
-}
-
-export interface SlashEntry extends Handler {
-  top: string;
-  topDescription: string;
-  topLocalizations?: LocalizationPair;
-  group?: string;
-  groupDescription?: string;
-  groupLocalizations?: LocalizationPair;
-  sub?: string;
-  subDescription?: string;
-  subLocalizations?: LocalizationPair;
-  flags: CommandFlags;
 }
 
 export interface MenuEntry extends Handler {

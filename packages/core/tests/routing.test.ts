@@ -69,10 +69,30 @@ describe('DiscordRoutingService.route', () => {
     const grouped = handlerFor(h, 'grouped');
     const subbed = handlerFor(h, 'subbed');
     const plain = handlerFor(h, 'plain');
-    h.discovery['slash'] = [
-      { ...grouped, top: 'quest', group: 'daily', sub: 'reroll' },
-      { ...subbed, top: 'quest', sub: 'reroll' },
-      { ...plain, top: 'ping' },
+    h.discovery['commands'] = [
+      {
+        name: 'quest',
+        description: 'Quest',
+        flags: {},
+        issues: [],
+        subcommands: [{ ...subbed, sub: 'reroll', description: 'Reroll' }],
+        groups: [
+          {
+            name: 'daily',
+            description: 'Daily',
+            subcommands: [{ ...grouped, sub: 'reroll', group: 'daily', description: 'Reroll' }],
+          },
+        ],
+      },
+      {
+        name: 'ping',
+        description: 'Ping',
+        flags: {},
+        issues: [],
+        subcommands: [],
+        groups: [],
+        plain: { ...plain, description: 'Ping' },
+      },
     ];
     h.routing.subscribe();
     const route = h.handlers.get(INTERACTION_CREATE)?.[0] as (i: unknown) => void;
@@ -238,7 +258,17 @@ describe('DiscordRoutingService.route', () => {
     const boom = handlerFor(h, 'boom', () => {
       throw new Error('nope');
     });
-    h.discovery['slash'] = [{ ...boom, top: 'boom' }];
+    h.discovery['commands'] = [
+      {
+        name: 'boom',
+        description: 'Boom',
+        flags: {},
+        issues: [],
+        subcommands: [],
+        groups: [],
+        plain: { ...boom, description: 'Boom' },
+      },
+    ];
     h.routing.subscribe();
     const route = h.handlers.get(INTERACTION_CREATE)?.[0] as (i: unknown) => void;
     route({

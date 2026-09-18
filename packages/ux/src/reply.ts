@@ -1,39 +1,91 @@
-import { MessageFlags, type InteractionReplyOptions } from 'discord.js';
+import { MessageFlags, type EmbedBuilder, type Message } from 'discord.js';
 
-/** Narrow reply payload: text content plus the ephemeral flag only. */
-export type EphemeralReplyOptions = Pick<InteractionReplyOptions, 'content'> & {
-  content: string;
-  flags: MessageFlags.Ephemeral;
-};
-
-/** Structural target: anything with an interaction-style reply. */
-export interface EphemeralTarget {
-  reply(options: EphemeralReplyOptions): Promise<unknown>;
-  readonly replied?: boolean;
-  readonly deferred?: boolean;
+/** Payload forwarded to the target's reply, edit, or follow-up. */
+export interface ReplyPayload {
+  content?: string;
+  embeds?: unknown[];
+  components?: unknown[];
+  [key: string]: unknown;
 }
 
-function isEphemeralTarget(target: unknown): target is EphemeralTarget {
-  return (
-    typeof target === 'object' &&
-    target !== null &&
-    'reply' in target &&
-    typeof target.reply === 'function'
-  );
+export interface ReplyOptions {
+  /** Ask for the payload to be ephemeral. */
+  ephemeral?: boolean;
 }
 
 /**
- * Best-effort ephemeral reply. Accepts `unknown` and narrows at runtime:
- * sends only when the target looks repliable and nothing was replied or
- * deferred yet, and never throws: a failed deny reply must not shadow the
- * original block.
+ * Structural target: any interaction-style replier. Real discord.js
+ * interactions satisfy it. Core guards hold the interaction as a structural
+ * record; `deliver` narrows at runtime so they pass it without a cast.
  */
-export async function replyEphemeral(target: unknown, content: string): Promise<void> {
+export interface ReplyTarget {
+  readonly replied?: boolean;
+  readonly deferred?: boolean;
+  reply?(payload: unknown): Promise<unknown>;
+  editReply?(payload: unknown): Promise<unknown>;
+  followUp?(payload: unknown): Promise<unknown>;
+}
+
+function narrow(target: unknown): ReplyTarget | null {
+  if (typeof target !== 'object' || target === null) return null;
+  const candidate = target as Record<string, unknown>;
+  if (
+    typeof candidate['reply'] !== 'function' &&
+    typeof candidate['editReply'] !== 'function' &&
+    typeof candidate['followUp'] !== 'function'
+  )
+    return null;
+  return target as ReplyTarget;
+}
+
+function messageOf(result: unknown): Message | null {
+  if (result === null || result === undefined) return null;
+  const resource = (result as { resource?: { message?: Message | null } | null }).resource;
+  if (resource !== undefined) return resource?.message ?? null;
+  return result as Message;
+}
+
+/**
+ * One delivery path for a Context. Replies when the Context is free, edits
+ * when it is already acknowledged, and follows up when the payload must stay
+ * ephemeral after acknowledgement. Never throws; returns the sent or edited
+ * message when the target produces one.
+ */
+export async function deliver(
+  target: unknown,
+  payload: ReplyPayload,
+  opts: ReplyOptions = {},
+): Promise<Message | null> {
+  const t = narrow(target);
+  if (!t) return null;
+  const body: ReplyPayload =
+    opts.ephemeral === true ? { ...payload, flags: MessageFlags.Ephemeral } : payload;
   try {
-    if (!isEphemeralTarget(target)) return;
-    if (target.replied || target.deferred) return;
-    await target.reply({ content, flags: MessageFlags.Ephemeral });
+    if (t.replied || t.deferred) {
+      if (opts.ephemeral === true) {
+        if (!t.followUp) return null;
+        return messageOf(await t.followUp(body));
+      }
+      if (!t.editReply) return null;
+      return messageOf(await t.editReply(body));
+    }
+    if (!t.reply) return null;
+    return messageOf(await t.reply({ ...body, withResponse: true }));
   } catch {
-    // ignore reply failures, the caller is already blocked
+    return null;
   }
+}
+
+/** Best-effort ephemeral text. Guards and app refusals use it. */
+export async function replyEphemeral(target: unknown, content: string): Promise<void> {
+  await deliver(target, { content }, { ephemeral: true });
+}
+
+/** Embed reply with the same acknowledgement rules as `deliver`. */
+export async function replyEmbed(
+  target: unknown,
+  embed: EmbedBuilder,
+  ephemeral = false,
+): Promise<void> {
+  await deliver(target, { embeds: [embed] }, { ephemeral });
 }

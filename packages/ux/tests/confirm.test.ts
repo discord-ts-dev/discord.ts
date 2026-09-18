@@ -55,10 +55,15 @@ describe('confirm', () => {
     assert.equal(captured.edits.length, 1);
   });
 
-  test('a fresh interaction replies with fetchReply', async () => {
+  test('a fresh interaction replies with withResponse', async () => {
     const { target, captured } = fakeTarget({ plan: () => [], end: true });
     await confirm(target as never, 'Delete?');
-    const sent = captured.replies[0] as { fetchReply?: boolean };
-    assert.equal(sent.fetchReply, true);
+    const sent = captured.replies[0] as { withResponse?: boolean };
+    assert.equal(sent.withResponse, true);
+  });
+
+  test('resolves false when delivery fails', async () => {
+    const target = { reply: async () => null };
+    assert.equal(await confirm(target as never, 'Delete?'), false);
   });
 });

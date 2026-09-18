@@ -2,14 +2,14 @@ import {
   COMMAND_GROUP_METADATA,
   COMMAND_METADATA,
   SUBCOMMAND_METADATA,
+  Inject,
   type CanActivate,
   type CommandGroupMeta,
   type CommandMeta,
   type SubcommandMeta,
 } from '@discord.ts/common';
-import { isCommandEnabled, type Store } from '@discord.ts/systems';
+import { STORE, isCommandEnabled, type Store } from '@discord.ts/systems';
 import type { DiscordExecutionContext } from '@discord.ts/core';
-import { store as appStore } from '../game/store.js';
 import { replyEphemeral } from '@discord.ts/ux';
 import { tt } from '../game/text.js';
 
@@ -71,7 +71,7 @@ export const TOGGLEABLE = [
  * guild. DMs and un-decorated handlers pass through.
  */
 export class EnabledGuard implements CanActivate {
-  constructor(private readonly store: Store = appStore) {}
+  constructor(@Inject(STORE) private readonly store: Store) {}
 
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
     const ix = context.getArgByIndex<Record<string, unknown>>(0);

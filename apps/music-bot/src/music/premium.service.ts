@@ -10,8 +10,7 @@ interface PremiumRow {
 
 // ponytail: memory-first premium/language store mirroring the Prisma shape
 // (Guild/User + language). Boot hydrate + write-through when DATABASE_URL is
-// set; pure memory otherwise. Framework builds providers with `new P()`, so
-// shared state lives in the module singleton below.
+// set; pure memory otherwise. One instance per App via the provider registry.
 @Injectable()
 export class PremiumService {
   private readonly guilds = new Map<string, { premium: PremiumRow; language: string }>();
@@ -159,5 +158,3 @@ export class PremiumService {
       .catch(() => null);
   }
 }
-
-export const premiumService = new PremiumService();

@@ -1,4 +1,6 @@
 export * from './discord.module.js';
+export * from './provider-registry.js';
+export * from './discovery/command-definition.js';
 export * from './discovery/discord-discovery.service.js';
 export * from './discovery/discord-routing.service.js';
 export * from './discovery/discord-sync.service.js';

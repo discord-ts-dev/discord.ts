@@ -5,12 +5,14 @@ Ubiquitous language. Glossary only. No implementation.
 ## Terms
 
 - **Module**: a `@Module()` grouping providers, commands, events. Root config via `DiscordModule.forRoot()`.
+- **Provider registry**: constructs every Provider once in declaration order, resolving `@Inject()` tokens first, and fails on duplicates, missing tokens, or cycles. Guards named in `@UseGuards()` resolve through it on first use.
 - **Config**: the `discord.config.ts` file at app root. Declared with `defineConfig()`. Loaded via `forRootAsync()`. Env wins over file.
 - **App**: the consumer app that calls `bootstrapApp()`. Example lives in `apps/example`.
 - **Standard structure**: soft App convention: `discord.config.ts`, `src/main.ts`, `src/commands/`, `src/events/`. Warn-only, never blocks boot.
 - **Discovery**: scan of providers into handler state plus command JSON plus login. Owned by `DiscordDiscoveryService`.
 - **Routing**: dispatch of interactions to handlers with guards and validation. Owned by `DiscordRoutingService`, reads `Discovery` state.
 - **Validation**: boot check of every definition (names, limits, duplicates). Throws aggregated before any REST call.
+- **Command definition**: one top-level slash command built from `@Command()` / `@Subcommand()` metadata: its flags, options DTO, localizations, and either a plain handler or a subcommand tree. The builder records structural conflicts (duplicates, flag drift, plain/sub mixing) as issues for Validation to aggregate.
 - **Guard**: a `CanActivate` check before a command. Used via `@UseGuards()`. Reads interaction via `DiscordExecutionContext`.
 - **Sync**: push of command JSON to Discord REST. Auto on bootstrap unless `skipRegistration`. Target is global or `development` guilds.
 - **Deploy**: sync without login. Done via `deployWithModule(AppModule)` or `bun run deploy` in the app.

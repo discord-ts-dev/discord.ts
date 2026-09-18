@@ -5,6 +5,8 @@ description: Cooldown, permissions, and custom guards. Block with an ephemeral r
 
 Attach with `@UseGuards()` (custom) or the built-ins below. Guards read the interaction via `DiscordExecutionContext`. A `false` return blocks the handler.
 
+Guards resolve through the provider registry: it constructs each `@UseGuards()` class once and resolves its `@Inject()` constructor parameters, so a guard can read a `Store` or any registered provider. Constructor-free guards need nothing extra.
+
 ## Cooldown
 
 Per-user rate limit. Hit replies ephemeral with seconds left and blocks.

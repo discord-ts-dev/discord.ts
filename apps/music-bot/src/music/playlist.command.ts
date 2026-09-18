@@ -1,10 +1,10 @@
-import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Author, Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireGuild } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, User } from 'discord.js';
 import { PlaylistAddDto, PlaylistNameDto, PlaylistStealDto } from './dto/music.dto.js';
-import { MusicService, musicService } from './music.service.js';
-import { PremiumService, premiumService } from './premium.service.js';
+import { PlaylistService } from './playlist.service.js';
+import { PremiumService } from './premium.service.js';
 
 async function reply(ctx: ChatInputCommandInteraction, text: string): Promise<void> {
   await ctx.reply(text.slice(0, 2000));
@@ -13,14 +13,15 @@ async function reply(ctx: ChatInputCommandInteraction, text: string): Promise<vo
 @Injectable()
 @RequireGuild()
 export class PlaylistCommand {
-  // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly music: MusicService = musicService;
-  private readonly premium: PremiumService = premiumService;
+  constructor(
+    @Inject(PlaylistService) private readonly playlists: PlaylistService,
+    @Inject(PremiumService) private readonly premium: PremiumService,
+  ) {}
 
   @Command({ name: 'playlist', description: 'List your playlists' })
   @Cooldown(5)
   async list(@Context() ctx: ChatInputCommandInteraction, @Author() author: User): Promise<void> {
-    const list = this.music.listPlaylists(author.id);
+    const list = this.playlists.listPlaylists(author.id);
     await reply(
       ctx,
       list.length ? list.map((p) => `${p.name} (${p.size})`).join('\n') : 'No playlists.',
@@ -36,7 +37,7 @@ export class PlaylistCommand {
     @Options() dto: PlaylistNameDto,
   ): Promise<void> {
     const lang = this.premium.languageOf(guild.id);
-    const ok = this.music.createPlaylist(author.id, dto.name);
+    const ok = this.playlists.createPlaylist(author.id, dto.name);
     await reply(ctx, ok ? t('success.playlist.create', { name: dto.name }, lang) : 'Name taken.');
   }
 
@@ -50,7 +51,7 @@ export class PlaylistCommand {
     @Author() author: User,
     @Options() dto: PlaylistAddDto,
   ): Promise<void> {
-    const ok = this.music.addToPlaylist(author.id, dto.name, {
+    const ok = this.playlists.addToPlaylist(author.id, dto.name, {
       uri: dto.song,
       name: dto.song,
       duration: 0,
@@ -69,7 +70,7 @@ export class PlaylistCommand {
     @Author() author: User,
     @Options() dto: PlaylistNameDto,
   ): Promise<void> {
-    const tracks = this.music.loadPlaylist(author.id, dto.name);
+    const tracks = this.playlists.loadPlaylist(author.id, dto.name);
     await reply(ctx, tracks ? `Loaded ${dto.name} (${tracks.length}).` : 'Playlist not found.');
   }
 
@@ -80,7 +81,7 @@ export class PlaylistCommand {
     @Author() author: User,
     @Options() dto: PlaylistNameDto,
   ): Promise<void> {
-    const ok = this.music.deletePlaylist(author.id, dto.name);
+    const ok = this.playlists.deletePlaylist(author.id, dto.name);
     await reply(ctx, ok ? `Deleted ${dto.name}.` : 'Playlist not found.');
   }
 
@@ -108,16 +109,16 @@ export class PlaylistCommand {
     @Options() dto: PlaylistStealDto,
   ): Promise<void> {
     const from = dto.user.replace(/[<@!>]/g, '');
-    const tracks = this.music.loadPlaylist(from, dto.name);
+    const tracks = this.playlists.loadPlaylist(from, dto.name);
     if (!tracks) {
       await reply(ctx, 'Playlist not found or private.');
       return;
     }
-    if (!this.music.createPlaylist(author.id, dto.name)) {
+    if (!this.playlists.createPlaylist(author.id, dto.name)) {
       await reply(ctx, 'You already have that name.');
       return;
     }
-    for (const track of tracks) this.music.addToPlaylist(author.id, dto.name, track);
+    for (const track of tracks) this.playlists.addToPlaylist(author.id, dto.name, track);
     await reply(ctx, `Stole ${dto.name} (${tracks.length}).`);
   }
 }

@@ -1,7 +1,16 @@
 import 'reflect-metadata';
-import { GUARDS_METADATA, PIPES_METADATA } from './constants.js';
+import { GUARDS_METADATA, INJECT_METADATA, PIPES_METADATA } from './constants.js';
 
 export type Type<T = unknown> = new (...args: never[]) => T;
+
+/** A literal value registered under a token, e.g. an app's Store adapter. */
+export interface ValueProvider {
+  provide: unknown;
+  useValue: unknown;
+}
+
+/** A class the registry constructs, or a value it hands out as-is. */
+export type Provider = Type<object> | ValueProvider;
 
 export const MODULE_METADATA = 'discord:module';
 
@@ -11,15 +20,22 @@ export function Injectable(): ClassDecorator {
   };
 }
 
-export function Module(meta: { imports?: unknown[]; providers?: Type[] }): ClassDecorator {
+export function Module(meta: { imports?: unknown[]; providers?: Provider[] }): ClassDecorator {
   return (target) => {
     Reflect.defineMetadata(MODULE_METADATA, meta, target);
   };
 }
 
-// ponytail: compat no-op, container wires known services manually
-export function Inject(_token: unknown): ParameterDecorator {
-  return () => {};
+/**
+ * Declare the token a constructor parameter resolves from. The provider
+ * registry reads the tokens recorded on the class; a parameter without
+ * `@Inject()` is not injected.
+ */
+export function Inject(token: unknown): ParameterDecorator {
+  return (target, _key, index) => {
+    const prev: Record<number, unknown> = Reflect.getMetadata(INJECT_METADATA, target) ?? {};
+    Reflect.defineMetadata(INJECT_METADATA, { ...prev, [index]: token }, target);
+  };
 }
 
 export function SetMetadata(key: string, value: unknown): MethodDecorator & ClassDecorator {

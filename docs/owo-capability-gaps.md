@@ -11,18 +11,18 @@ Modules.
 
 | Capability                                                          | Where   |
 | ------------------------------------------------------------------- | ------- |
-| Store port + `MemoryStore` (ADR 0004)                                | systems |
-| Task runner: `defineTask` / interval / daily (ADR 0005)              | systems |
-| Daily claim + streaks                                                | systems |
-| Leaderboards: `addScore` / `top` / `rankOf`                           | systems |
-| Quests: assign / progress / reroll / complete                        | systems |
-| Shop + inventory: `buy` / `useItem` / `addBalance`                    | systems |
-| Guild settings: enable flags (`isCommandEnabled`)                    | systems |
-| Vote reward: `awardVote`                                             | systems |
-| Help grouping: `buildHelp`                                           | systems |
-| Confirm / pager / picker / error embed / `replyEphemeral`            | ux      |
-| Mentions, snowflake, amount parser, word filter, vote payload parse  | utils   |
-| Native i18n: catalogs, `t`, locale resolution                        | i18n    |
+| Store port + `MemoryStore` (ADR 0004)                               | systems |
+| Task runner: `defineTask` / interval / daily (ADR 0005)             | systems |
+| Daily claim + streaks                                               | systems |
+| Leaderboards: `addScore` / `top` / `rankOf`                         | systems |
+| Quests: assign / progress / reroll / complete                       | systems |
+| Shop + inventory: `buy` / `useItem` / `addBalance`                  | systems |
+| Guild settings: enable flags (`isCommandEnabled`)                   | systems |
+| Vote reward: `awardVote`                                            | systems |
+| Help grouping: `buildHelp`                                          | systems |
+| Confirm / pager / picker / error embed / `replyEphemeral`           | ux      |
+| Mentions, snowflake, amount parser, word filter, vote payload parse | utils   |
+| Native i18n: catalogs, `t`, locale resolution                       | i18n    |
 
 ## Queued promotions (ranked by dedupe)
 
@@ -50,13 +50,13 @@ Modules.
 
 ## Considered, deferred (single consumer)
 
-| Candidate                          | Why deferred                                             | Reopens when            |
-| ---------------------------------- | -------------------------------------------------------- | ----------------------- |
-| `math` expression evaluator        | One consumer (`/math`); niche                             | A second app needs it   |
-| Unique-sample draw (`pickWinners`) | One consumer (giveaways)                                  | A second app needs it   |
-| Premium tiers                      | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans) | A third app, or a shared design |
-| `GuildSettings` widening / arbitrary guild keys | Recipe instead                               | A second app needs it   |
-| `tt` / `fmt`, `readBet`, `purchase`, `replyError` | Thin conveniences over shipped primitives   | Never as capabilities   |
+| Candidate                                         | Why deferred                                                        | Reopens when                    |
+| ------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------- |
+| `math` expression evaluator                       | One consumer (`/math`); niche                                       | A second app needs it           |
+| Unique-sample draw (`pickWinners`)                | One consumer (giveaways)                                            | A second app needs it           |
+| Premium tiers                                     | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans) | A third app, or a shared design |
+| `GuildSettings` widening / arbitrary guild keys   | Recipe instead                                                      | A second app needs it           |
+| `tt` / `fmt`, `readBet`, `purchase`, `replyError` | Thin conveniences over shipped primitives                           | Never as capabilities           |
 
 ## Ruled out (app-side by decision)
 

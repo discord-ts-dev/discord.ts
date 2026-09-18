@@ -1,4 +1,5 @@
 import type { Store } from './store.js';
+import { keys } from './keys.js';
 
 export interface ShopItem {
   id: string;
@@ -9,42 +10,68 @@ export type BuyResult =
   | { ok: true; balance: number; qty: number }
   | { ok: false; reason: 'invalid-qty' | 'insufficient-funds'; balance: number };
 
-const balKey = (userId: string) => `bal:${userId}`;
-const invKey = (userId: string) => `inv:${userId}`;
+/** Keep a sorted-set board equal to the new balance, in the same atomic write. */
+export interface MirrorOptions {
+  mirrorBoard?: string;
+}
 
-async function readInv(store: Store, userId: string): Promise<Record<string, number>> {
-  return JSON.parse((await store.get(invKey(userId))) ?? '{}') as Record<string, number>;
+function parseInv(raw: string | null): Record<string, number> {
+  return raw === null ? {} : (JSON.parse(raw) as Record<string, number>);
 }
 
 export async function getBalance(store: Store, userId: string): Promise<number> {
-  return Number((await store.get(balKey(userId))) ?? 0) || 0;
+  return Number((await store.get(keys.balance(userId))) ?? 0) || 0;
 }
 
-export async function addBalance(store: Store, userId: string, amount: number): Promise<number> {
-  return store.incrBy(balKey(userId), amount);
+export async function addBalance(
+  store: Store,
+  userId: string,
+  amount: number,
+  opts: MirrorOptions = {},
+): Promise<number> {
+  const balanceKey = keys.balance(userId);
+  return store.update([balanceKey], (current) => {
+    const next = (Number(current[balanceKey] ?? 0) || 0) + amount;
+    return {
+      result: next,
+      writes: { [balanceKey]: String(next) },
+      zadds: opts.mirrorBoard
+        ? [{ key: keys.leaderboard(opts.mirrorBoard), score: next, member: userId }]
+        : undefined,
+    };
+  });
 }
 
-// ponytail: check-then-act. Atomicity is the adapter's job; MemoryStore
-// is single-process so sequential awaits never interleave here.
 export async function buy(
   store: Store,
   userId: string,
   item: ShopItem,
   qty = 1,
+  opts: MirrorOptions = {},
 ): Promise<BuyResult> {
-  const balance = await getBalance(store, userId);
-  if (!Number.isInteger(qty) || qty <= 0) return { ok: false, reason: 'invalid-qty', balance };
-  const cost = item.price * qty;
-  if (balance < cost) return { ok: false, reason: 'insufficient-funds', balance };
-  const inv = await readInv(store, userId);
-  inv[item.id] = (inv[item.id] ?? 0) + qty;
-  await store.set(invKey(userId), JSON.stringify(inv));
-  const next = await store.incrBy(balKey(userId), -cost);
-  return { ok: true, balance: next, qty: inv[item.id] as number };
+  const balanceKey = keys.balance(userId);
+  const inventoryKey = keys.inventory(userId);
+  return store.update<BuyResult>([inventoryKey, balanceKey], (current) => {
+    const balance = Number(current[balanceKey] ?? 0) || 0;
+    if (!Number.isInteger(qty) || qty <= 0)
+      return { result: { ok: false, reason: 'invalid-qty', balance } };
+    const cost = item.price * qty;
+    if (balance < cost) return { result: { ok: false, reason: 'insufficient-funds', balance } };
+    const inv = parseInv(current[inventoryKey]);
+    inv[item.id] = (inv[item.id] ?? 0) + qty;
+    const next = balance - cost;
+    return {
+      result: { ok: true, balance: next, qty: inv[item.id] as number },
+      writes: { [inventoryKey]: JSON.stringify(inv), [balanceKey]: String(next) },
+      zadds: opts.mirrorBoard
+        ? [{ key: keys.leaderboard(opts.mirrorBoard), score: next, member: userId }]
+        : undefined,
+    };
+  });
 }
 
 export async function inventory(store: Store, userId: string): Promise<Record<string, number>> {
-  return readInv(store, userId);
+  return parseInv(await store.get(keys.inventory(userId)));
 }
 
 export async function useItem(
@@ -54,10 +81,12 @@ export async function useItem(
   qty = 1,
 ): Promise<boolean> {
   if (!Number.isInteger(qty) || qty <= 0) return false;
-  const inv = await readInv(store, userId);
-  if ((inv[itemId] ?? 0) < qty) return false;
-  inv[itemId] = (inv[itemId] as number) - qty;
-  if (inv[itemId] === 0) delete inv[itemId];
-  await store.set(invKey(userId), JSON.stringify(inv));
-  return true;
+  const inventoryKey = keys.inventory(userId);
+  return store.update<boolean>([inventoryKey], (current) => {
+    const inv = parseInv(current[inventoryKey]);
+    if ((inv[itemId] ?? 0) < qty) return { result: false };
+    inv[itemId] = (inv[itemId] as number) - qty;
+    if (inv[itemId] === 0) delete inv[itemId];
+    return { result: true, writes: { [inventoryKey]: JSON.stringify(inv) } };
+  });
 }

@@ -32,7 +32,7 @@ describe('group commands', () => {
     const { discovery } = await createRuntime(appWith(['rr', 'lock']));
     try {
       assert.deepStrictEqual(
-        discovery.slash.map((s) => `${s.top} ${s.sub}`),
+        discovery.commands.flatMap((c) => c.subcommands.map((l) => `${c.name} ${l.sub}`)),
         ['quest rr', 'quest lock'],
       );
     } finally {

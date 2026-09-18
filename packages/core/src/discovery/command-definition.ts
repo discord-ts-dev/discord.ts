@@ -1,0 +1,261 @@
+import {
+  COMMAND_GROUP_METADATA,
+  COMMAND_METADATA,
+  PARAM_OPTIONS_METADATA,
+  SUBCOMMAND_METADATA,
+  type CommandFlags,
+  type CommandGroupMeta,
+  type CommandMeta,
+  type SubcommandMeta,
+} from '@discord.ts/common';
+import { explicitPair } from './discord-localize.js';
+import type { Handler, LocalizationPair } from './handler.types.js';
+
+/** One callable handler inside a top-level command. */
+export interface CommandLeaf extends Handler {
+  /** Subcommand name. Absent on the plain handler of a top-level command. */
+  sub?: string;
+  /** Subcommand group name. Absent unless the leaf sits in a group. */
+  group?: string;
+  description: string;
+  localizations?: LocalizationPair;
+  /** Group facts, carried by every leaf in a group; the first leaf wins. */
+  groupDescription?: string;
+  groupLocalizations?: LocalizationPair;
+  /** Options DTO from `@Options()`, resolved once at build time. */
+  options?: new () => object;
+}
+
+export interface CommandGroupDefinition {
+  name: string;
+  description: string;
+  localizations?: LocalizationPair;
+  subcommands: CommandLeaf[];
+}
+
+/**
+ * One top-level slash command. `plain`, `subcommands`, and `groups` are
+ * mutually exclusive once valid; the builder records structural conflicts in
+ * `issues` so boot Validation can still report everything at once.
+ */
+export interface CommandDefinition {
+  name: string;
+  description: string;
+  localizations?: LocalizationPair;
+  flags: CommandFlags;
+  plain?: CommandLeaf;
+  subcommands: CommandLeaf[];
+  groups: CommandGroupDefinition[];
+  issues: string[];
+}
+
+function who(h: Handler): string {
+  return `${h.instance.constructor.name}.${h.method}`;
+}
+
+function label(name: string, leaf: { group?: string; sub?: string }): string {
+  return `/${name}${leaf.group ? ` ${leaf.group}` : ''}${leaf.sub ? ` ${leaf.sub}` : ''}`;
+}
+
+function commandFlags(meta: CommandFlags): CommandFlags {
+  const flags: CommandFlags = {};
+  if (meta.nsfw !== undefined) flags.nsfw = meta.nsfw;
+  if (meta.defaultMemberPermissions !== undefined)
+    flags.defaultMemberPermissions = meta.defaultMemberPermissions;
+  if (meta.contexts !== undefined) flags.contexts = meta.contexts;
+  if (meta.dmPermission !== undefined) flags.dmPermission = meta.dmPermission;
+  return flags;
+}
+
+function flagsKey(flags: CommandFlags): string {
+  const perms =
+    typeof flags.defaultMemberPermissions === 'bigint'
+      ? flags.defaultMemberPermissions.toString()
+      : JSON.stringify(flags.defaultMemberPermissions ?? null);
+  return `${flags.nsfw ?? null}|${perms}|${JSON.stringify(flags.contexts ?? null)}|${flags.dmPermission ?? null}`;
+}
+
+function optionsDto(h: Handler): (new () => object) | undefined {
+  const fn = h.instance[h.method] as (...a: never[]) => unknown;
+  const idxs: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, fn) ?? [];
+  if (!idxs.length) return undefined;
+  const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
+  return types[idxs[0]] as new () => object;
+}
+
+interface Draft {
+  top: string;
+  topDescription: string;
+  topLocalizations?: LocalizationPair;
+  flags: CommandFlags;
+  leaf: CommandLeaf;
+}
+
+function draftsOf(instances: object[]): Draft[] {
+  const drafts: Draft[] = [];
+  for (const instance of instances) {
+    if (!instance || typeof instance !== 'object') continue;
+    const proto = Object.getPrototypeOf(instance) as Record<string, unknown>;
+    if (!proto) continue;
+    const names = Object.getOwnPropertyNames(proto).filter((n) => n !== 'constructor');
+    const group = Reflect.getMetadata(COMMAND_GROUP_METADATA, instance.constructor) as
+      | CommandGroupMeta
+      | undefined;
+    for (const name of names) {
+      const fn = (instance as Record<string, (...a: never[]) => unknown>)[name];
+      if (typeof fn !== 'function') continue;
+      const base = { instance, method: name } as Handler;
+      const options = optionsDto(base);
+      const cmd = Reflect.getMetadata(COMMAND_METADATA, fn) as CommandMeta | undefined;
+      const sub = Reflect.getMetadata(SUBCOMMAND_METADATA, fn) as SubcommandMeta | undefined;
+      const methodGroup = Reflect.getMetadata(COMMAND_GROUP_METADATA, fn) as
+        | Partial<CommandGroupMeta>
+        | undefined;
+      if (cmd && !sub) {
+        drafts.push({
+          top: cmd.name,
+          topDescription: cmd.description,
+          topLocalizations: explicitPair(cmd),
+          flags: commandFlags(cmd),
+          leaf: { ...base, description: cmd.description, options },
+        });
+      } else if (sub && (group ?? methodGroup)) {
+        drafts.push({
+          top: group?.name ?? cmd?.name ?? methodGroup?.name ?? sub.name,
+          topDescription: group?.description ?? cmd?.description ?? sub.description,
+          topLocalizations: group
+            ? explicitPair(group)
+            : cmd
+              ? explicitPair(cmd)
+              : methodGroup
+                ? {
+                    name: methodGroup.nameLocalizations,
+                    description: sub.descriptionLocalizations,
+                  }
+                : explicitPair(sub),
+          flags: cmd ? commandFlags(cmd) : {},
+          leaf: {
+            ...base,
+            sub: sub.name,
+            group: group && methodGroup ? methodGroup.name : undefined,
+            description: sub.description,
+            localizations: explicitPair(sub),
+            groupDescription: group?.description,
+            groupLocalizations:
+              group && methodGroup
+                ? {
+                    name: methodGroup.nameLocalizations,
+                    description: group.descriptionLocalizations,
+                  }
+                : undefined,
+            options,
+          },
+        });
+      } else if (sub && cmd) {
+        drafts.push({
+          top: cmd.name,
+          topDescription: cmd.description,
+          topLocalizations: explicitPair(cmd),
+          flags: commandFlags(cmd),
+          leaf: {
+            ...base,
+            sub: sub.name,
+            description: sub.description,
+            localizations: explicitPair(sub),
+            options,
+          },
+        });
+      }
+    }
+  }
+  return drafts;
+}
+
+/** Translate provider instances into one definition per top-level command. */
+export function buildCommandDefinitions(instances: object[]): CommandDefinition[] {
+  const byTop = new Map<string, Draft[]>();
+  for (const draft of draftsOf(instances))
+    byTop.set(draft.top, [...(byTop.get(draft.top) ?? []), draft]);
+
+  const definitions: CommandDefinition[] = [];
+  for (const [name, drafts] of byTop) {
+    const first = drafts[0] as Draft;
+    const def: CommandDefinition = {
+      name,
+      description: first.topDescription,
+      localizations: first.topLocalizations,
+      flags: first.flags,
+      subcommands: [],
+      groups: [],
+      issues: [],
+    };
+    const plains: CommandLeaf[] = [];
+    const seen = new Map<string, string>();
+    const groupNames = new Map<string, CommandGroupDefinition>();
+    for (const draft of drafts) {
+      const leaf = draft.leaf;
+      const key = `${leaf.group ?? ''}\u0000${leaf.sub ?? ''}`;
+      const owner = seen.get(key);
+      if (owner) def.issues.push(`${who(leaf)}: duplicate ${label(name, leaf)} (also in ${owner})`);
+      else seen.set(key, who(leaf));
+      if (flagsKey(draft.flags) !== flagsKey(def.flags))
+        def.issues.push(`${who(leaf)}: /${name} mixes command flags with another entry`);
+      if (!leaf.sub) {
+        plains.push(leaf);
+        continue;
+      }
+      if (leaf.group) {
+        let groupDef = groupNames.get(leaf.group);
+        if (!groupDef) {
+          groupDef = {
+            name: leaf.group,
+            description: leaf.groupDescription ?? leaf.group,
+            localizations: leaf.groupLocalizations,
+            subcommands: [],
+          };
+          groupNames.set(leaf.group, groupDef);
+        }
+        groupDef.subcommands.push(leaf);
+        continue;
+      }
+      def.subcommands.push(leaf);
+    }
+    def.groups = [...groupNames.values()];
+    def.plain = plains[0];
+    if (def.plain && (def.subcommands.length || def.groups.length))
+      def.issues.push(`/${name} mixes a plain command with subcommands`);
+    definitions.push(def);
+  }
+  return definitions;
+}
+
+export function commandLeaves(def: CommandDefinition): CommandLeaf[] {
+  return [
+    ...(def.plain ? [def.plain] : []),
+    ...def.subcommands,
+    ...def.groups.flatMap((g) => g.subcommands),
+  ];
+}
+
+/**
+ * Resolve the leaf a Discord call addresses. Grouped subs win; then a direct
+ * subcommand with the same name answers when no group was sent; then the plain
+ * handler.
+ */
+export function matchCommandLeaf(
+  def: CommandDefinition,
+  group: string | null,
+  sub: string | null,
+): CommandLeaf | null {
+  if (!sub) return def.plain ?? null;
+  if (group) {
+    const grouped = def.groups
+      .find((g) => g.name === group)
+      ?.subcommands.find((l) => l.sub === sub);
+    if (grouped) return grouped;
+  }
+  return def.subcommands.find((l) => l.sub === sub) ?? null;
+}
+
+/** Slash JSON for one definition. Re-exported; rendering lives in command-render.ts. */
+export { renderCommandDefinition } from './command-render.js';

@@ -1,4 +1,4 @@
-import { addScore, buy } from '@discord.ts/systems';
+import { buy } from '@discord.ts/systems';
 import { WEALTH_BOARD } from '../game/economy.js';
 import { premiumTierOf, shopPrice } from '../game/premium.js';
 import { store } from '../game/store.js';
@@ -20,8 +20,9 @@ export async function purchase(
 ): Promise<PurchaseResult> {
   const tier = await premiumTierOf(store, ctx.user.id);
   const price = shopPrice(item.price, tier);
-  const result = await buy(store, ctx.user.id, { id: item.id, price });
+  const result = await buy(store, ctx.user.id, { id: item.id, price }, 1, {
+    mirrorBoard: WEALTH_BOARD,
+  });
   if (!result.ok) return { ok: false, price, balance: result.balance };
-  await addScore(store, WEALTH_BOARD, ctx.user.id, -price);
   return { ok: true, price, balance: result.balance };
 }

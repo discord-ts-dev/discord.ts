@@ -57,9 +57,10 @@ export function fakeTarget(opts: FakeOptions = {}) {
     }),
   };
   const target: Record<string, unknown> = {
+    // Mirrors discord.js `withResponse: true`: the message rides in resource.
     reply: async (m: unknown) => {
       captured.replies.push(m);
-      return msg;
+      return { resource: { message: msg } };
     },
     editReply: async (m: unknown) => {
       captured.edits.push(m);

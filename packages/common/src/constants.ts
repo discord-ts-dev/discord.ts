@@ -1,5 +1,7 @@
 export const DISCORD_MODULE_OPTIONS = 'DISCORD_MODULE_OPTIONS';
 export const DISCORD_CLIENT = 'DISCORD_CLIENT';
+export const DISCORD_OWNERS = 'DISCORD_OWNERS';
+export const INJECT_METADATA = 'discord:inject-tokens';
 
 export const COMMAND_METADATA = 'discord:command';
 export const SUBCOMMAND_METADATA = 'discord:subcommand';

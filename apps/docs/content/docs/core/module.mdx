@@ -41,13 +41,34 @@ DiscordModule.forRootAsync({
 
 `createRuntime(AppModule)` builds client, sync, discovery, routing, and provider instances. `bootstrapApp(AppModule)` is the thin gate on top: `--shards` spawns shards, else it starts discovery. See sharding for details.
 
+## Providers and injection
+
+A provider is a class the registry constructs once per App, or a `{ provide, useValue }` pair for ports and config. Constructor parameters receive dependencies via `@Inject()`:
+
+```ts
+import { Inject, Module } from '@discord.ts/common';
+import { STORE } from '@discord.ts/systems';
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [MusicService, MusicCommand, { provide: STORE, useValue: myStore }],
+})
+export class AppModule {}
+
+export class MusicCommand {
+  constructor(@Inject(MusicService) private readonly music: MusicService) {}
+}
+```
+
+The registry resolves every `@Inject()` token before constructing the class, in declaration order, and fails at boot on duplicate providers, missing tokens, or dependency cycles. Guards named in `@UseGuards()` resolve through the same registry on first use, so a guard can inject providers too. Modules are flat: only the root module's `providers` are read.
+
 ## DI helpers
 
 | Helper                            | Use                                                                |
 | --------------------------------- | ------------------------------------------------------------------ |
-| `@Injectable()`                   | Mark a class as provider. Required on every command and listener.  |
+| `@Injectable()`                   | Marker for the language service; optional.                         |
 | `@Module({ imports, providers })` | Group providers.                                                   |
-| `Inject(token)`                   | Compat no-op. The container wires known services directly.         |
+| `@Inject(token)`                  | Resolve a constructor parameter from a provider token.             |
 | `SetMetadata(key, value)`         | Attach metadata to method or class.                                |
 | `applyDecorators(...decs)`        | Compose decorators into one.                                       |
 | `Reflector.get(key, target)`      | Read metadata.                                                     |

@@ -2,16 +2,32 @@ import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
 import { ApplicationCommandType } from 'discord.js';
+import { type CommandDefinition, type CommandLeaf } from '../src/discovery/command-definition.js';
 import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate.js';
-import type { SlashEntry } from '../src/discovery/handler.types.js';
 
 class Probe {
   run(): void {}
 }
 
+function leaf(over: Partial<CommandLeaf> = {}): CommandLeaf {
+  return { instance: new Probe() as never, method: 'run', description: 'Pong', ...over };
+}
+
+function def(over: Partial<CommandDefinition> = {}): CommandDefinition {
+  return {
+    name: 'ping',
+    description: 'Pong',
+    flags: {},
+    subcommands: [],
+    groups: [],
+    issues: [],
+    ...over,
+  };
+}
+
 function base(partial: Partial<DiscoveryState> = {}): DiscoveryState {
   return {
-    slash: [],
+    commands: [],
     menus: [],
     buttons: [],
     selects: [],
@@ -19,17 +35,6 @@ function base(partial: Partial<DiscoveryState> = {}): DiscoveryState {
     autocompletes: [],
     events: [],
     ...partial,
-  };
-}
-
-function slash(over: Partial<SlashEntry> = {}): SlashEntry {
-  return {
-    instance: new Probe() as never,
-    method: 'run',
-    top: 'ping',
-    topDescription: 'Pong',
-    flags: {},
-    ...over,
   };
 }
 
@@ -45,17 +50,21 @@ function expectsError(state: DiscoveryState, ...fragments: string[]): void {
 }
 
 describe('validateDiscoveryState accepts a healthy app', () => {
-  test('plain and grouped entries pass', () => {
+  test('plain, grouped and leaf entries pass', () => {
     validateDiscoveryState(
       base({
-        slash: [
-          slash(),
-          slash({
-            top: 'quest',
-            topDescription: 'Quests',
-            sub: 'reroll',
-            subDescription: 'Reroll',
-            group: 'daily',
+        commands: [
+          def({ plain: leaf() }),
+          def({
+            name: 'quest',
+            description: 'Quests',
+            groups: [
+              {
+                name: 'daily',
+                description: 'Daily',
+                subcommands: [leaf({ sub: 'reroll', group: 'daily', description: 'Reroll' })],
+              },
+            ],
           }),
         ],
         menus: [
@@ -75,55 +84,50 @@ describe('validateDiscoveryState accepts a healthy app', () => {
   });
 });
 
-describe('slash validation', () => {
-  test('rejects bad names, descriptions and duplicates', () => {
+describe('command validation', () => {
+  test('rejects bad names and descriptions', () => {
     expectsError(
       base({
-        slash: [
-          slash({
-            top: 'BAD NAME',
-            topDescription: '',
-            sub: 'BAD SUB',
-            group: 'BAD GROUP',
-            subDescription: '',
+        commands: [
+          def({
+            name: 'BAD NAME',
+            description: '',
+            plain: leaf({ sub: 'BAD SUB', group: 'BAD GROUP', description: '' }),
           }),
         ],
       }),
       'slash name "BAD NAME" must be 1-32 lowercase',
-      'description of /BAD NAME must be 1-100',
+      '/BAD NAME: description must be 1-100',
       'subcommand name "BAD SUB" must match',
       'description of /BAD NAME BAD GROUP BAD SUB must be 1-100',
       'group name "BAD GROUP" must match',
     );
-    expectsError(base({ slash: [slash(), slash()] }), 'duplicate /ping (also in Probe.run)');
   });
 
-  test('rejects mixed flags, mixed plain/sub and missing descriptions', () => {
+  test('reports the structural issues the builder recorded', () => {
+    expectsError(
+      base({ commands: [def({ issues: ['Probe.two: duplicate /ping (also in Probe.run)'] })] }),
+      'duplicate /ping (also in Probe.run)',
+    );
     expectsError(
       base({
-        slash: [
-          slash(),
-          slash({
-            top: 'ping',
-            topDescription: '',
-            flags: { nsfw: true },
+        commands: [
+          def({
+            issues: [
+              'Probe.run: /ping mixes command flags with another entry',
+              '/ping mixes a plain command with subcommands',
+            ],
           }),
         ],
       }),
-      'mixes nsfw/permissions/contexts with another entry',
-      'description of /ping must be 1-100',
-    );
-    expectsError(
-      base({ slash: [slash(), slash({ top: 'ping', topDescription: 'Pong', sub: 'sub' })] }),
+      'mixes command flags',
       '/ping mixes a plain command with subcommands',
     );
   });
 
   test('rejects more than 100 top-level commands', () => {
-    const slash100 = Array.from({ length: 101 }, (_, i) =>
-      slash({ top: `cmd${i}`, topDescription: 'x' }),
-    );
-    expectsError(base({ slash: slash100 }), 'top-level commands, max 100');
+    const many = Array.from({ length: 101 }, (_, i) => def({ name: `cmd${i}`, description: 'x' }));
+    expectsError(base({ commands: many }), 'top-level commands, max 100');
   });
 });
 

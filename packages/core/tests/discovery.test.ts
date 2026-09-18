@@ -12,7 +12,6 @@ import {
   ContextMenu,
   Modal,
   OnEvent,
-  PARAM_OPTIONS_METADATA,
   StringOption,
   StringSelect,
   Subcommand,
@@ -20,7 +19,7 @@ import {
 } from '@discord.ts/common';
 import { initI18n } from '@discord.ts/i18n';
 import { DiscordDiscoveryService, type DiscordSyncService } from '../src/index.js';
-import type { SlashEntry } from '../src/discovery/handler.types.js';
+import type { CommandDefinition, CommandLeaf } from '../src/discovery/command-definition.js';
 
 interface Calls {
   synced: unknown[][];
@@ -94,13 +93,23 @@ apply(Modal('form'), Probe.prototype, 'modal');
 apply(Autocomplete('ping'), Probe.prototype, 'auto');
 apply(OnEvent('ready'), Probe.prototype, 'event');
 
-function entry(over: Partial<SlashEntry>): SlashEntry {
+function leaf(over: Partial<CommandLeaf> = {}): CommandLeaf {
   return {
     instance: { run: () => undefined } as never,
     method: 'run',
-    top: 'ping',
-    topDescription: 'Pong',
+    description: 'Desc',
+    ...over,
+  };
+}
+
+function def(over: Partial<CommandDefinition> = {}): CommandDefinition {
+  return {
+    name: 'ping',
+    description: 'Pong',
     flags: {},
+    subcommands: [],
+    groups: [],
+    issues: [],
     ...over,
   };
 }
@@ -110,8 +119,12 @@ describe('DiscordDiscoveryService.scan', () => {
     const { service } = fakes();
     service.init([new Probe()]);
     assert.deepEqual(
-      service.slash.map((s) => `${s.top} ${s.sub ?? ''}`.trim()),
-      ['ping', 'plain', 'quest reroll'],
+      service.commands.map((c) => c.name),
+      ['ping', 'plain', 'quest'],
+    );
+    assert.deepEqual(
+      service.commands[2]?.subcommands.map((l) => l.sub),
+      ['reroll'],
     );
     assert.deepEqual(
       [service.menus.length, service.buttons.length, service.selects.length, service.modals.length],
@@ -124,35 +137,28 @@ describe('DiscordDiscoveryService.scan', () => {
 describe('DiscordDiscoveryService.buildJson', () => {
   test('builds plain, subcommand, grouped and menu JSON', () => {
     const { service } = fakes();
-    service.slash.push(
-      entry({
+    service.commands.push(
+      def({
         flags: { nsfw: true, defaultMemberPermissions: '8', contexts: [0], dmPermission: false },
       }),
-      entry({
-        top: 'plain',
-        topDescription: 'Plain',
+      def({
+        name: 'plain',
+        description: 'Plain',
+        subcommands: [leaf({ sub: 'one', description: 'One' })],
       }),
-      entry({
-        top: 'plain',
-        topDescription: 'Plain',
-        sub: 'one',
-        subDescription: 'One',
-      }),
-      entry({
-        top: 'quest',
-        topDescription: 'Quests',
-        group: 'daily',
-        groupDescription: 'Daily quests',
-        sub: 'reroll',
-        subDescription: 'Reroll',
-      }),
-      entry({
-        top: 'quest',
-        topDescription: 'Quests',
-        group: 'daily',
-        groupDescription: 'Daily quests',
-        sub: 'lock',
-        subDescription: 'Lock',
+      def({
+        name: 'quest',
+        description: 'Quests',
+        groups: [
+          {
+            name: 'daily',
+            description: 'Daily quests',
+            subcommands: [
+              leaf({ sub: 'reroll', group: 'daily', description: 'Reroll' }),
+              leaf({ sub: 'lock', group: 'daily', description: 'Lock' }),
+            ],
+          },
+        ],
       }),
     );
     service.menus.push(
@@ -218,7 +224,7 @@ describe('DiscordDiscoveryService.buildJson', () => {
     initI18n({ localesDir: dir, languages: ['de'] });
     try {
       const { service } = fakes();
-      service.slash.push(entry({ topLocalizations: { name: { fr: 'ping-fr' } } }));
+      service.commands.push(def({ localizations: { name: { fr: 'ping-fr' } } }));
       const json = service.buildJson() as Array<Record<string, unknown>>;
       assert.deepEqual(json[0]?.['description_localizations'], { de: 'Pong auf Deutsch' });
       assert.deepEqual(json[0]?.['name_localizations'], { fr: 'ping-fr' });
@@ -230,16 +236,13 @@ describe('DiscordDiscoveryService.buildJson', () => {
 
   test('mirrors DTO options onto the command JSON', () => {
     const { service } = fakes();
-    const instance = new Probe();
-    Reflect.defineMetadata(PARAM_OPTIONS_METADATA, [0], Probe.prototype.ping);
-    Reflect.defineMetadata('design:paramtypes', [PingDto], instance, 'ping');
-    service.slash.push({
-      instance: instance as never,
-      method: 'ping',
-      top: 'search',
-      topDescription: 'Search',
-      flags: {},
-    });
+    service.commands.push(
+      def({
+        name: 'search',
+        description: 'Search',
+        plain: leaf({ options: PingDto, description: 'Search' }),
+      }),
+    );
     const json = service.buildJson() as Array<{ name: string; options?: Array<{ name: string }> }>;
     assert.deepEqual(
       json[0]?.options?.map((o) => o.name),

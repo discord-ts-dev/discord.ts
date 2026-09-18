@@ -1,6 +1,5 @@
 import type { SortedEntry, Store } from './store.js';
-
-const boardKey = (board: string) => `lb:${board}`;
+import { keys } from './keys.js';
 
 export async function addScore(
   store: Store,
@@ -8,13 +7,11 @@ export async function addScore(
   member: string,
   amount: number,
 ): Promise<number> {
-  const next = ((await store.zscore(boardKey(board), member)) ?? 0) + amount;
-  await store.zadd(boardKey(board), next, member);
-  return next;
+  return store.zincrBy(keys.leaderboard(board), amount, member);
 }
 
 export async function top(store: Store, board: string, limit: number): Promise<SortedEntry[]> {
-  return store.zrange(boardKey(board), 0, limit - 1, true);
+  return store.zrange(keys.leaderboard(board), 0, limit - 1, true);
 }
 
 export async function rankOf(
@@ -22,9 +19,10 @@ export async function rankOf(
   board: string,
   member: string,
 ): Promise<{ rank: number; score: number } | null> {
+  const key = keys.leaderboard(board);
   const [rank, score] = await Promise.all([
-    store.zrank(boardKey(board), member, true),
-    store.zscore(boardKey(board), member),
+    store.zrank(key, member, true),
+    store.zscore(key, member),
   ]);
   if (rank === null || score === null) return null;
   return { rank: rank + 1, score };

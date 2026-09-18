@@ -34,7 +34,7 @@ describe('Boot scan', () => {
     const { discovery } = await createRuntime(ProbeApp);
     try {
       assert.deepStrictEqual(
-        discovery.slash.map((s) => s.top),
+        discovery.commands.map((c) => c.name),
         ['ping', 'roll'],
       );
     } finally {

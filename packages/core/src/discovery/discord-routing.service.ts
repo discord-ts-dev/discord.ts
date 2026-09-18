@@ -1,7 +1,5 @@
 import { Client, Events } from 'discord.js';
 import {
-  DISCORD_CLIENT,
-  DISCORD_MODULE_OPTIONS,
   DiscordLogger,
   GUARDS_METADATA,
   OPTION_FIELD_METADATA,
@@ -9,10 +7,13 @@ import {
   PIPES_METADATA,
   type DiscordModuleOptions,
   type OptionFieldMeta,
+  type Type,
 } from '@discord.ts/common';
 import { replyEphemeral } from '@discord.ts/ux';
 import { DiscordExecutionContext } from '../context/discord-execution-context.js';
+import type { ProviderRegistry } from '../provider-registry.js';
 import { buildArgs, buildEventArgs } from './discord-args.js';
+import { matchCommandLeaf } from './command-definition.js';
 import { DiscordDiscoveryService } from './discord-discovery.service.js';
 import { matches, type Handler } from './handler.types.js';
 
@@ -24,15 +25,12 @@ export class DiscordRoutingService {
     private readonly client: Client,
     private readonly opts: DiscordModuleOptions,
     private readonly discovery: DiscordDiscoveryService,
-    private readonly guards: Map<unknown, { canActivate(ctx: unknown): unknown }>,
+    private readonly registry: ProviderRegistry,
     private readonly pipes: Map<
       unknown,
       { transform(v: unknown, m: unknown): unknown }
     > = new Map(),
-  ) {
-    void DISCORD_CLIENT;
-    void DISCORD_MODULE_OPTIONS;
-  }
+  ) {}
 
   subscribe(): void {
     this.client.on(Events.InteractionCreate, (i) => void this.route(i));
@@ -70,13 +68,9 @@ export class DiscordRoutingService {
       };
       const group = cmd.options.getSubcommandGroup(false);
       const sub = cmd.options.getSubcommand(false);
-      const found =
-        this.discovery.slash.find(
-          (s) => s.top === cmd.commandName && s.group === group && s.sub === sub,
-        ) ??
-        this.discovery.slash.find((s) => s.top === cmd.commandName && s.sub === sub && !s.group) ??
-        this.discovery.slash.find((s) => s.top === cmd.commandName && !s.sub);
-      if (found) await this.invoke(found, anyIx, [anyIx]);
+      const def = this.discovery.commands.find((c) => c.name === cmd.commandName);
+      const leaf = def ? matchCommandLeaf(def, group, sub) : null;
+      if (leaf) await this.invoke(leaf, anyIx, [anyIx]);
       return;
     }
     if (interaction.isContextMenuCommand()) {
@@ -245,9 +239,6 @@ export class DiscordRoutingService {
   }
 
   private resolveGuard(g: unknown): { canActivate(ctx: unknown): unknown } {
-    const found = this.guards.get(g);
-    if (found) return found;
-    const Ctor = g as new () => { canActivate(ctx: unknown): unknown };
-    return new Ctor();
+    return this.registry.resolveOrCreate(g as Type<{ canActivate(ctx: unknown): unknown }>);
   }
 }

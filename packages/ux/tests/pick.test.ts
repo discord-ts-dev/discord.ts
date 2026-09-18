@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
+import { MessageFlags } from 'discord.js';
 import { pickOne } from '../src/index.js';
 import { customIdsOf, fakeTarget } from './collector.js';
 
@@ -21,6 +22,11 @@ describe('pickOne', () => {
     assert.equal(await pickOne(target as never, options, { timeoutMs: 10 }), null);
   });
 
+  test('resolves null when delivery fails', async () => {
+    const target = { reply: async () => null };
+    assert.equal(await pickOne(target as never, options), null);
+  });
+
   test('nudges a user outside allowedUserId and keeps waiting', async () => {
     const { target, captured } = fakeTarget({
       plan: (ids) => [ids[0] as string],
@@ -28,7 +34,9 @@ describe('pickOne', () => {
       end: true,
     });
     assert.equal(await pickOne(target as never, options, { allowedUserId: 'u1' }), null);
-    assert.deepEqual(captured.nudges, [{ content: 'Not yours to pick.', ephemeral: true }]);
+    assert.deepEqual(captured.nudges, [
+      { content: 'Not yours to pick.', flags: MessageFlags.Ephemeral, withResponse: true },
+    ]);
   });
 
   test('accepts the allowed user', async () => {

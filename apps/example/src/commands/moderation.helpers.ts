@@ -1,5 +1,5 @@
 import { userIdOf } from '@discord.ts/utils';
-import { errorEmbed } from '@discord.ts/ux';
+import { errorEmbed, replyEmbed } from '@discord.ts/ux';
 import {
   AuditLogEvent,
   EmbedBuilder,
@@ -7,7 +7,7 @@ import {
   type Guild,
 } from 'discord.js';
 
-export { userIdOf };
+export { userIdOf, replyEmbed };
 
 // ponytail: bounded in-memory stores, FIFO evict. No DB until needed.
 const MAX_AUDIT = 100;
@@ -132,14 +132,6 @@ export function modEmbed(action: string, color: number): EmbedBuilder {
     .setColor(color)
     .setTimestamp()
     .setFooter({ text: 'discord.ts moderation example' });
-}
-
-export async function replyEmbed(
-  ctx: ChatInputCommandInteraction,
-  embed: EmbedBuilder,
-  ephemeral = false,
-): Promise<void> {
-  await ctx.reply({ embeds: [embed], ephemeral });
 }
 
 export async function replyError(ctx: ChatInputCommandInteraction, text: string): Promise<void> {

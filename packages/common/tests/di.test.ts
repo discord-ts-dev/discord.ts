@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
 import {
   GUARDS_METADATA,
+  INJECT_METADATA,
   Inject,
   Injectable,
   Logger,
@@ -35,9 +36,14 @@ describe('Injectable and Module', () => {
     assert.deepEqual(Reflect.getMetadata(MODULE_METADATA, App), meta);
   });
 
-  test('Inject is a no-op parameter decorator', () => {
-    const dec = Inject('token');
-    assert.equal(dec({}, undefined, 0), undefined);
+  test('Inject records the token for a constructor parameter', () => {
+    class Service {}
+    Inject('token')(Service, undefined, 0);
+    Inject('second')(Service, undefined, 1);
+    assert.deepEqual(Reflect.getMetadata(INJECT_METADATA, Service), {
+      0: 'token',
+      1: 'second',
+    });
   });
 });
 

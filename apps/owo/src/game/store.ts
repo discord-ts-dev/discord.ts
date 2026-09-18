@@ -37,7 +37,7 @@ export class FileStore implements Store {
     fs.renameSync(tmp, this.file);
   }
 
-  async get(key: string): Promise<string | null> {
+  private read(key: string): string | null {
     const hit = this.state.strings[key];
     if (!hit) return null;
     if (hit.exp !== undefined && hit.exp <= Date.now()) {
@@ -47,6 +47,20 @@ export class FileStore implements Store {
     return hit.v;
   }
 
+  /** Write keeping the key's existing TTL; atomic-update semantics. */
+  private write(key: string, value: string): void {
+    const exp = this.state.strings[key]?.exp;
+    this.state.strings[key] = exp === undefined ? { v: value } : { v: value, exp };
+  }
+
+  private setScore(key: string, score: number, member: string): void {
+    (this.state.sorted[key] ??= {})[member] = score;
+  }
+
+  async get(key: string): Promise<string | null> {
+    return this.read(key);
+  }
+
   async set(key: string, value: string, ttlMs?: number): Promise<void> {
     this.state.strings[key] =
       ttlMs === undefined ? { v: value } : { v: value, exp: Date.now() + ttlMs };
@@ -54,17 +68,44 @@ export class FileStore implements Store {
   }
 
   async incrBy(key: string, amount: number): Promise<number> {
-    const current = Number((await this.get(key)) ?? 0) || 0;
-    const next = Math.trunc(current + amount);
-    this.state.strings[key] = { v: String(next) };
-    this.flush();
-    return next;
+    return this.update([key], (current) => {
+      const next = Math.trunc((Number(current[key] ?? 0) || 0) + amount);
+      return { result: next, writes: { [key]: String(next) } };
+    });
+  }
+
+  async update<T>(
+    keys: string[],
+    fn: (current: Record<string, string | null>) => {
+      result: T;
+      writes?: Record<string, string | null>;
+      zadds?: Array<{ key: string; score: number; member: string }>;
+    },
+  ): Promise<T> {
+    const current: Record<string, string | null> = {};
+    for (const key of keys) current[key] = this.read(key);
+    const { result, writes, zadds } = fn(current);
+    if (writes) {
+      for (const [key, value] of Object.entries(writes)) {
+        if (value === null) delete this.state.strings[key];
+        else this.write(key, value);
+      }
+    }
+    if (zadds) for (const { key, score, member } of zadds) this.setScore(key, score, member);
+    if (writes || zadds) this.flush();
+    return result;
   }
 
   async zadd(key: string, score: number, member: string): Promise<void> {
-    const set = (this.state.sorted[key] ??= {});
-    set[member] = score;
+    this.setScore(key, score, member);
     this.flush();
+  }
+
+  async zincrBy(key: string, amount: number, member: string): Promise<number> {
+    const next = (this.state.sorted[key]?.[member] ?? 0) + amount;
+    this.setScore(key, next, member);
+    this.flush();
+    return next;
   }
 
   private ordered(key: string, reverse: boolean): SortedEntry[] {

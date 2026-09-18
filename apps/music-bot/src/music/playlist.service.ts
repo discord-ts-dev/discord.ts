@@ -1,112 +1,14 @@
 import { Injectable } from '@discord.ts/common';
 import { db } from './db.js';
+import type { Track } from './track.js';
 
-// ponytail: one guild = one queue. Memory is the display source of truth;
-// LavalinkService plays audio from `raw` originals alongside (see transport
-// calls in commands). No service-to-service imports: ReadyListener wires
-// event mirrors, commands call both singletons. Framework builds providers
-// with `new P()`, so shared state lives in these module singletons.
-export interface Track {
-  uri: string;
-  name: string;
-  duration: number;
-  encode?: string;
-  requesterId?: string;
-  author?: string;
-  artworkUrl?: string | null;
-  isStream?: boolean;
-  /** Original lavalink track for transport. Opaque here, cast in LavalinkService. */
-  raw?: unknown;
-}
-
-export interface GuildQueue {
-  tracks: Track[];
-  current: Track | null;
-  paused: boolean;
-  volume: number;
-  loop: 'off' | 'track' | 'queue';
-  autoplay: boolean;
-  filters: string[];
-}
-
-const DEFAULT_QUEUE: () => GuildQueue = () => ({
-  tracks: [],
-  current: null,
-  paused: false,
-  volume: 100,
-  loop: 'off',
-  autoplay: false,
-  filters: [],
-});
-
+/** User-scoped saved track lists. Guild playback state lives in GuildPlayer. */
 @Injectable()
-export class MusicService {
-  private readonly queues = new Map<string, GuildQueue>();
+export class PlaylistService {
   private readonly playlists = new Map<
     string,
     { name: string; tracks: Track[]; isPrivate: boolean }[]
   >();
-
-  queueOf(guildId: string): GuildQueue {
-    let q = this.queues.get(guildId);
-    if (!q) {
-      q = DEFAULT_QUEUE();
-      this.queues.set(guildId, q);
-    }
-    return q;
-  }
-
-  enqueue(guildId: string, track: Track, playNext = false): number {
-    const q = this.queueOf(guildId);
-    if (!q.current) {
-      q.current = track;
-      return 0;
-    }
-    if (playNext) q.tracks.unshift(track);
-    else q.tracks.push(track);
-    return q.tracks.length;
-  }
-
-  skip(guildId: string): Track | null {
-    const q = this.queueOf(guildId);
-    q.current = q.tracks.shift() ?? null;
-    q.paused = false;
-    return q.current;
-  }
-
-  clear(guildId: string): void {
-    this.queueOf(guildId).tracks = [];
-  }
-
-  shuffle(guildId: string): void {
-    const q = this.queueOf(guildId);
-    for (let i = q.tracks.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [q.tracks[i], q.tracks[j]] = [q.tracks[j]!, q.tracks[i]!];
-    }
-  }
-
-  remove(guildId: string, index: number): Track | null {
-    const q = this.queueOf(guildId);
-    if (index < 1 || index > q.tracks.length) return null;
-    return q.tracks.splice(index - 1, 1)[0] ?? null;
-  }
-
-  /** Lavalink trackStart mirror: adopt the live track as current. */
-  mirrorLiveCurrent(guildId: string, track: Track): void {
-    const q = this.queueOf(guildId);
-    const at = q.tracks.findIndex((t) => t.uri === track.uri);
-    if (at >= 0) q.tracks.splice(at, 1);
-    q.current = track;
-    q.paused = false;
-  }
-
-  /** Lavalink queueEnd mirror: audio drained, keep flags. */
-  mirrorQueueEnd(guildId: string): void {
-    const q = this.queueOf(guildId);
-    q.current = null;
-    q.tracks = [];
-  }
 
   // --- playlists (memory-first, Prisma write-through + boot hydrate) ---
   async hydratePlaylists(): Promise<void> {
@@ -218,5 +120,3 @@ export class MusicService {
     await client.playlist.delete({ where: { userId_name: { userId, name } } }).catch(() => null);
   }
 }
-
-export const musicService = new MusicService();

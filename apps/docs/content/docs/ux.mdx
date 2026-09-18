@@ -50,21 +50,27 @@ import { errorEmbed } from '@discord.ts/ux';
 await interaction.reply({ embeds: [errorEmbed('Missing target.')] });
 ```
 
-## Reply ephemeral
+## Replies
 
-Best-effort ephemeral reply, used by the framework guards and available to apps.
-Sends only when nothing was replied or deferred yet, and never throws: a failed
-deny reply must not shadow the block it explains.
+One delivery path for a Context. It replies when nothing was acknowledged yet,
+edits when the Context is already acknowledged, and follows up when an ephemeral
+reply is wanted after acknowledgement. It never throws, so a failed delivery
+cannot shadow the block it explains.
 
 ```ts
-import { replyEphemeral } from '@discord.ts/ux';
+import { deliver, replyEmbed, replyEphemeral } from '@discord.ts/ux';
 
-if (interaction.guild) return;
+// Guards and refusals: ephemeral, and never lost after a defer or confirm.
 await replyEphemeral(interaction, 'Use this command in a server.');
-return false;
+
+// Results: replace the confirm message, or follow up with a private embed.
+await deliver(interaction, { content: 'Restarted.' });
+await replyEmbed(interaction, errorEmbed('Ban failed.'), true);
 ```
 
-| Arg       | Notes                                                                                 |
-| --------- | ------------------------------------------------------------------------------------- |
-| `target`  | `unknown`: narrowed at runtime to `EphemeralTarget` (`reply` + `replied`/`deferred`). |
-| `content` | Plain text.                                                                           |
+| Export           | Notes                                                                                     |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| `deliver`        | Full payload (`content`, `embeds`, `components`, extras). Returns the message, or `null`. |
+| `replyEphemeral` | Text-only ephemeral.                                                                      |
+| `replyEmbed`     | One embed, private when the third argument is `true`.                                     |
+| `ReplyTarget`    | Structural target shape; real interactions satisfy it.                                    |

@@ -1,5 +1,5 @@
-export { MemoryStore } from './store.js';
-export type { SortedEntry, Store } from './store.js';
+export { MemoryStore, STORE } from './store.js';
+export type { SortedEntry, Store, StoreUpdate, StoreWrites } from './store.js';
 export { TaskRunner, dayIndex, defineTask, msUntilDaily } from './scheduler.js';
 export type { DailyAt, TaskDef } from './scheduler.js';
 export { claimDaily } from './daily.js';
@@ -8,7 +8,7 @@ export { addScore, rankOf, top } from './leaderboard.js';
 export { addProgress, assignQuest, completeQuest, getQuest, rerollQuest } from './quest.js';
 export type { QuestState, QuestWindow } from './quest.js';
 export { addBalance, buy, getBalance, inventory, useItem } from './shop.js';
-export type { BuyResult, ShopItem } from './shop.js';
+export type { BuyResult, MirrorOptions, ShopItem } from './shop.js';
 export { getSettings, isCommandEnabled, setCommandEnabled } from './guild-settings.js';
 export type { GuildSettings } from './guild-settings.js';
 export { awardVote } from './vote.js';

@@ -1,5 +1,5 @@
 import { OPTION_FIELD_METADATA, type OptionFieldMeta } from '@discord.ts/common';
-import { optionsDto } from './discord-args.js';
+import { commandLeaves, type CommandDefinition, type CommandLeaf } from './command-definition.js';
 import type {
   AutocompleteEntry,
   ButtonEntry,
@@ -8,11 +8,10 @@ import type {
   MenuEntry,
   ModalEntry,
   SelectEntry,
-  SlashEntry,
 } from './handler.types.js';
 
 export interface DiscoveryState {
-  slash: SlashEntry[];
+  commands: CommandDefinition[];
   menus: MenuEntry[];
   buttons: ButtonEntry[];
   selects: SelectEntry[];
@@ -30,19 +29,6 @@ function who(h: Handler): string {
 
 function descOk(d: string | undefined): boolean {
   return !!d && d.length >= 1 && d.length <= 100;
-}
-
-function flagsKey(m: {
-  nsfw?: boolean;
-  defaultMemberPermissions?: string | number | bigint | null;
-  contexts?: unknown;
-  dmPermission?: boolean;
-}): string {
-  const perms =
-    typeof m.defaultMemberPermissions === 'bigint'
-      ? m.defaultMemberPermissions.toString()
-      : JSON.stringify(m.defaultMemberPermissions ?? null);
-  return `${m.nsfw ?? null}|${perms}|${JSON.stringify(m.contexts ?? null)}|${m.dmPermission ?? null}`;
 }
 
 function checkOptionField(where: string, key: string, f: OptionFieldMeta, errs: string[]): void {
@@ -84,8 +70,8 @@ function checkOptionField(where: string, key: string, f: OptionFieldMeta, errs: 
     errs.push(`${at} channelTypes is empty`);
 }
 
-function checkDto(where: string, s: SlashEntry, errs: string[]): void {
-  const Dto = optionsDto(s);
+function checkDto(where: string, leaf: CommandLeaf, errs: string[]): void {
+  const Dto = leaf.options;
   if (!Dto) return;
   const fields: Record<string, OptionFieldMeta> =
     Reflect.getMetadata(OPTION_FIELD_METADATA, Dto) ?? {};
@@ -100,6 +86,19 @@ function checkDto(where: string, s: SlashEntry, errs: string[]): void {
   }
 }
 
+function checkLeaf(where: string, def: CommandDefinition, leaf: CommandLeaf, errs: string[]): void {
+  if (leaf.sub && !NAME.test(leaf.sub))
+    errs.push(`${where}: subcommand name "${leaf.sub}" must match ${NAME}`);
+  if (leaf.group && !NAME.test(leaf.group))
+    errs.push(`${where}: group name "${leaf.group}" must match ${NAME}`);
+  const label = leaf.sub
+    ? `/${def.name} ${leaf.group ? `${leaf.group} ` : ''}${leaf.sub}`
+    : `/${def.name}`;
+  if (leaf.sub && !descOk(leaf.description))
+    errs.push(`${where}: description of ${label} must be 1-100 chars`);
+  checkDto(where, leaf, errs);
+}
+
 function checkCustomId(where: string, id: string | RegExp, errs: string[]): void {
   if (typeof id !== 'string') return;
   if (id.length < 1 || id.length > 100) errs.push(`${where} customId must be 1-100 chars`);
@@ -108,36 +107,15 @@ function checkCustomId(where: string, id: string | RegExp, errs: string[]): void
 // ponytail: every Discord rejection we can predict runs here, before any REST call.
 export function validateDiscoveryState(s: DiscoveryState): void {
   const errs: string[] = [];
-  const slashKeys = new Map<string, string>();
-  const tops = new Map<string, { flags: string; hasPlain: boolean; hasSub: boolean }>();
-  for (const e of s.slash) {
-    const w = who(e);
-    const label = e.sub ? `/${e.top} ${e.group ? `${e.group} ` : ''}${e.sub}` : `/${e.top}`;
-    if (!NAME.test(e.top))
-      errs.push(`${w}: slash name "${e.top}" must be 1-32 lowercase letters, numbers, _ or -`);
-    if (!descOk(e.topDescription)) errs.push(`${w}: description of /${e.top} must be 1-100 chars`);
-    if (e.sub && !NAME.test(e.sub))
-      errs.push(`${w}: subcommand name "${e.sub}" must match ${NAME}`);
-    if (e.sub && !descOk(e.subDescription ?? e.sub))
-      errs.push(`${w}: description of ${label} must be 1-100 chars`);
-    if (e.group && !NAME.test(e.group))
-      errs.push(`${w}: group name "${e.group}" must match ${NAME}`);
-    const key = `${e.top} ${e.group ?? ''} ${e.sub ?? ''}`;
-    const first = slashKeys.get(key);
-    if (first) errs.push(`${w}: duplicate ${label} (also in ${first})`);
-    else slashKeys.set(key, w);
-    const top = tops.get(e.top) ?? { flags: flagsKey(e.flags), hasPlain: false, hasSub: false };
-    if (top.flags !== flagsKey(e.flags))
+  for (const def of s.commands) {
+    errs.push(...def.issues);
+    if (!NAME.test(def.name))
       errs.push(
-        `${w}: /${e.top} mixes nsfw/permissions/contexts with ${top.flags ? 'another entry' : 'defaults'}`,
+        `/${def.name}: slash name "${def.name}" must be 1-32 lowercase letters, numbers, _ or -`,
       );
-    if (e.sub) top.hasSub = true;
-    else top.hasPlain = true;
-    tops.set(e.top, top);
-    checkDto(w, e, errs);
+    if (!descOk(def.description)) errs.push(`/${def.name}: description must be 1-100 chars`);
+    for (const leaf of commandLeaves(def)) checkLeaf(who(leaf), def, leaf, errs);
   }
-  for (const [top, t] of tops)
-    if (t.hasPlain && t.hasSub) errs.push(`/${top} mixes a plain command with subcommands`);
   for (const m of s.menus) {
     const w = who(m);
     if (!m.name || m.name.length > 32) errs.push(`${w}: menu name must be 1-32 chars`);
@@ -156,12 +134,12 @@ export function validateDiscoveryState(s: DiscoveryState): void {
   custom('select', s.selects);
   custom('modal', s.modals);
   for (const e of s.events) if (!e.event) errs.push(`${who(e)}: event is empty`);
-  const topNames = new Set(s.slash.map((e) => e.top));
+  const topNames = new Set(s.commands.map((c) => c.name));
   for (const a of s.autocompletes)
     if (a.commandName && !topNames.has(a.commandName))
       errs.push(`${who(a)}: autocomplete targets missing command "${a.commandName}"`);
-  if (tops.size + s.menus.length > 100)
-    errs.push(`app holds ${tops.size + s.menus.length} top-level commands, max 100`);
+  if (s.commands.length + s.menus.length > 100)
+    errs.push(`app holds ${s.commands.length + s.menus.length} top-level commands, max 100`);
   if (errs.length)
     throw new Error(
       `[discord.ts] invalid command definitions:\n${errs.map((e) => `- ${e}`).join('\n')}`,
