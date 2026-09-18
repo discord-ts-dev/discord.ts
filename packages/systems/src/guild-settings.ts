@@ -1,20 +1,12 @@
 import type { Store } from './store.js';
+import { keys } from './keys.js';
 
 export interface GuildSettings {
   disabled?: string[];
 }
 
-const settingsKey = (guildId: string) => `guild:${guildId}`;
-
 export async function getSettings(store: Store, guildId: string): Promise<GuildSettings> {
-  return JSON.parse((await store.get(settingsKey(guildId))) ?? '{}') as GuildSettings;
-}
-
-async function patch(store: Store, guildId: string, part: Partial<GuildSettings>): Promise<void> {
-  await store.set(
-    settingsKey(guildId),
-    JSON.stringify({ ...(await getSettings(store, guildId)), ...part }),
-  );
+  return JSON.parse((await store.get(keys.guildSettings(guildId))) ?? '{}') as GuildSettings;
 }
 
 export async function setCommandEnabled(
@@ -24,12 +16,17 @@ export async function setCommandEnabled(
   enabled: boolean,
 ): Promise<void> {
   const name = command.toLowerCase();
-  const disabled = new Set(
-    ((await getSettings(store, guildId)).disabled ?? []).map((c) => c.toLowerCase()),
-  );
-  if (enabled) disabled.delete(name);
-  else disabled.add(name);
-  await patch(store, guildId, { disabled: [...disabled] });
+  const settingsKey = keys.guildSettings(guildId);
+  await store.update([settingsKey], (current) => {
+    const settings = JSON.parse(current[settingsKey] ?? '{}') as GuildSettings;
+    const disabled = new Set((settings.disabled ?? []).map((c) => c.toLowerCase()));
+    if (enabled) disabled.delete(name);
+    else disabled.add(name);
+    return {
+      result: undefined,
+      writes: { [settingsKey]: JSON.stringify({ ...settings, disabled: [...disabled] }) },
+    };
+  });
 }
 
 export async function isCommandEnabled(

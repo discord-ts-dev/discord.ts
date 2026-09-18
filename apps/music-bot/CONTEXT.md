@@ -5,9 +5,10 @@ Ubiquitous language. Glossary only. No implementation.
 ## Terms
 
 - **Music bot**: the runnable app in `apps/music-bot`. Wires `common` decorators into the `core` module, 100% port of Shiroko command inventory.
-- **Track**: one playable URI plus name, duration, encode. Requested by a user. Not `Song`.
+- **Track**: one playable URI plus name, duration, encode. Requested by a user. Not `Song`. Transport handles stay opaque inside the transport adapter.
 - **Queue**: per-guild ordered `Track` list plus current, paused, volume, loop, autoplay, filters. Not `Playlist`.
-- **Guild player**: Lavalink player per guild. One voice connection max. Owns transport for its `Queue`.
+- **Guild player**: the module that owns a guild's `Queue` state and its transport calls together, so a command cannot update one without the other. One voice connection max.
+- **Transport**: the `PlaybackTransport` an adapter satisfies. `LavalinkTransport` in production, a fake in tests. Emits track-start and queue-end events that the Guild player mirrors into the `Queue`.
 - **Playlist**: saved named `Track` list per `User`. Load copies into `Queue`. Steal copies from another `User`.
 - **Filter**: Lavalink audio effect per guild player (`bassboost`, `nightcore`, `karaoke`, `8d`, `pitch`, `speed`, `tremolo`, `vibrato`, `lowpass`, `rotation`). Reset clears all.
 - **Premium**: per-`User` or per-guild flag gating track and playlist limits.

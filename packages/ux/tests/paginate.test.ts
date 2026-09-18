@@ -60,6 +60,11 @@ describe('paginate', () => {
     assert.deepEqual(captured.updates, []);
   });
 
+  test('returns without a collector when delivery fails', async () => {
+    const target = { reply: async () => null };
+    await paginate(target as never, pages);
+  });
+
   test('answered interaction edits the initial page', async () => {
     const { target, captured } = fakeTarget({ deferred: true, plan: () => [] });
     await paginate(target as never, pages);

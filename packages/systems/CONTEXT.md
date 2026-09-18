@@ -5,7 +5,13 @@ Ubiquitous language. Glossary only. No implementation.
 ## Terms
 
 - **Store**: the async key/value plus sorted-set port every system reads
-  and writes through. Implemented by `MemoryStore`, plugged by adapters.
+  and writes through. `update()` is the atomic read-modify-write; `incrBy`
+  and `zincrBy` are single-key atomic increments. Implemented by
+  `MemoryStore`, plugged by adapters.
+- **Store keys**: `bal:` balance, `inv:` inventory, `daily:` index and
+  streak, `quest:` state, `lb:` leaderboards, `guild:` settings, `vote:`
+  stamps. Apps may address these keys; the value shapes belong to the
+  system that owns them.
 - **Task**: a named unit of scheduled work. Declared with `defineTask()`,
   run at boot plus on interval or daily time. Owned by `TaskRunner`.
 - **Daily**: a once-per-reset-window currency claim. Claimed via

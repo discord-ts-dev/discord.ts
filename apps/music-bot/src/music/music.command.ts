@@ -1,4 +1,4 @@
-import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Author, Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
 import {
   Cooldown,
   RequireBotPermissions,
@@ -17,9 +17,8 @@ import {
   type User,
 } from 'discord.js';
 import { PlayDto, RemoveDto, SeekDto, VolumeDto } from './dto/music.dto.js';
-import { LavalinkService, lavalinkService } from './lavalink.service.js';
-import { MusicService, musicService } from './music.service.js';
-import { PremiumService, premiumService } from './premium.service.js';
+import { GuildPlayer } from './guild-player.js';
+import { PremiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 import { formatTime } from '@discord.ts/utils';
 import { chunk, parseSeek } from './format.js';
@@ -28,10 +27,10 @@ import { NON_PREMIUM_QUEUE_CAP, trackLine } from './music-helpers.js';
 @Injectable()
 @RequireGuild()
 export class MusicCommand {
-  // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly music: MusicService = musicService;
-  private readonly lavalink: LavalinkService = lavalinkService;
-  private readonly premium: PremiumService = premiumService;
+  constructor(
+    @Inject(GuildPlayer) private readonly player: GuildPlayer,
+    @Inject(PremiumService) private readonly premium: PremiumService,
+  ) {}
 
   private lang(guild: DiscordGuild): string {
     return this.premium.languageOf(guild.id);
@@ -39,7 +38,7 @@ export class MusicCommand {
 
   private capped(guild: DiscordGuild, author: User): boolean {
     if (this.premium.isPremium(guild.id, author.id)) return false;
-    return this.music.queueOf(guild.id).tracks.length >= NON_PREMIUM_QUEUE_CAP;
+    return this.player.queueOf(guild.id).tracks.length >= NON_PREMIUM_QUEUE_CAP;
   }
 
   @Command({ name: 'join', description: 'Join your voice channel' })
@@ -53,7 +52,7 @@ export class MusicCommand {
     const member = ctx.member as GuildMember | null;
     const channelId = member?.voice?.channelId ?? null;
     if (!channelId) return;
-    const live = await this.lavalink.join(guild.id, channelId, ctx.channelId);
+    const live = await this.player.join(guild.id, channelId, ctx.channelId);
     await ctx.reply(
       live
         ? `Joined <#${channelId}>.`
@@ -67,9 +66,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    this.music.clear(guild.id);
-    this.music.queueOf(guild.id).current = null;
-    void this.lavalink.leave(guild.id);
+    await this.player.leave(guild.id);
     await ctx.reply('Left voice channel and cleared queue.');
   }
 
@@ -87,10 +84,9 @@ export class MusicCommand {
       await ctx.reply(t('error.premium.limit', undefined, this.lang(guild)));
       return;
     }
-    const tracks = await this.lavalink.search(dto.query, author.id);
+    const tracks = await this.player.search(dto.query, author.id);
     const track = tracks[0]!;
-    const pos = this.music.enqueue(guild.id, track);
-    void this.lavalink.playNow(guild.id, tracks);
+    const pos = this.player.play(guild.id, tracks);
     const embed = new EmbedBuilder()
       .setColor(botConfig.color.main)
       .setDescription(
@@ -113,9 +109,8 @@ export class MusicCommand {
       await ctx.reply(t('error.premium.limit', undefined, this.lang(guild)));
       return;
     }
-    const [track] = await this.lavalink.search(dto.query, author.id);
-    this.music.enqueue(guild.id, track!, true);
-    void this.lavalink.playNow(guild.id, [track!], true);
+    const [track] = await this.player.search(dto.query, author.id);
+    this.player.play(guild.id, [track!], true);
     await ctx.reply(`Will play next: ${trackLine(track!)}`);
   }
 
@@ -126,8 +121,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    this.music.queueOf(guild.id).paused = true;
-    void this.lavalink.pauseLive(guild.id, true);
+    this.player.setPaused(guild.id, true);
     await ctx.reply('Paused.');
   }
 
@@ -138,8 +132,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    this.music.queueOf(guild.id).paused = false;
-    void this.lavalink.pauseLive(guild.id, false);
+    this.player.setPaused(guild.id, false);
     await ctx.reply('Resumed.');
   }
 
@@ -150,8 +143,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    const next = this.music.skip(guild.id);
-    void this.lavalink.skipLive(guild.id);
+    const next = this.player.skip(guild.id);
     await ctx.reply(next ? `Skipped. Now: ${trackLine(next)}` : 'Skipped. Queue empty.');
   }
 
@@ -161,7 +153,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    const current = this.music.queueOf(guild.id).current;
+    const current = this.player.queueOf(guild.id).current;
     await ctx.reply(current ? `Replaying: ${trackLine(current)}` : 'Nothing to replay.');
   }
 
@@ -178,8 +170,8 @@ export class MusicCommand {
       await ctx.reply('Bad time. Use seconds or 1m30s.');
       return;
     }
-    const current = this.music.queueOf(guild.id).current;
-    void this.lavalink.seekLive(guild.id, ms);
+    const current = this.player.queueOf(guild.id).current;
+    this.player.seek(guild.id, ms);
     await ctx.reply(current ? `Seek ${current.name} to ${formatTime(ms)}.` : 'Nothing playing.');
   }
 
@@ -191,8 +183,7 @@ export class MusicCommand {
     @Guild() guild: DiscordGuild,
     @Options() dto: VolumeDto,
   ): Promise<void> {
-    this.music.queueOf(guild.id).volume = dto.level;
-    void this.lavalink.volumeLive(guild.id, dto.level);
+    this.player.setVolume(guild.id, dto.level);
     await ctx.reply(`Volume: ${dto.level}.`);
   }
 
@@ -202,7 +193,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    const q = this.music.queueOf(guild.id);
+    const q = this.player.queueOf(guild.id);
     if (!q.current && !q.tracks.length) {
       await ctx.reply(t('error.common.no_player', undefined, this.lang(guild)));
       return;
@@ -225,7 +216,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    this.music.clear(guild.id);
+    this.player.clear(guild.id);
     await ctx.reply('Queue cleared.');
   }
 
@@ -235,7 +226,7 @@ export class MusicCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    this.music.shuffle(guild.id);
+    this.player.shuffle(guild.id);
     await ctx.reply('Shuffled.');
   }
 
@@ -246,7 +237,7 @@ export class MusicCommand {
     @Guild() guild: DiscordGuild,
     @Options() dto: RemoveDto,
   ): Promise<void> {
-    const removed = this.music.remove(guild.id, dto.index);
+    const removed = this.player.remove(guild.id, dto.index);
     await ctx.reply(removed ? `Removed: ${trackLine(removed)}` : 'Bad index.');
   }
 }

@@ -1,8 +1,23 @@
 // ponytail: lazy TTL. Expired keys die on read, no sweep timer.
 
+/** Token apps register their Store adapter under (ADR 0004). */
+export const STORE = 'discord:store';
+
 export interface SortedEntry {
   member: string;
   score: number;
+}
+
+/** Values written by one atomic update; null deletes the key. */
+export type StoreWrites = Record<string, string | null>;
+
+/** One atomic update: what the caller gets back plus the writes to apply. */
+export interface StoreUpdate<T> {
+  result: T;
+  /** String values written atomically; null deletes. Existing TTLs are kept. */
+  writes?: StoreWrites;
+  /** Sorted-set scores written atomically, absolute like `zadd`. */
+  zadds?: Array<{ key: string; score: number; member: string }>;
 }
 
 export interface Store {
@@ -14,6 +29,18 @@ export interface Store {
   zscore(key: string, member: string): Promise<number | null>;
   zrank(key: string, member: string, reverse?: boolean): Promise<number | null>;
   del(key: string): Promise<void>;
+  /** Atomic increment of one member's score. Returns the new score. */
+  zincrBy(key: string, amount: number, member: string): Promise<number>;
+  /**
+   * Atomic read-modify-write over `keys`. `fn` runs once with the current
+   * values (null when missing) and must be synchronous; its writes and zadds
+   * apply together with no other update interleaving. Adapters serialize
+   * concurrent updates that share keys.
+   */
+  update<T>(
+    keys: string[],
+    fn: (current: Record<string, string | null>) => StoreUpdate<T>,
+  ): Promise<T>;
 }
 
 export class MemoryStore implements Store {
@@ -31,6 +58,18 @@ export class MemoryStore implements Store {
     return hit.value;
   }
 
+  /** Write keeping the key's existing TTL; atomic-update semantics. */
+  private write(key: string, value: string): void {
+    const expiresAt = this.strings.get(key)?.expiresAt;
+    this.strings.set(key, expiresAt === undefined ? { value } : { value, expiresAt });
+  }
+
+  private setScore(key: string, score: number, member: string): void {
+    let set = this.sorted.get(key);
+    if (!set) this.sorted.set(key, (set = new Map()));
+    set.set(member, score);
+  }
+
   async get(key: string): Promise<string | null> {
     return this.read(key);
   }
@@ -43,15 +82,37 @@ export class MemoryStore implements Store {
   }
 
   async incrBy(key: string, amount: number): Promise<number> {
-    const next = (Number(this.read(key) ?? 0) || 0) + amount;
-    this.strings.set(key, { value: String(next) });
-    return next;
+    return this.update([key], (current) => {
+      const next = (Number(current[key] ?? 0) || 0) + amount;
+      return { result: next, writes: { [key]: String(next) } };
+    });
+  }
+
+  async update<T>(
+    keys: string[],
+    fn: (current: Record<string, string | null>) => StoreUpdate<T>,
+  ): Promise<T> {
+    const current: Record<string, string | null> = {};
+    for (const key of keys) current[key] = this.read(key);
+    const { result, writes, zadds } = fn(current);
+    if (writes) {
+      for (const [key, value] of Object.entries(writes)) {
+        if (value === null) this.strings.delete(key);
+        else this.write(key, value);
+      }
+    }
+    if (zadds) for (const { key, score, member } of zadds) this.setScore(key, score, member);
+    return result;
   }
 
   async zadd(key: string, score: number, member: string): Promise<void> {
-    let set = this.sorted.get(key);
-    if (!set) this.sorted.set(key, (set = new Map()));
-    set.set(member, score);
+    this.setScore(key, score, member);
+  }
+
+  async zincrBy(key: string, amount: number, member: string): Promise<number> {
+    const next = (this.sorted.get(key)?.get(member) ?? 0) + amount;
+    this.setScore(key, next, member);
+    return next;
   }
 
   private ordered(key: string, reverse: boolean): SortedEntry[] {

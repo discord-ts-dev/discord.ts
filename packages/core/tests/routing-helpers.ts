@@ -1,7 +1,9 @@
 import { Events } from 'discord.js';
+import type { Provider } from '@discord.ts/common';
 import { DiscordRoutingService } from '../src/discovery/discord-routing.service.js';
 import type { DiscordDiscoveryService } from '../src/discovery/discord-discovery.service.js';
 import type { Handler } from '../src/discovery/handler.types.js';
+import { ProviderRegistry } from '../src/provider-registry.js';
 
 export interface Harness {
   routing: DiscordRoutingService;
@@ -13,7 +15,7 @@ export interface Harness {
 
 export function setup(
   opts: {
-    guards?: Map<unknown, { canActivate(ctx: unknown): unknown }>;
+    guards?: Provider[];
     pipes?: Map<unknown, { transform(v: unknown, m: unknown): unknown }>;
   } = {},
 ): Harness {
@@ -21,7 +23,7 @@ export function setup(
   const seen: unknown[][] = [];
   const handlers = new Map<string, Array<(...a: unknown[]) => unknown>>();
   const discovery: Record<string, unknown[]> = {
-    slash: [],
+    commands: [],
     menus: [],
     buttons: [],
     selects: [],
@@ -41,7 +43,7 @@ export function setup(
     client as never,
     { i18n: undefined } as never,
     discovery as never as DiscordDiscoveryService,
-    opts.guards ?? new Map(),
+    new ProviderRegistry(opts.guards ?? []),
     opts.pipes ?? new Map(),
   );
   return { routing, calls, handlers, discovery, seen };

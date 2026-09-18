@@ -1,11 +1,11 @@
-import type { CanActivate } from '@discord.ts/common';
+import { DISCORD_OWNERS, Inject, type CanActivate } from '@discord.ts/common';
 import { replyEphemeral } from '@discord.ts/ux';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: fail-closed allowlist. Empty owners denies everyone, so the
-// `new Ctor()` fallback in routing stays safe. Owners come from config.
+// registry-created guard stays safe. Owners come from config via @Inject.
 export class OwnerGuard implements CanActivate {
-  constructor(private readonly owners: string[] = []) {}
+  constructor(@Inject(DISCORD_OWNERS) private readonly owners: string[] = []) {}
 
   async canActivate(context: DiscordExecutionContext): Promise<boolean> {
     const ix = context.getArgByIndex<Record<string, unknown>>(0);

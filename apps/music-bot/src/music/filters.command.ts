@@ -1,14 +1,15 @@
 import {
   Context,
   Guild,
+  Inject,
   Injectable,
   Subcommand,
   createCommandGroupDecorator,
 } from '@discord.ts/common';
 import { Cooldown, RequireGuild, SameVoice } from '@discord.ts/core';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild } from 'discord.js';
-import { LavalinkService, lavalinkService } from './lavalink.service.js';
-import { MusicService, musicService } from './music.service.js';
+import { GuildPlayer } from './guild-player.js';
+import { describeLiveFilter } from './lavalink-filters.js';
 
 const Filters = createCommandGroupDecorator({ name: 'filters', description: 'Audio filters' });
 
@@ -17,25 +18,17 @@ const Filters = createCommandGroupDecorator({ name: 'filters', description: 'Aud
 @RequireGuild()
 @SameVoice()
 export class FiltersCommand {
-  // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly music: MusicService = musicService;
-  private readonly lavalink: LavalinkService = lavalinkService;
+  constructor(@Inject(GuildPlayer) private readonly player: GuildPlayer) {}
 
   private async toggle(
     ctx: ChatInputCommandInteraction,
     guild: DiscordGuild,
     name: string,
   ): Promise<void> {
-    const q = this.music.queueOf(guild.id);
-    const i = q.filters.indexOf(name);
-    if (i >= 0) q.filters.splice(i, 1);
-    else q.filters.push(name);
-    const enabled = i < 0;
-    void this.lavalink.applyFilter(guild.id, name, enabled);
-    const payload = this.lavalink.describeFilter(name);
-    await ctx.reply(
-      `${name}: ${i >= 0 ? 'off' : `on (${payload})`}. Active: ${q.filters.join(', ') || '(off)'}.`,
-    );
+    const enabled = this.player.toggleFilter(guild.id, name);
+    const payload = describeLiveFilter(name);
+    const active = this.player.queueOf(guild.id).filters.join(', ') || '(off)';
+    await ctx.reply(`${name}: ${enabled ? `on (${payload})` : 'off'}. Active: ${active}.`);
   }
 
   @Subcommand({ name: 'bassboost', description: 'Toggle bassboost' })
@@ -125,8 +118,7 @@ export class FiltersCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    this.music.queueOf(guild.id).filters = [];
-    void this.lavalink.resetFiltersLive(guild.id);
+    this.player.resetFilters(guild.id);
     await ctx.reply('Filters reset.');
   }
 }

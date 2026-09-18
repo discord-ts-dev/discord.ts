@@ -6,6 +6,7 @@ import {
   type EmbedBuilder,
   type RepliableInteraction,
 } from 'discord.js';
+import { deliver } from './reply.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
@@ -18,16 +19,8 @@ export async function paginate(
   timeoutMs = 60_000,
 ): Promise<void> {
   if (!pages.length) return;
-  const ix = target as {
-    replied?: boolean;
-    deferred?: boolean;
-    editReply(m: unknown): Promise<unknown>;
-    reply(m: unknown): Promise<unknown>;
-  };
   if (pages.length === 1) {
-    const payload = { embeds: [pages[0]] };
-    if (ix.replied || ix.deferred) await ix.editReply(payload);
-    else await ix.reply(payload);
+    await deliver(target, { embeds: [pages[0]] });
     return;
   }
   const tag = uid();
@@ -39,10 +32,8 @@ export async function paginate(
   );
   let i = 0;
   const payload = () => ({ embeds: [pages[i]], components: [row] });
-  const msg =
-    ix.replied || ix.deferred
-      ? await ix.editReply(payload())
-      : await ix.reply({ ...payload(), fetchReply: true });
+  const msg = await deliver(target, payload());
+  if (!msg) return;
   const collector = (
     msg as unknown as {
       createMessageComponentCollector(o: unknown): {

@@ -161,3 +161,35 @@ describe('vote', () => {
     expect(await getBalance(s, 'u')).toBe(250);
   });
 });
+
+describe('atomic balance paths', () => {
+  test('concurrent buys cannot overspend', async () => {
+    const s = new MemoryStore();
+    await addBalance(s, 'u', 100);
+    const item = { id: 'sword', price: 60 };
+    const [a, b] = await Promise.all([buy(s, 'u', item), buy(s, 'u', item)]);
+    expect([a.ok, b.ok]).toEqual([true, false]);
+    expect(await getBalance(s, 'u')).toBe(40);
+    expect(await inventory(s, 'u')).toEqual({ sword: 1 });
+  });
+
+  test('addBalance and buy mirror the board in the same write', async () => {
+    const s = new MemoryStore();
+    expect(await addBalance(s, 'u', 100, { mirrorBoard: 'wealth' })).toBe(100);
+    expect(await s.zscore('lb:wealth', 'u')).toBe(100);
+    await buy(s, 'u', { id: 'x', price: 30 }, 1, { mirrorBoard: 'wealth' });
+    expect(await s.zscore('lb:wealth', 'u')).toBe(70);
+  });
+
+  test('claimDaily mirrors the new balance', async () => {
+    const s = new MemoryStore();
+    const r = await claimDaily(s, 'u', {
+      amount: 40,
+      mirrorBoard: 'wealth',
+      timeZone: UTC,
+      now: day('2026-01-01T10:00:00Z'),
+    });
+    expect(r.claimed).toBe(true);
+    expect(await s.zscore('lb:wealth', 'u')).toBe(40);
+  });
+});

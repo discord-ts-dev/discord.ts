@@ -1,6 +1,6 @@
 import { Command, Context, Injectable, Options } from '@discord.ts/common';
 import { userIdOf } from '@discord.ts/utils';
-import { confirm, replyEphemeral } from '@discord.ts/ux';
+import { confirm, deliver, replyEphemeral } from '@discord.ts/ux';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { accept, decline, divorce, propose, relation } from '../game/relations.js';
@@ -77,6 +77,8 @@ export class MarriageCommand {
       await replyEphemeral(ctx, tt(ctx, 'game:marry.not-married'));
       return;
     }
-    await ctx.reply(tt(ctx, 'game:marry.divorced', { user: `<@${result.former}>` }));
+    await deliver(ctx, {
+      content: tt(ctx, 'game:marry.divorced', { user: `<@${result.former}>` }),
+    });
   }
 }

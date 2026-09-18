@@ -4,6 +4,7 @@ import {
   StringSelectMenuBuilder,
   type RepliableInteraction,
 } from 'discord.js';
+import { deliver, replyEphemeral } from './reply.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
@@ -37,16 +38,8 @@ export async function pickOne(
   const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(menu);
   const base = { components: [row] };
   const payload = config.content !== undefined ? { content: config.content, ...base } : { ...base };
-  const ix = target as {
-    replied?: boolean;
-    deferred?: boolean;
-    editReply(m: unknown): Promise<unknown>;
-    reply(m: unknown): Promise<unknown>;
-  };
-  const msg =
-    ix.replied || ix.deferred
-      ? await ix.editReply(payload)
-      : await ix.reply({ ...payload, fetchReply: true });
+  const msg = await deliver(target, payload);
+  if (!msg) return null;
   return new Promise((resolve) => {
     const collector = (
       msg as unknown as {
@@ -70,7 +63,7 @@ export async function pickOne(
     let done = false;
     collector.on('collect', (c) => {
       if (config.allowedUserId && c.user.id !== config.allowedUserId) {
-        void c.reply({ content: 'Not yours to pick.', ephemeral: true });
+        void replyEphemeral(c, 'Not yours to pick.');
         return;
       }
       done = true;

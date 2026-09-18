@@ -31,7 +31,11 @@ describe('Cooldown', () => {
     assert.equal(await guard.canActivate(ctx(fakeInteraction('u1', seen))), true);
     assert.equal(await guard.canActivate(ctx(fakeInteraction('u1', seen))), false);
     assert.deepStrictEqual(seen, [
-      { content: 'Slow down. Try again in 60s.', flags: MessageFlags.Ephemeral },
+      {
+        content: 'Slow down. Try again in 60s.',
+        flags: MessageFlags.Ephemeral,
+        withResponse: true,
+      },
     ]);
   });
 });

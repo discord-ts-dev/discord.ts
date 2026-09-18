@@ -12,16 +12,7 @@ import { resolveLocale } from '@discord.ts/i18n';
 import { applyLocalizations, localizedPair } from './discord-localize.js';
 import type { Handler } from './handler.types.js';
 
-// ponytail: pure arg building, no DI. Shared by routing; optionsDto by discovery JSON.
-export function optionsDto(h: Handler): (new () => Record<string, unknown>) | undefined {
-  const fn = h.instance[h.method] as (...a: never[]) => unknown;
-  if (typeof fn !== 'function') return undefined;
-  const idxs: number[] = Reflect.getMetadata(PARAM_OPTIONS_METADATA, fn) ?? [];
-  if (!idxs.length) return undefined;
-  const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
-  return types[idxs[0]] as new () => Record<string, unknown>;
-}
-
+// ponytail: pure arg building, no DI. Shared by routing.
 export function buildArgs(h: Handler, interaction: unknown, i18nDefault?: string): unknown[] {
   const fn = h.instance[h.method] as (...a: never[]) => unknown;
   const types: unknown[] = Reflect.getMetadata('design:paramtypes', h.instance, h.method) ?? [];
@@ -131,7 +122,7 @@ type OptionBuilder = Pick<
 // ponytail: extras mirror builder setters; limits are checked at boot by the validator.
 export function applyOptions(
   b: OptionBuilder,
-  dto?: (new () => Record<string, unknown>) | undefined,
+  dto?: (new () => object) | undefined,
   keyBase?: string,
 ): void {
   if (!dto) return;

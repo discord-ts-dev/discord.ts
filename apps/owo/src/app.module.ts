@@ -1,5 +1,7 @@
 import { Module } from '@discord.ts/common';
 import { DiscordModule } from '@discord.ts/core';
+import { STORE } from '@discord.ts/systems';
+import { store } from './game/store.js';
 import { AdminCommand } from './commands/admin.command.js';
 import { AutohuntCommand } from './commands/autohunt.command.js';
 import { AvatarCommand } from './commands/avatar.command.js';
@@ -66,6 +68,7 @@ import { UsersListener } from './events/users.listener.js';
 @Module({
   imports: [DiscordModule.forRootAsync()],
   providers: [
+    { provide: STORE, useValue: store },
     HuntCommand,
     ZooCommand,
     DexCommand,

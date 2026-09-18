@@ -2,11 +2,11 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
 import * as fc from 'fast-check';
+import type { CommandDefinition } from '../src/discovery/command-definition.js';
 import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate.js';
-import type { SlashEntry } from '../src/discovery/handler.types.js';
 
 const empty: DiscoveryState = {
-  slash: [],
+  commands: [],
   menus: [],
   buttons: [],
   selects: [],
@@ -20,25 +20,15 @@ const nameArb = fc.string({ unit: fc.constantFrom(...'abcxyz019_-'), minLength: 
 const descArb = fc.string({ minLength: 1, maxLength: 100 });
 const badNameArb = fc.string({ maxLength: 40 }).filter((s) => !NAME.test(s));
 
-function entry(top: string, method: string, sub?: string): SlashEntry {
-  return {
-    instance: { [method]: () => undefined },
-    method,
-    top,
-    topDescription: 'd',
-    sub,
-    flags: {},
-  };
+function def(name: string, description: string): CommandDefinition {
+  return { name, description, flags: {}, subcommands: [], groups: [], issues: [] };
 }
 
 describe('validateDiscoveryState properties', () => {
-  test('accepts any generated valid slash entry', () => {
+  test('accepts any generated valid command definition', () => {
     fc.assert(
-      fc.property(nameArb, descArb, (top, desc) => {
-        const s: DiscoveryState = {
-          ...empty,
-          slash: [{ ...entry(top, 'run'), topDescription: desc }],
-        };
+      fc.property(nameArb, descArb, (name, description) => {
+        const s: DiscoveryState = { ...empty, commands: [def(name, description)] };
         assert.doesNotThrow(() => validateDiscoveryState(s));
       }),
     );
@@ -46,20 +36,19 @@ describe('validateDiscoveryState properties', () => {
 
   test('rejects any top name outside the NAME grammar', () => {
     fc.assert(
-      fc.property(badNameArb, (top) => {
-        const s: DiscoveryState = { ...empty, slash: [entry(top, 'run')] };
+      fc.property(badNameArb, (name) => {
+        const s: DiscoveryState = { ...empty, commands: [def(name, 'd')] };
         assert.throws(() => validateDiscoveryState(s), /slash name/);
       }),
     );
   });
 
-  test('rejects duplicate top/group/sub keys', () => {
+  test('surfaces any structural issue the builder recorded', () => {
     fc.assert(
-      fc.property(nameArb, fc.option(nameArb), (top, sub) => {
-        const s: DiscoveryState = {
-          ...empty,
-          slash: [entry(top, 'one', sub ?? undefined), entry(top, 'two', sub ?? undefined)],
-        };
+      fc.property(nameArb, descArb, (name, description) => {
+        const command = def(name, description);
+        command.issues = [`Probe.run: duplicate /${name} (also in Probe.two)`];
+        const s: DiscoveryState = { ...empty, commands: [command] };
         assert.throws(() => validateDiscoveryState(s), /duplicate/);
       }),
     );

@@ -56,6 +56,7 @@ describe('EnabledGuard', () => {
     expect(replies[0]).toEqual({
       content: expect.stringContaining('disabled'),
       flags: MessageFlags.Ephemeral,
+      withResponse: true,
     });
   });
 

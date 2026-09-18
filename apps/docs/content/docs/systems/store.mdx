@@ -13,15 +13,31 @@ await store.set('bal:123', '100');
 await store.incrBy('bal:123', 50);
 ```
 
-| Method                               | Use                                                                   |
-| ------------------------------------ | --------------------------------------------------------------------- |
-| `get(key)`                           | String or `null`. Lazy TTL: expired keys die on read, no sweep timer. |
-| `set(key, value, ttlMs?)`            | Write with optional expiry.                                           |
-| `incrBy(key, amount)`                | Atomic-ish increment. Returns next.                                   |
-| `zadd(key, score, member)`           | Upsert sorted-set entry.                                              |
-| `zrange(key, start, stop, reverse?)` | Slice ordered entries. `stop: -1` means end.                          |
-| `zscore(key, member)`                | Score or `null`.                                                      |
-| `zrank(key, member, reverse?)`       | 0-based rank or `null`.                                               |
-| `del(key)`                           | Delete string and sorted keys.                                        |
+| Method                               | Use                                                                                                                                |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `get(key)`                           | String or `null`. Lazy TTL: expired keys die on read, no sweep timer.                                                              |
+| `set(key, value, ttlMs?)`            | Write with optional expiry.                                                                                                        |
+| `incrBy(key, amount)`                | Atomic increment. Returns next. Keeps the key's TTL.                                                                               |
+| `zincrBy(key, amount, member)`       | Atomic score increment. Returns next.                                                                                              |
+| `update(keys, fn)`                   | Atomic read-modify-write. `fn` gets current values and returns `{ result, writes?, zadds? }`; `null` writes delete, TTLs are kept. |
+| `zadd(key, score, member)`           | Upsert sorted-set entry.                                                                                                           |
+| `zrange(key, start, stop, reverse?)` | Slice ordered entries. `stop: -1` means end.                                                                                       |
+| `zscore(key, member)`                | Score or `null`.                                                                                                                   |
+| `zrank(key, member, reverse?)`       | 0-based rank or `null`.                                                                                                            |
+| `del(key)`                           | Delete string and sorted keys.                                                                                                     |
 
 Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. Daily payouts land in `bal:` so they are spendable in the shop. App-defined guild values extend the settings prefix as `guild:<id>:<name>` — see the [guild config recipe](/docs/recipes/guild-config).
+
+## Atomic operations
+
+`update()` is the seam that makes read-modify-write safe: `fn` runs once, synchronously, with the current values of `keys`, and its writes and sorted-set entries apply together. Adapters serialize concurrent updates that share keys — MemoryStore and the JSON FileStore because `fn` is synchronous, Redis with `WATCH`/`MULTI` retries, Postgres with a transaction.
+
+Systems already use it, and the balance-taking functions can mirror a board in the same write:
+
+```ts
+import { addBalance, buy, claimDaily } from '@discord.ts/systems';
+
+await addBalance(store, userId, 100, { mirrorBoard: 'wealth' });
+await buy(store, userId, { id: 'lootbox', price: 200 }, 1, { mirrorBoard: 'wealth' });
+await claimDaily(store, userId, { amount: 100, mirrorBoard: 'wealth' });
+```

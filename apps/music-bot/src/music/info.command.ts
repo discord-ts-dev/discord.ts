@@ -1,7 +1,8 @@
-import { Author, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Author, Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireGuild } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
 import { buildHelp } from '@discord.ts/systems';
+import { deliver } from '@discord.ts/ux';
 import {
   EmbedBuilder,
   type ChatInputCommandInteraction,
@@ -9,7 +10,7 @@ import {
   type User,
 } from 'discord.js';
 import { HelpDto, PremiumScopeDto } from './dto/admin.dto.js';
-import { PremiumService, premiumService } from './premium.service.js';
+import { PremiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 
 const COMMANDS = [
@@ -61,7 +62,7 @@ const HELP = buildHelp(COMMANDS);
 @RequireGuild()
 export class InfoCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly premium: PremiumService = premiumService;
+  constructor(@Inject(PremiumService) private readonly premium: PremiumService) {}
 
   @Command({
     name: 'help',
@@ -122,7 +123,7 @@ export class InfoCommand {
         value: `${apiLatency >= 500 || apiLatency < 0 ? '' : '+'}${apiLatency}ms`,
       },
     );
-    await ctx.reply({ embeds: [embed] });
+    await deliver(ctx, { embeds: [embed] });
   }
 
   @Command({ name: 'premium', description: 'Check premium status' })

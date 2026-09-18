@@ -1,7 +1,7 @@
-import { Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
 import { Cooldown, RequireGuild, RequireOwner, RequirePermissions } from '@discord.ts/core';
 import { availableLocales, t } from '@discord.ts/i18n';
-import { confirm } from '@discord.ts/ux';
+import { confirm, deliver } from '@discord.ts/ux';
 // ponytail: node:vm has no Bun equivalent; Bun runs the module natively.
 import { runInNewContext } from 'node:vm';
 import {
@@ -11,7 +11,7 @@ import {
   type Guild as DiscordGuild,
 } from 'discord.js';
 import { EvalDto, GrantPremiumDto, LanguageDto, ScopeTargetDto } from './dto/admin.dto.js';
-import { PremiumService, premiumService } from './premium.service.js';
+import { PremiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 
 function cleanId(raw: string): string {
@@ -22,7 +22,7 @@ function cleanId(raw: string): string {
 @RequireGuild()
 export class AdminCommand {
   // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly premium: PremiumService = premiumService;
+  constructor(@Inject(PremiumService) private readonly premium: PremiumService) {}
 
   @Command({
     name: 'language',
@@ -132,11 +132,8 @@ export class AdminCommand {
   @RequireOwner()
   async restart(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const ok = await confirm(ctx, 'Confirm restart?');
-    if (!ok) {
-      await ctx.reply('Restart cancelled.');
-      return;
-    }
-    await ctx.reply('Restarting…');
+    if (!ok) return;
+    await deliver(ctx, { content: 'Restarting…' });
     process.exit(0);
   }
 }

@@ -19,3 +19,5 @@ Ubiquitous language. Glossary only. No implementation.
 - **Locale**: the Discord locale of the current call. Injected with `@Locale()`.
 - **Options**: validated DTO for slash options. Injected with `@Options()`. Fields use `@StringOption()` etc.
 - **Logger**: scoped signale output via `DiscordLogger(context)`. Color accents via `styleText` at call sites.
+- **Provider**: a class or `{ provide, useValue }` pair registered in `@Module({ providers })`. The provider registry constructs each class once per App.
+- **Inject**: a constructor-parameter declaration naming the token it resolves from. `@Inject(TOKEN)`.

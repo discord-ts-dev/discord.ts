@@ -1,7 +1,16 @@
-import { Author, Button, Command, Context, Guild, Injectable, Options } from '@discord.ts/common';
+import {
+  Author,
+  Button,
+  Command,
+  Context,
+  Guild,
+  Inject,
+  Injectable,
+  Options,
+} from '@discord.ts/common';
 import { Cooldown, RequireBotPermissions, RequireGuild, SameVoice } from '@discord.ts/core';
 import { t } from '@discord.ts/i18n';
-import { paginate, pickOne } from '@discord.ts/ux';
+import { deliver, paginate, pickOne, replyEphemeral } from '@discord.ts/ux';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -14,10 +23,9 @@ import {
   type User,
 } from 'discord.js';
 import { LoopDto, LyricDto, SearchDto, ToggleDto } from './dto/music.dto.js';
-import { LavalinkService, lavalinkService } from './lavalink.service.js';
-import { LyricService, lyricService } from './lyric.service.js';
-import { MusicService, musicService } from './music.service.js';
-import { PremiumService, premiumService } from './premium.service.js';
+import { GuildPlayer } from './guild-player.js';
+import { LyricService } from './lyric.service.js';
+import { PremiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
 import { formatTime, progressBar } from '@discord.ts/utils';
 import { NON_PREMIUM_QUEUE_CAP, trackLine } from './music-helpers.js';
@@ -25,18 +33,18 @@ import { NON_PREMIUM_QUEUE_CAP, trackLine } from './music-helpers.js';
 @Injectable()
 @RequireGuild()
 export class MusicHudCommand {
-  // ponytail: singletons, the framework builds providers with `new P()`.
-  private readonly music: MusicService = musicService;
-  private readonly lavalink: LavalinkService = lavalinkService;
-  private readonly lyrics: LyricService = lyricService;
-  private readonly premium: PremiumService = premiumService;
+  constructor(
+    @Inject(GuildPlayer) private readonly player: GuildPlayer,
+    @Inject(LyricService) private readonly lyrics: LyricService,
+    @Inject(PremiumService) private readonly premium: PremiumService,
+  ) {}
 
   private lang(guild: DiscordGuild): string {
     return this.premium.languageOf(guild.id);
   }
 
   private controlRow(guildId: string): ActionRowBuilder<ButtonBuilder> {
-    const q = this.music.queueOf(guildId);
+    const q = this.player.queueOf(guildId);
     return new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder()
         .setCustomId('music:resume')
@@ -61,13 +69,13 @@ export class MusicHudCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Guild() guild: DiscordGuild,
   ): Promise<void> {
-    const q = this.music.queueOf(guild.id);
+    const q = this.player.queueOf(guild.id);
     if (!q.current) {
       await ctx.reply(t('error.player.no_track_playing', undefined, this.lang(guild)));
       return;
     }
     const total = q.current.duration > 0 ? formatTime(q.current.duration) : 'LIVE';
-    const pos = this.lavalink.positionOf(guild.id);
+    const pos = this.player.positionOf(guild.id);
     const embed = new EmbedBuilder()
       .setColor(botConfig.color.main)
       .setDescription(
@@ -84,10 +92,10 @@ export class MusicHudCommand {
     @Guild() guild: DiscordGuild,
     @Options() dto: ToggleDto,
   ): Promise<void> {
-    const q = this.music.queueOf(guild.id);
-    q.autoplay = dto.on ?? !q.autoplay;
-    this.lavalink.setAutoplay(guild.id, q.autoplay);
-    await ctx.reply(`Autoplay: ${q.autoplay ? 'on' : 'off'}.`);
+    const q = this.player.queueOf(guild.id);
+    const next = dto.on ?? !q.autoplay;
+    this.player.setAutoplay(guild.id, next);
+    await ctx.reply(`Autoplay: ${next ? 'on' : 'off'}.`);
   }
 
   @Command({ name: 'loop', description: 'Loop track, queue, or off' })
@@ -98,8 +106,7 @@ export class MusicHudCommand {
     @Options() dto: LoopDto,
   ): Promise<void> {
     const mode = dto.mode === 'track' || dto.mode === 'queue' ? dto.mode : 'off';
-    this.music.queueOf(guild.id).loop = mode;
-    void this.lavalink.repeatLive(guild.id, mode);
+    this.player.setLoop(guild.id, mode);
     await ctx.reply(`Loop: ${mode}.`);
   }
 
@@ -113,7 +120,7 @@ export class MusicHudCommand {
     @Author() author: User,
     @Options() dto: SearchDto,
   ): Promise<void> {
-    const tracks = (await this.lavalink.search(dto.query, author.id)).slice(0, 5);
+    const tracks = (await this.player.search(dto.query, author.id)).slice(0, 5);
     if (!tracks.length) {
       await ctx.reply(t('error.no_result', undefined, this.lang(guild)));
       return;
@@ -134,15 +141,14 @@ export class MusicHudCommand {
     if (picked === null) return;
     const track = tracks[Number(picked)]!;
     if (
-      this.music.queueOf(guild.id).tracks.length >= NON_PREMIUM_QUEUE_CAP &&
+      this.player.queueOf(guild.id).tracks.length >= NON_PREMIUM_QUEUE_CAP &&
       !this.premium.isPremium(guild.id, author.id)
     ) {
       const limited = t('error.premium.limit', undefined, this.lang(guild));
-      await ctx.followUp({ content: limited, ephemeral: true });
+      await replyEphemeral(ctx, limited);
       return;
     }
-    const pos = this.music.enqueue(guild.id, { ...track, requesterId: author.id });
-    void this.lavalink.playNow(guild.id, [{ ...track, requesterId: author.id }]);
+    const pos = this.player.play(guild.id, [{ ...track, requesterId: author.id }]);
     const done =
       pos === 0 ? `Now playing: ${trackLine(track)}` : `Queued #${pos}: ${trackLine(track)}`;
     await ctx.followUp({ content: done });
@@ -155,7 +161,7 @@ export class MusicHudCommand {
     @Guild() guild: DiscordGuild,
     @Options() dto: LyricDto,
   ): Promise<void> {
-    const fallback = this.music.queueOf(guild.id).current?.name;
+    const fallback = this.player.queueOf(guild.id).current?.name;
     const title = dto.song ?? fallback;
     if (!title) {
       await ctx.reply('Nothing playing. Name a song.');
@@ -164,7 +170,7 @@ export class MusicHudCommand {
     await ctx.reply(t('use_many.searching', undefined, this.lang(guild)));
     const found = await this.lyrics.find(title);
     if (!found || !found.pages.length) {
-      await ctx.reply(t('error.no_result', undefined, this.lang(guild)));
+      await deliver(ctx, { content: t('error.no_result', undefined, this.lang(guild)) });
       return;
     }
     const pages = found.pages.map((page) =>
@@ -180,42 +186,38 @@ export class MusicHudCommand {
   @Button('music:resume')
   async onResume(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId!;
-    const q = this.music.queueOf(guildId);
-    q.paused = !q.paused;
-    void this.lavalink.pauseLive(guildId, q.paused);
+    const q = this.player.queueOf(guildId);
+    this.player.setPaused(guildId, !q.paused);
     await ix.update({ components: [this.controlRow(guildId)] });
   }
 
   @Button('music:skip')
   async onSkip(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId!;
-    this.music.skip(guildId);
-    void this.lavalink.skipLive(guildId);
+    this.player.skip(guildId);
     await ix.update({ components: [this.controlRow(guildId)] });
   }
 
   @Button('music:stop')
   async onStop(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId!;
-    this.music.clear(guildId);
-    this.music.queueOf(guildId).current = null;
-    void this.lavalink.stopLive(guildId);
+    this.player.stop(guildId);
     await ix.update({ content: 'Stopped.', components: [] });
   }
 
   @Button('music:loop')
   async onLoop(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId!;
-    const q = this.music.queueOf(guildId);
-    q.loop = q.loop === 'off' ? 'track' : q.loop === 'track' ? 'queue' : 'off';
-    void this.lavalink.repeatLive(guildId, q.loop);
+    const q = this.player.queueOf(guildId);
+    const mode = q.loop === 'off' ? 'track' : q.loop === 'track' ? 'queue' : 'off';
+    this.player.setLoop(guildId, mode);
     await ix.update({ components: [this.controlRow(guildId)] });
   }
 
   @Button('music:shuffle')
   async onShuffle(@Context() ix: ButtonInteraction): Promise<void> {
     const guildId = ix.guildId!;
-    this.music.shuffle(guildId);
-    await ix.reply({ content: 'Shuffled.', ephemeral: true });
+    this.player.shuffle(guildId);
+    await replyEphemeral(ix, 'Shuffled.');
   }
 }

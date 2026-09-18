@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { OPTION_FIELD_METADATA, PARAM_OPTIONS_METADATA } from '@discord.ts/common';
+import { OPTION_FIELD_METADATA } from '@discord.ts/common';
+import { type CommandDefinition, type CommandLeaf } from '../src/discovery/command-definition.js';
 import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate.js';
-import type { SlashEntry } from '../src/discovery/handler.types.js';
 
 class Probe {
   run(): void {}
@@ -11,7 +11,7 @@ class Probe {
 
 function base(partial: Partial<DiscoveryState> = {}): DiscoveryState {
   return {
-    slash: [],
+    commands: [],
     menus: [],
     buttons: [],
     selects: [],
@@ -22,13 +22,18 @@ function base(partial: Partial<DiscoveryState> = {}): DiscoveryState {
   };
 }
 
-function slash(over: Partial<SlashEntry> = {}): SlashEntry {
+function leaf(over: Partial<CommandLeaf> = {}): CommandLeaf {
+  return { instance: new Probe() as never, method: 'run', description: 'Pong', ...over };
+}
+
+function def(over: Partial<CommandDefinition> = {}): CommandDefinition {
   return {
-    instance: new Probe() as never,
-    method: 'run',
-    top: 'ping',
-    topDescription: 'Pong',
+    name: 'ping',
+    description: 'Pong',
     flags: {},
+    subcommands: [],
+    groups: [],
+    issues: [],
     ...over,
   };
 }
@@ -44,11 +49,11 @@ function expectsError(state: DiscoveryState, ...fragments: string[]): void {
   assert.fail('expected validateDiscoveryState to throw');
 }
 
-function slashWithDto(Dto: object, over: Partial<SlashEntry> = {}): SlashEntry {
-  const instance = new Probe();
-  Reflect.defineMetadata(PARAM_OPTIONS_METADATA, [0], Probe.prototype.run);
-  Reflect.defineMetadata('design:paramtypes', [Dto], instance, 'run');
-  return slash({ instance: instance as never, ...over });
+function defWithDto(Dto: object, over: Partial<CommandDefinition> = {}): CommandDefinition {
+  return def({
+    plain: leaf({ options: Dto as new () => Record<string, unknown> }),
+    ...over,
+  });
 }
 
 describe('option field validation', () => {
@@ -143,7 +148,7 @@ describe('option field validation', () => {
       BadDto,
     );
     expectsError(
-      base({ slash: [slashWithDto(BadDto)] }),
+      base({ commands: [defWithDto(BadDto)] }),
       'must be 1-32 lowercase letters',
       'description must be 1-100 chars',
       'choices need a string, integer, or number option',
@@ -172,6 +177,6 @@ describe('option field validation', () => {
     }
     class WideDto {}
     Reflect.defineMetadata(OPTION_FIELD_METADATA, fields, WideDto);
-    expectsError(base({ slash: [slashWithDto(WideDto)] }), 'holds 26 options, max 25');
+    expectsError(base({ commands: [defWithDto(WideDto)] }), 'holds 26 options, max 25');
   });
 });

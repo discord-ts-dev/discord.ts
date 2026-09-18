@@ -1,16 +1,14 @@
-import { addBalance, addScore, type Store } from '@discord.ts/systems';
+import { addBalance, type Store } from '@discord.ts/systems';
 import { RARITIES, ROSTER } from './roster.js';
 
 export const XP_BOARD = 'xp';
 export const WEALTH_BOARD = 'wealth';
 export const ZOO_BOARD = 'zoo';
 
-// ponytail: the wealth board mirrors balances as deltas. Every path that moves
-// pawcoins must go through credit() (or mirror its own delta, like claimDaily).
+// ponytail: every pawcoin path goes through credit(), so the wealth board can
+// be mirrored in the same atomic update as the balance rather than drifting.
 export async function credit(store: Store, userId: string, amount: number): Promise<number> {
-  const next = await addBalance(store, userId, amount);
-  await addScore(store, WEALTH_BOARD, userId, amount);
-  return next;
+  return addBalance(store, userId, amount, { mirrorBoard: WEALTH_BOARD });
 }
 
 export interface SaleResult {

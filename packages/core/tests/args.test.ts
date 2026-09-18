@@ -17,7 +17,6 @@ import {
   buildArgs,
   buildDto,
   buildEventArgs,
-  optionsDto,
   resolveAuthor,
   resolveGuild,
 } from '../src/discovery/discord-args.js';
@@ -47,20 +46,6 @@ Reflect.defineMetadata(
   Cmd.prototype,
   'run',
 );
-
-describe('optionsDto', () => {
-  test('returns the DTO behind @Options()', () => {
-    assert.equal(optionsDto(probe(new Cmd(), 'run')), QueryDto);
-  });
-
-  test('returns undefined without the decorator or a callable method', () => {
-    class Bare {
-      go(): void {}
-    }
-    assert.equal(optionsDto(probe(new Bare(), 'go')), undefined);
-    assert.equal(optionsDto({ instance: { nope: 1 } as never, method: 'nope' }), undefined);
-  });
-});
 
 describe('buildArgs', () => {
   test('fills every decorated slot from an interaction', () => {
