@@ -25,3 +25,20 @@ runner.start();
 | `run`      | Sync or async work. Single-flight per name. Errors go to `getLastError(name)`, never throw. |
 
 Helpers: `msUntilDaily(now, at)` for ms to next run, `dayIndex(now, timeZone)` for whole reset windows since epoch (streak math). Timers `unref` so a started runner dies with the process.
+
+## Store and errors
+
+`run` takes no parameters. A task body reaches the `Store` the way the rest of the app does — close over the module store or resolve it from the container at boot — and stays a thin wrapper around a `Store`-parameterized function so it is testable:
+
+```ts
+import { defineTask } from '@discord.ts/systems';
+import { store } from './store.js';
+
+const sweep = defineTask({
+  name: 'sweep',
+  everyMs: 60_000,
+  run: () => sweepExpired(store),
+});
+```
+
+The runner never retries and never rethrows: a failure is caught into `getLastError(name)` and the next tick waits for the schedule. Log or surface that error yourself. Retries, backoff, and dead-lettering mean the job has outgrown the runner — move it to a queue (BullMQ, pg-boss) and keep the same `Store`-parameterized body.

@@ -24,6 +24,16 @@ if (r.claimed) console.log(`+${r.amount} streak ${r.streak}`);
 | `timeZone`        | `'UTC'`      | Reset zone.                               |
 | `now`             | `new Date()` | Inject for tests.                         |
 
+The curve is linear — `amount + streakBonus * (streak - 1)` — and the streak is computed inside the claim. Compute app-side multipliers (premium tiers, event bonuses) into `amount` before the call:
+
+```ts
+// Your rule: tier multipliers, event bonuses, ...
+const amount = 100 * (await multiplierFor(userId));
+await claimDaily(store, userId, { amount, streakBonus: 25 });
+```
+
+A payout that depends on the _next_ streak needs its own flow (your keys, `addBalance`), not an option.
+
 ## Balance and shop
 
 ```ts
@@ -34,7 +44,7 @@ const r = await buy(store, userId, { id: 'sword', price: 300 }, 1);
 // { ok: true, balance, qty } | { ok: false, reason: 'invalid-qty' | 'insufficient-funds', balance }
 ```
 
-Check-then-act. Atomicity is the adapter job (`MemoryStore` is single-process, awaits never interleave). `useItem()` consumes qty and deletes at zero.
+`buy()` charges `price × qty` against `bal:` and updates `inv:` in one atomic `Store.update`; `useItem()` consumes qty and deletes at zero. Stock, expiry, taxes, and multiple currencies are game rules: keep your own keys and build the flow on `Store.update` — see the [custom purchase recipe](/docs/recipes/custom-purchase).
 
 ## Quests
 
@@ -55,7 +65,7 @@ await rerollQuest(store, userId, pool); // once per window, swaps to a different
 await completeQuest(store, userId); // returns state if done, else null
 ```
 
-State: `{ id, progress, goal, done, day, rerolled }`. Expired days read as `null`.
+State: `{ id, progress, goal, done, day, rerolled }`. Expired days read as `null`. Quest ids are opaque strings — keep metadata (`reward`, display name) in an app map keyed by id.
 
 ## Leaderboard
 
@@ -67,7 +77,23 @@ await top(store, 'xp', 10); // desc SortedEntry[]
 await rankOf(store, 'xp', userId); // { rank: 1-based, score } | null
 ```
 
-Boards live in `lb:` sorted sets.
+Boards live in `lb:` sorted sets; the board name is an app string, one sorted set per name.
+
+## Composing
+
+Systems functions are leaf primitives: they return results, and side effects (XP, announcements, role grants) run after — in your command, at the call site. Pre-compute inputs such as multipliers or discounts. If two writes must be atomic, they belong in one `Store.update`; that is the signal to build your own flow, not to hook a helper.
+
+Ids stay strings by design — the `Store` is value-shaped (ADR 0004). Brand them app-side and wrap at the boundary:
+
+```ts
+import { inventory } from '@discord.ts/systems';
+
+type ItemId = 'lootbox' | 'title-star' | `weapon-${string}`;
+
+const bag = (await inventory(store, userId)) as Record<ItemId, number>;
+```
+
+Keep that cast in one wrapper module so command code never re-derives it.
 
 ## Amounts
 

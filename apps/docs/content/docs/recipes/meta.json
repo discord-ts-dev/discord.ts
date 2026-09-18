@@ -1,4 +1,11 @@
 {
   "title": "Recipes",
-  "pages": ["word-filter", "vote-webhook", "guild-config", "audience-index"]
+  "pages": [
+    "word-filter",
+    "vote-webhook",
+    "guild-config",
+    "custom-purchase",
+    "store-migrations",
+    "audience-index"
+  ]
 }

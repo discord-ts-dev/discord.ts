@@ -37,6 +37,51 @@ Modules.
 5. **`FileStore` → `systems`** — [#48](https://github.com/discord-ts-dev/discord.ts/issues/48).
    The port shipped with no usable production adapter. ADR 0009's port exception; amends ADR 0004.
 
+## Systems dynamism review (2026-09-18)
+
+Assessed how far `systems` can be refined after ADR 0010 (PR #50): hooks,
+generics, policy knobs, runner limits, and stored-value migrations. Verdicts
+apply ADR 0009 — capabilities, not a configurable game engine. Consumers
+counted in-repo: `apps/owo` is the only app on daily / shop / quests / boards;
+`apps/music-bot` and `apps/example` use none of them, and no app calls
+`awardVote` or `Store.update` yet.
+
+- **Hooks in helpers — reject.** `claimDaily` / `buy` take no callbacks
+  (`packages/systems/src/daily.ts:21`, `shop.ts:45`), and side effects run
+  after the atomic write either way, so a hook buys interface without
+  atomicity. Wrap at the call site (documented in `economy.mdx`). Reopens when
+  two apps need the same post-write effect co-located with a helper.
+- **Generics over app data — reject.** Inventory is `Record<string, number>`
+  (`shop.ts:18`) and `QuestState` is a closed shape (`quest.ts:5`); the Store
+  is value-shaped (ADR 0004). Typed wrappers are the app-side recipe
+  (`economy.mdx` "Composing"). Reopens when a second app brands ids and a
+  shared wrapper shape converges.
+- **Daily curve — recipe.** The linear curve is fixed in `daily.ts:36-40`; owo
+  only multiplies `amount` before the call
+  (`apps/owo/src/commands/daily.command.ts:16-22`). A curve that depends on the
+  next streak owns its flow. Reopens when a second app needs that.
+- **Shop policies — recipe.** `buy` is price × qty against one balance
+  (`shop.ts:45-71`); stock, expiry, taxes, and extra currencies stay app-side
+  on `Store.update` (`recipes/custom-purchase.mdx`). Reopens when a second app
+  needs the same stock / expiry / tax rule.
+- **Guild settings widening — reject.** `GuildSettings` holds `{ disabled }`
+  only (`guild-settings.ts:4-6`); extra keys use `guild:<id>:<name>`. The
+  deferred table already tracks the reopen condition.
+- **Runner limits — reject.** No run parameters, retries, or DLQ
+  (`scheduler.ts:7-13,101-111`), and no app consumes `getLastError`. owo closes
+  over its Store. Reopens when a second app needs Store-parameterized tasks,
+  retries, or cross-process single-flight.
+- **Schema and migrations — recipe.** The port is value-shaped with no scan
+  (`store.ts:23-44`) and no stored value carries a version
+  (`recipes/store-migrations.mdx`). Reopens when #48 `FileStore` or a second
+  adapter needs versioned values.
+- **Promotion friction — process.** New candidates have at most one consumer;
+  the #44–#48 queue is unchanged and stays ranked by dedupe.
+
+ADR 0005's "tasks receive the same `Store`" is satisfied by app wiring
+(closure or container), not a runner parameter; `tasks.mdx` documents the
+actual contract.
+
 ## Documented recipes (no framework code)
 
 - **Word filter vs substring censor** — `apps/docs/content/docs/recipes/word-filter.mdx`.
@@ -45,18 +90,26 @@ Modules.
   Parse and award ship; auth, hosting, and dedupe are app-side.
 - **Guild config beyond enable flags** — `apps/docs/content/docs/recipes/guild-config.mdx`.
   `GuildSettings` stays `{ disabled }`; extra keys use `guild:<id>:<name>`.
+- **Custom purchases** — `apps/docs/content/docs/recipes/custom-purchase.mdx`.
+  Stock, taxes, currencies: checks and writes in one `Store.update`; `buy` stays simple.
+- **Store value migrations** — `apps/docs/content/docs/recipes/store-migrations.mdx`.
+  Version fields and lazy upgrades; the port has no schema and no key scan.
 - **Audience index** — `apps/docs/content/docs/recipes/audience-index.mdx`.
   Capped single-key index for broadcasts; documented scaling ceiling, deliberately not a capability.
 
 ## Considered, deferred (single consumer)
 
-| Candidate                                         | Why deferred                                                        | Reopens when                    |
-| ------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------- |
-| `math` expression evaluator                       | One consumer (`/math`); niche                                       | A second app needs it           |
-| Unique-sample draw (`pickWinners`)                | One consumer (giveaways)                                            | A second app needs it           |
-| Premium tiers                                     | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans) | A third app, or a shared design |
-| `GuildSettings` widening / arbitrary guild keys   | Recipe instead                                                      | A second app needs it           |
-| `tt` / `fmt`, `readBet`, `purchase`, `replyError` | Thin conveniences over shipped primitives                           | Never as capabilities           |
+| Candidate                                         | Why deferred                                                        | Reopens when                                                      |
+| ------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `math` expression evaluator                       | One consumer (`/math`); niche                                       | A second app needs it                                             |
+| Unique-sample draw (`pickWinners`)                | One consumer (giveaways)                                            | A second app needs it                                             |
+| Premium tiers                                     | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans) | A third app, or a shared design                                   |
+| `GuildSettings` widening / arbitrary guild keys   | Recipe instead                                                      | A second app needs it                                             |
+| Helper hooks (`onClaim`, `onPurchase`)            | Wrap at the call site; side effects run after the atomic write      | Two apps need the same post-write effect co-located with a helper |
+| Generic item / currency / quest types             | Value-shaped Store (ADR 0004); typed wrappers are the recipe        | A second app brands ids and a shared wrapper shape converges      |
+| Task `run` Store injection                        | owo closes over its Store; `run` stays parameter-free               | A second app needs Store-parameterized tasks                      |
+| Store schema / migration helpers                  | No schema by design; version fields and lazy upgrade is a recipe    | A second adapter needs versioned values, or the port grows a scan |
+| `tt` / `fmt`, `readBet`, `purchase`, `replyError` | Thin conveniences over shipped primitives                           | Never as capabilities                                             |
 
 ## Ruled out (app-side by decision)
 
