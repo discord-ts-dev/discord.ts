@@ -15,6 +15,7 @@ Multi-context repo. Read the `CONTEXT.md` for each context relevant to the topic
 | `cli`     | `packages/cli/CONTEXT.md` | Runner: dev, shard, deploy, start                   |
 | `example` | `apps/example/CONTEXT.md`  | Example bot: wiring commands and events with core   |
 | `music-bot` | `apps/music-bot/CONTEXT.md` | Music bot: Lavalink queue, playlists, filters, premium |
+| `owo`     | `apps/owo/CONTEXT.md`      | Paw bot: clean-room OwO clone, hunting, zoo, pawcoins |
 | `docs`    | `apps/docs/CONTEXT.md`     | Docs site: Fumadocs content, meta, site meta        |
 
 Context-specific decisions live in `<context-path>/docs/adr/` next to each `CONTEXT.md`.

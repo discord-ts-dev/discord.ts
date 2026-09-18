@@ -1,0 +1,426 @@
+{
+  "hunt": {
+    "title": "Hunt",
+    "caught": "You caught {animal} ({rarity})! Zoo count: x{count}. +{xp} XP",
+    "escaped": "The trail went cold... the animal escaped. Try again soon."
+  },
+  "zoo": {
+    "title": "{user}'s zoo",
+    "empty": "This zoo is empty. Hunt to catch your first animal.",
+    "totals": "{unique} species caught, {total} animals in total.",
+    "line": "{emoji} {name} — x{count}"
+  },
+  "dex": {
+    "title": "Dex",
+    "missing": "not caught yet",
+    "totals": "{unique}/{total} species caught.",
+    "line": "{emoji} {name} — {count}"
+  },
+  "profile": {
+    "title": "{user}'s profile",
+    "balance": "Balance",
+    "level": "Level {level}",
+    "zoo": "Zoo",
+    "rank": "XP rank",
+    "titleField": "Title",
+    "unranked": "Unranked",
+    "none": "None",
+    "zooValue": "{unique} species, {total} animals"
+  },
+  "me": {
+    "title": "{user}'s ranks",
+    "xp": "XP rank",
+    "wealth": "Wealth rank",
+    "zoo": "Zoo rank",
+    "unranked": "Unranked"
+  },
+  "daily": {
+    "title": "Daily",
+    "claimed": "Claimed **{amount}** pawcoins. Streak: {streak} day(s). +{xp} XP",
+    "already": "Already claimed today. Streak: {streak} day(s). Come back tomorrow."
+  },
+  "balance": {
+    "title": "{user}'s balance",
+    "line": "**{amount}** pawcoins"
+  },
+  "bet": {
+    "invalid": "That bet is not a number. Try `100`, `2k`, or `all`.",
+    "non-positive": "Bet must be more than zero.",
+    "exceeds-balance": "You do not have that much. Balance: {balance}."
+  },
+  "coinflip": {
+    "title": "Coinflip",
+    "win": "The coin lands **{result}**. You picked {choice} and won {amount}!",
+    "lose": "The coin lands **{result}**. You picked {choice} and lost {amount}.",
+    "balance": "New balance: {balance} pawcoins."
+  },
+  "slots": {
+    "title": "Slots",
+    "win": "x{multiplier} payout: you won {amount}. Balance: {balance}.",
+    "lose": "No win this spin. Balance: {balance}."
+  },
+  "lottery": {
+    "info-title": "Lottery",
+    "info": "Pot: **{pot}** pawcoins. Your tickets: {tickets}.",
+    "buy-ok": "Bought {count} ticket(s). Pot: {pot}. Balance: {balance}.",
+    "buy-fail-balance": "Tickets cost {price} each. Your balance: {balance}.",
+    "buy-fail-count": "Pick a positive whole number of tickets.",
+    "last": "Last winner: <@{winner}> won {pot} pawcoins.",
+    "no-last": "No draw yet."
+  },
+  "sell": {
+    "title": "Sold",
+    "done": "Sold {count} {animal} for **{proceeds}** pawcoins. Balance: {balance}.",
+    "fail": "You have none of that animal to sell."
+  },
+  "quest": {
+    "title": "Daily quest",
+    "hunt": "Catch 5 animals",
+    "sell": "Sell 5 animals",
+    "flip": "Play 5 coinflips",
+    "progress": "Progress",
+    "reward": "Reward",
+    "done": "Done! Claim with /quest claim.",
+    "claimed": "Claimed **{reward}** pawcoins. Balance: {balance}.",
+    "not-done": "That quest is not finished yet.",
+    "reroll-ok": "New quest: {label}",
+    "reroll-fail": "You already rerolled today.",
+    "reroll-none": "No quest yet. Use /quest view first."
+  },
+  "top": {
+    "title": "{board} leaderboard",
+    "board-xp": "XP",
+    "board-wealth": "Wealth",
+    "board-zoo": "Zoo size",
+    "empty": "Nothing on this board yet. Be the first.",
+    "line": "{n}. <@{member}> — {score} XP (level {level})",
+    "line-plain": "{n}. <@{member}> — {score}",
+    "your-rank": "Your rank: #{rank} with {score}.",
+    "unranked": "You are not on the board yet."
+  },
+  "shop": {
+    "title": "Shop",
+    "list-line": "**{name}** — {price} pawcoins\n{description}",
+    "balance": "Your balance: {balance} pawcoins.",
+    "unknown-item": "Unknown item.",
+    "buy-ok": "Bought **{name}** for {price} pawcoins. Balance: {balance}.",
+    "buy-fail": "You need {price} pawcoins for **{name}**. Balance: {balance}.",
+    "use-ok": "Used **{name}**.",
+    "use-fail": "You do not own **{name}**.",
+    "lootbox": "The lootbox bursts open: {animal} ({rarity})! Zoo count: x{count}.",
+    "title-owned": "You now wear the {title} title.",
+    "inventory-title": "{user}'s items",
+    "inventory-empty": "Your bag is empty. Buy something with `/shop list`.",
+    "inventory-line": "**{name}** x{count}"
+  },
+  "settings": {
+    "enabled": "`/{command}` is enabled in this server.",
+    "disabled": "`/{command}` is disabled in this server.",
+    "command-disabled": "`/{command}` is disabled in this server."
+  },
+  "ban": {
+    "blocked": "You are banned from Paw: {reason}",
+    "done": "Banned <@{user}> from Paw: {reason}",
+    "lifted": "Unbanned <@{user}>.",
+    "not-banned": "<@{user}> is not banned.",
+    "status-banned": "Banned: {reason} (since <t:{at}:R>)",
+    "list-title": "Bot bans",
+    "list-empty": "Nobody is banned.",
+    "list-line": "<@{user}> — {reason} (<t:{at}:R>)",
+    "fail": "I could not resolve that user."
+  },
+  "blackjack": {
+    "title": "Blackjack",
+    "hit": "Hit",
+    "stand": "Stand",
+    "player": "Your hand ({value})",
+    "dealer": "Dealer ({value})",
+    "bet": "Bet",
+    "bust": "Bust! The dealer takes it.",
+    "blackjack": "Blackjack! Paid 3:2.",
+    "win": "You win!",
+    "push": "Push. Your bet comes back.",
+    "lose": "The dealer takes it.",
+    "balance": "Paid {payout}. Balance: {balance}.",
+    "expired": "That game expired. Start a new one with /blackjack.",
+    "not-yours": "This is not your game."
+  },
+  "drop": {
+    "dropped": "**{amount}** pawcoins dropped! First to grab takes them.",
+    "button": "Grab it!",
+    "claimed": "<@{user}> grabbed **{amount}** pawcoins! Balance: {balance}.",
+    "taken": "Too late — somebody grabbed it first.",
+    "gone": "This drop expired."
+  },
+  "marry": {
+    "proposed": "You proposed to {user}. They can `/accept` you.",
+    "wed": "{a} and {b} are now married!",
+    "declined": "You declined {user}'s proposal.",
+    "divorced": "You and {user} are divorced.",
+    "divorce-confirm": "Divorce {user}?",
+    "self": "You cannot marry yourself.",
+    "already-married": "One of you is already married.",
+    "target-married": "That person is already married.",
+    "already-pending": "You already have a proposal pending.",
+    "no-proposal": "There is no proposal like that.",
+    "not-married": "You are not married.",
+    "fail": "I could not resolve that user."
+  },
+  "level": {
+    "title": "{user}'s level",
+    "xp": "XP"
+  },
+  "math": {
+    "title": "Math",
+    "empty": "Give me an expression.",
+    "invalid": "That is not a valid expression.",
+    "divide-by-zero": "Division by zero is not allowed.",
+    "too-long": "That expression is too long (max 100 chars)."
+  },
+  "avatar": {
+    "title": "{user}'s avatar"
+  },
+  "color": {
+    "title": "Random color"
+  },
+  "ping": {
+    "pinging": "Pinging...",
+    "pong": "Pong! Round trip {roundTrip}ms, gateway {ws}ms."
+  },
+  "invite": {
+    "title": "Invite Paw",
+    "body": "Use the link above to add Paw to a server.",
+    "unavailable": "Invite link is unavailable."
+  },
+  "giveanimal": {
+    "done": "Gave {count} {animal} ({rarity}) to {user}. They now have x{total}.",
+    "fail": "I could not resolve that user or animal."
+  },
+  "eightball": {
+    "title": "Magic 8 ball",
+    "answer": "{question}\n\n**{answer}**"
+  },
+  "ship": {
+    "title": "Ship",
+    "fail": "I could not resolve both users.",
+    "result": "{a} + {b} = **{percent}%**\n{bar}"
+  },
+  "cookie": {
+    "done": "You gave a cookie to {user}. They now have {count} cookies.",
+    "fail": "I could not resolve that user."
+  },
+  "pray": {
+    "done": "You prayed. Total prayers: {count}."
+  },
+  "battle": {
+    "title": "Battle",
+    "bad-opponent": "Pick someone else to fight.",
+    "no-animal": "You have no animals to fight with. Hunt first.",
+    "opponent-no-animal": "That user has no animals to fight with.",
+    "opponent-broke": "That user cannot cover the bet.",
+    "not-yours": "This is not your battle.",
+    "not-your-turn": "Not your turn. Waiting on <@{user}>.",
+    "busy": "Hold on, the turn is resolving.",
+    "expired": "That battle expired.",
+    "fighter": "{user} — {animal} {active}",
+    "your-turn": "(your turn)",
+    "crit": "critical!",
+    "stunned": "and stunned the enemy!",
+    "move": {
+      "attack": "Attack",
+      "defend": "Defend",
+      "special": "Special"
+    },
+    "line": {
+      "attack": "<@{user}> attacks for {damage} {crit}",
+      "defend": "<@{user}> braces for the next hit.",
+      "special": "<@{user}> swings their weapon for {damage} {crit} {stun}"
+    },
+    "finished": "{winner} wins with {animal}! Pot **{pot}** pawcoins. Balance: {balance}."
+  },
+  "weapons": {
+    "title": "Weapons",
+    "line": "{emoji} **{name}** — +{atk} atk, {price} pawcoins {effect} {marks}",
+    "effect": {
+      "crit": "(crit)",
+      "stun": "(stun)",
+      "lifesteal": "(lifesteal)"
+    },
+    "owned": "· owned",
+    "equipped": "· equipped",
+    "record": "Record: {wins}W {losses}L",
+    "unknown": "Unknown weapon.",
+    "bought": "Bought **{name}** for {price} pawcoins. Balance: {balance}.",
+    "not-owned": "You do not own **{name}**.",
+    "equipped-ok": "Equipped **{name}**.",
+    "unequipped": "Fighting bare-handed."
+  },
+  "paused": "Paw is paused right now. Try again later.",
+  "fail": {
+    "user": "I could not resolve that user.",
+    "purchase": "You need {price} pawcoins for **{name}**. Balance: {balance}."
+  },
+  "admin": {
+    "no-channel": "This command needs a text channel.",
+    "echo-sent": "Sent.",
+    "reply-sent": "Replied.",
+    "reply-fail": "Could not find that message here.",
+    "warned": "Warned <@{user}> ({count} total): {reason}",
+    "no-warnings": "<@{user}> has no warnings.",
+    "paused": "Paw is paused. Player commands are blocked.",
+    "resumed": "Paw is running again."
+  },
+  "info": {
+    "stats-title": "Paw stats",
+    "uptime": "Uptime",
+    "guilds": "Servers",
+    "users": "Cached users",
+    "memory": "Heap",
+    "gateway": "Gateway",
+    "shard-line": "Shards {ids} of {count}.",
+    "no-shards": "Running without sharding.",
+    "invite": "Invite: {url}",
+    "invite-fail": "Could not create an invite. Check my permissions."
+  },
+  "suggest": {
+    "title": "Suggestion",
+    "footer": "by {user}"
+  },
+  "survey": {
+    "title": "Survey",
+    "footer": "{total} vote(s)",
+    "expired": "That survey is gone."
+  },
+  "rules": {
+    "title": "Server rules",
+    "none": "No rules set yet. An admin can use /setrules.",
+    "saved": "Rules saved."
+  },
+  "vote": {
+    "body": "Vote for Paw on the bot list to earn a reward: https://top.gg/"
+  },
+  "patreon": {
+    "title": "Support Paw",
+    "body": "Premium tiers support development. Ask an admin to grant one on your server.",
+    "your-tier": "Your tier",
+    "perks": "Perks",
+    "no-perks": "none yet"
+  },
+  "premium": {
+    "tier": {
+      "free": "Free",
+      "supporter": "Supporter",
+      "patron": "Patron"
+    },
+    "example": "Example: a 1,000 pawcoin item costs {price} for Patrons.",
+    "set": "Set {user}'s tier to {tier}.",
+    "unknown": "Unknown tier."
+  },
+  "checklist": {
+    "title": "Checklist",
+    "empty": "Your checklist is empty. Add one with /checklist add."
+  },
+  "censor": {
+    "added": "Added `{word}` to the filter ({count} words).",
+    "removed": "Removed `{word}` from the filter ({count} words).",
+    "list": "Filtered words: {words}",
+    "empty": "The word filter is empty.",
+    "notice": "🫢 <@{user}> that word is filtered here."
+  },
+  "emoji": {
+    "bad": "Give me a custom emoji mention to copy.",
+    "copied": "Added {emoji} as `{name}`.",
+    "fail": "Could not add that emoji. Check my permissions and emoji slots."
+  },
+  "memegen": {
+    "fail": "Could not draw that meme."
+  },
+  "upgrade": {
+    "maxed": "Your hunting luck is maxed out.",
+    "fail": "You need {cost} pawcoins for the next upgrade. Balance: {balance}.",
+    "done": "Upgraded to level {level}. Hunt success: {chance}%."
+  },
+  "sacrifice": {
+    "fail": "You have none of that animal to sacrifice.",
+    "done": "Sacrificed {count} {animal} ({rarity}) for **{xp}** XP."
+  },
+  "autohunt": {
+    "title": "Autohunt",
+    "status": "Charges: **{charges}**\nNext charge in ~{next} min.",
+    "price": "One charge costs {price} pawcoins.",
+    "fail": "You cannot afford that many charges.",
+    "bought": "You now have **{charges}** autohunt charges."
+  },
+  "beehive": {
+    "title": "Beehive",
+    "status": "Bees: **{bees}**\nHoney: **{honey}** / {cap}",
+    "rates": "A bee costs {price} pawcoins, makes {rate} honey/hour, honey sells for {honey} each.",
+    "fail": "You need {price} pawcoins for another bee.",
+    "bought": "You now have **{bees}** bee(s).",
+    "collected": "Collected {collected} honey. Stored: {honey}.",
+    "sold": "Sold {collected} honey for **{coins}** pawcoins.",
+    "empty": "No honey to sell. Collect first."
+  },
+  "trade": {
+    "bad-target": "Pick someone else to trade with.",
+    "no-item": "You do not own that many.",
+    "offer": "<@{from}> offers {count} x **{item}** to <@{to}>.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "expired": "That offer expired.",
+    "not-yours": "This offer is not for you.",
+    "done": "Trade done: {count} x **{item}** moved from <@{from}> to <@{to}>.",
+    "declined": "<@{user}> declined the offer."
+  },
+  "giveaway": {
+    "title": "Giveaway",
+    "body": "**{prize}**\n{winners} winner(s), ends in {minutes} min. Hosted by <@{host}>.",
+    "enter": "Enter",
+    "entered": "You are in! Entries: {entries}.",
+    "already": "You already entered.",
+    "expired": "That giveaway is over.",
+    "ended": "Giveaway over: **{prize}** goes to {winners} ({entries} entries). Hosted by <@{host}>.",
+    "no-winners": "nobody (no entries)"
+  },
+  "emote": {
+    "needs-target": "That emote needs a target user.",
+    "unknown": "Unknown emote.",
+    "target": "<@{from}> {verb} <@{to}> {emoji}",
+    "self": "<@{from}> {verb} {emoji}"
+  },
+  "define": {
+    "title": "Definition: {word}",
+    "fail": "I could not find that word."
+  },
+  "translate": {
+    "title": "{from} -> {to}",
+    "fail": "Translation failed. Try again later."
+  },
+  "captcha": {
+    "set": "New members will be asked to verify for {role}.",
+    "unset": "Verification is not configured here.",
+    "dm": "Welcome! Press the button to verify and get access.",
+    "button": "Verify",
+    "verified": "Verified. Welcome in!",
+    "fail": "Verification failed. Ask an admin."
+  },
+  "broadcast": {
+    "set": "Announcements will post in <#{channel}>.",
+    "announced": "Announced in {count} server(s).",
+    "gave": "Gave {amount} pawcoins to {count} user(s).",
+    "dmed": "DMed {count} user(s)."
+  },
+  "reset": {
+    "confirm": "Wipe {what} for {user}?",
+    "done": "Wiped {what} for {user}.",
+    "fail": "I could not resolve that user."
+  },
+  "give": {
+    "done": "Gave **{amount}** pawcoins to <@{user}>. Their balance: {balance}.",
+    "fail": "I could not resolve that user."
+  },
+  "help": {
+    "title": "Paw commands",
+    "footer": "Paw — a clean-room OwO-style bot on discord.ts"
+  }
+}
