@@ -7,7 +7,7 @@ import {
   PermissionFlagsBits,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { banOf, banUser, bans, unbanUser } from '../game/bans.js';
 import { COLORS } from '../game/config.js';
 import { store } from '../game/store.js';

@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
+import { MessageFlags } from 'discord.js';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { Cooldown } from '../src/guards/guards.decorator.js';
 import { CooldownGuard } from '../src/guards/cooldown.guard.js';
@@ -29,6 +30,8 @@ describe('Cooldown', () => {
       DiscordExecutionContext.create([ix], Ping.prototype.run, Ping);
     assert.equal(await guard.canActivate(ctx(fakeInteraction('u1', seen))), true);
     assert.equal(await guard.canActivate(ctx(fakeInteraction('u1', seen))), false);
-    assert.deepStrictEqual(seen, [{ content: 'Slow down. Try again in 60s.', ephemeral: true }]);
+    assert.deepStrictEqual(seen, [
+      { content: 'Slow down. Try again in 60s.', flags: MessageFlags.Ephemeral },
+    ]);
   });
 });

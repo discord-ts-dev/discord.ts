@@ -1,4 +1,5 @@
 import { REQUIRED_BOT_PERMISSIONS_METADATA, type CanActivate } from '@discord.ts/common';
+import { replyEphemeral } from '@discord.ts/ux';
 import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
@@ -26,16 +27,7 @@ export class BotPermissionsGuard implements CanActivate {
     const missing = required.filter((p) => !perms || !perms.has(p));
     if (!missing.length) return true;
     const names = new PermissionsBitField(missing).toArray().join(', ');
-    try {
-      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
-      if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
-        await (reply as (m: unknown) => Promise<unknown>).call(ix, {
-          content: `Bot is missing permissions: ${names || 'unknown'}.`,
-          ephemeral: true,
-        });
-    } catch {
-      // ignore, handler already blocked
-    }
+    await replyEphemeral(ix, `Bot is missing permissions: ${names || 'unknown'}.`);
     return false;
   }
 }

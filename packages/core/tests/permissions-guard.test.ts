@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
+import { MessageFlags } from 'discord.js';
 import { REQUIRED_PERMISSIONS_METADATA } from '@discord.ts/common';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { PermissionsGuard } from '../src/guards/permissions.guard.js';
@@ -33,7 +34,7 @@ describe('PermissionsGuard', () => {
     };
     assert.equal(await new PermissionsGuard().canActivate(contextFor(ix, ['ManageGuild'])), false);
     assert.match((replies[0] as { content: string }).content, /Missing permissions/);
-    assert.equal((replies[0] as { ephemeral?: boolean }).ephemeral, true);
+    assert.equal((replies[0] as { flags?: number }).flags, MessageFlags.Ephemeral);
   });
 
   test('blocks without replying when already answered', async () => {

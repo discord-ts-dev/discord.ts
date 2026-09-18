@@ -10,6 +10,7 @@ import {
   type DiscordModuleOptions,
   type OptionFieldMeta,
 } from '@discord.ts/common';
+import { replyEphemeral } from '@discord.ts/ux';
 import { DiscordExecutionContext } from '../context/discord-execution-context.js';
 import { buildArgs, buildEventArgs } from './discord-args.js';
 import { DiscordDiscoveryService } from './discord-discovery.service.js';
@@ -218,17 +219,7 @@ export class DiscordRoutingService {
   }
 
   private async replyError(interaction: unknown, text: string): Promise<void> {
-    const ix = interaction as {
-      replied?: boolean;
-      deferred?: boolean;
-      reply?(msg: unknown): Promise<unknown>;
-    };
-    try {
-      if (ix.reply && !ix.replied && !ix.deferred)
-        await ix.reply({ content: text, ephemeral: true });
-    } catch {
-      // ignore reply failures, handler already blocked
-    }
+    await replyEphemeral(interaction, text);
   }
 
   private collectMeta<T>(key: string, h: Handler): T[] {

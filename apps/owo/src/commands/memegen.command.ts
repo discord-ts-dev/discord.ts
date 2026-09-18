@@ -6,7 +6,7 @@ import {
   createCommandGroupDecorator,
 } from '@discord.ts/common';
 import { AttachmentBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { renderMeme } from '../game/meme.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';

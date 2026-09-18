@@ -1,4 +1,5 @@
 import { COOLDOWN_METADATA, type CanActivate } from '@discord.ts/common';
+import { replyEphemeral } from '@discord.ts/ux';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: bounded in-memory map, FIFO evict on overflow, per-key expiry
@@ -39,15 +40,6 @@ export class CooldownGuard implements CanActivate {
   }
 
   private async deny(ix: Record<string, unknown>, text: string): Promise<void> {
-    try {
-      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
-      if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
-        await (reply as (m: unknown) => Promise<unknown>).call(ix, {
-          content: text,
-          ephemeral: true,
-        });
-    } catch {
-      // ignore, handler already blocked
-    }
+    await replyEphemeral(ix, text);
   }
 }

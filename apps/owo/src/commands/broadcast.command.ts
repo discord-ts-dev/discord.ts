@@ -6,7 +6,7 @@ import {
   type ChatInputCommandInteraction,
   type TextChannel,
 } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { announceChannelOf, announceGuilds, setAnnounceChannel } from '../game/community.js';
 import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';

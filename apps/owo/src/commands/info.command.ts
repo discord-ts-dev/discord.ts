@@ -2,7 +2,7 @@ import { Command, Context, Injectable } from '@discord.ts/common';
 import { RequireGuild, RequirePermissions } from '@discord.ts/core';
 import { formatTime } from '@discord.ts/utils';
 import { EmbedBuilder, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { COLORS } from '../game/config.js';
 import { tt } from '../game/text.js';
 

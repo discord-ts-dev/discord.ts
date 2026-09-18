@@ -49,3 +49,22 @@ import { errorEmbed } from '@discord.ts/ux';
 
 await interaction.reply({ embeds: [errorEmbed('Missing target.')] });
 ```
+
+## Reply ephemeral
+
+Best-effort ephemeral reply, used by the framework guards and available to apps.
+Sends only when nothing was replied or deferred yet, and never throws: a failed
+deny reply must not shadow the block it explains.
+
+```ts
+import { replyEphemeral } from '@discord.ts/ux';
+
+if (interaction.guild) return;
+await replyEphemeral(interaction, 'Use this command in a server.');
+return false;
+```
+
+| Arg       | Notes                                                                                 |
+| --------- | ------------------------------------------------------------------------------------- |
+| `target`  | `unknown`: narrowed at runtime to `EphemeralTarget` (`reply` + `replied`/`deferred`). |
+| `content` | Plain text.                                                                           |

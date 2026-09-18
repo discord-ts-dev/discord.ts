@@ -1,4 +1,5 @@
 import type { CanActivate } from '@discord.ts/common';
+import { replyEphemeral } from '@discord.ts/ux';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: fail-closed allowlist. Empty owners denies everyone, so the
@@ -11,16 +12,7 @@ export class OwnerGuard implements CanActivate {
     const author = ix['author'] ?? ix['user'];
     const id = (author as { id?: unknown } | null | undefined)?.id;
     if (typeof id === 'string' && this.owners.includes(id)) return true;
-    try {
-      const reply = ix['reply'] as ((msg: unknown) => Promise<unknown>) | undefined;
-      if (typeof reply === 'function' && !ix['replied'] && !ix['deferred'])
-        await (reply as (m: unknown) => Promise<unknown>).call(ix, {
-          content: 'Owner only.',
-          ephemeral: true,
-        });
-    } catch {
-      // ignore, handler already blocked
-    }
+    await replyEphemeral(ix, 'Owner only.');
     return false;
   }
 }

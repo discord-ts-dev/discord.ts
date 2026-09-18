@@ -6,7 +6,7 @@ import {
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from './bet.js';
+import { replyEphemeral } from '@discord.ts/ux';
 import { captchaRoleOf, setCaptchaRole } from '../game/captcha.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
