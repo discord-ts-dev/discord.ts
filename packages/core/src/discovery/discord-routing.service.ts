@@ -10,7 +10,7 @@ import {
   type DiscordModuleOptions,
   type OptionFieldMeta,
 } from '@discord.ts/common';
-import { replyEphemeral, type EphemeralTarget } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord.ts/ux';
 import { DiscordExecutionContext } from '../context/discord-execution-context.js';
 import { buildArgs, buildEventArgs } from './discord-args.js';
 import { DiscordDiscoveryService } from './discord-discovery.service.js';
@@ -219,7 +219,7 @@ export class DiscordRoutingService {
   }
 
   private async replyError(interaction: unknown, text: string): Promise<void> {
-    await replyEphemeral(interaction as EphemeralTarget, text);
+    await replyEphemeral(interaction, text);
   }
 
   private collectMeta<T>(key: string, h: Handler): T[] {

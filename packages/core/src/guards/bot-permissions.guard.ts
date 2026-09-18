@@ -1,5 +1,5 @@
 import { REQUIRED_BOT_PERMISSIONS_METADATA, type CanActivate } from '@discord.ts/common';
-import { replyEphemeral, type EphemeralTarget } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord.ts/ux';
 import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
@@ -18,7 +18,7 @@ export class BotPermissionsGuard implements CanActivate {
         | undefined) ??
       [];
     if (!required.length) return true;
-    const ix = context.getArgByIndex<Record<string, unknown> & EphemeralTarget>(0);
+    const ix = context.getArgByIndex<Record<string, unknown>>(0);
     const guild = ix['guild'] as
       | { members?: { me?: { permissions?: { has(p: unknown): boolean } } | null } | null }
       | null

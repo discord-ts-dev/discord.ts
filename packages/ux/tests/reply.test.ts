@@ -1,12 +1,12 @@
 import { describe, expect, test } from 'bun:test';
-import { MessageFlags } from 'discord.js';
-import { replyEphemeral, type EphemeralTarget } from '../src/reply.js';
+import { MessageFlags, type ButtonInteraction, type ChatInputCommandInteraction } from 'discord.js';
+import { replyEphemeral, type EphemeralReplyOptions, type EphemeralTarget } from '../src/reply.js';
 
 function fakeTarget(overrides: Partial<EphemeralTarget> = {}): {
   target: EphemeralTarget;
-  replies: Array<{ content: string; flags: number }>;
+  replies: EphemeralReplyOptions[];
 } {
-  const replies: Array<{ content: string; flags: number }> = [];
+  const replies: EphemeralReplyOptions[] = [];
   const target: EphemeralTarget = {
     reply: async (options) => {
       replies.push(options);
@@ -18,6 +18,19 @@ function fakeTarget(overrides: Partial<EphemeralTarget> = {}): {
   };
   return { target, replies };
 }
+
+// Compile-time: real discord.js interactions satisfy the structural target,
+// so app code can pass them without casts.
+function _assertInteractionTypes(
+  chatIx: ChatInputCommandInteraction,
+  buttonIx: ButtonInteraction,
+): void {
+  const chatTarget: EphemeralTarget = chatIx;
+  const buttonTarget: EphemeralTarget = buttonIx;
+  void chatTarget;
+  void buttonTarget;
+}
+void _assertInteractionTypes;
 
 describe('replyEphemeral', () => {
   test('sends an ephemeral reply', async () => {
@@ -37,8 +50,14 @@ describe('replyEphemeral', () => {
   });
 
   test('does nothing when the target cannot reply', async () => {
-    const { target, replies } = fakeTarget({ reply: undefined });
-    await replyEphemeral(target, 'nope');
+    await replyEphemeral({ replied: false, deferred: false }, 'nope');
+    await replyEphemeral(null, 'nope');
+    await replyEphemeral(undefined, 'nope');
+    await replyEphemeral('interaction', 'nope');
+    await replyEphemeral(42, 'nope');
+
+    const { replies } = fakeTarget();
+    await replyEphemeral({ replied: false, deferred: false }, 'nope');
     expect(replies).toHaveLength(0);
   });
 

@@ -64,7 +64,7 @@ await replyEphemeral(interaction, 'Use this command in a server.');
 return false;
 ```
 
-| Arg       | Notes                                                    |
-| --------- | -------------------------------------------------------- |
-| `target`  | `EphemeralTarget`: anything with an interaction `reply`. |
-| `content` | Plain text.                                              |
+| Arg       | Notes                                                                                 |
+| --------- | ------------------------------------------------------------------------------------- |
+| `target`  | `unknown`: narrowed at runtime to `EphemeralTarget` (`reply` + `replied`/`deferred`). |
+| `content` | Plain text.                                                                           |

@@ -10,7 +10,7 @@ import {
 import { isCommandEnabled, type Store } from '@discord.ts/systems';
 import type { DiscordExecutionContext } from '@discord.ts/core';
 import { store as appStore } from '../game/store.js';
-import { replyEphemeral, type EphemeralTarget } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord.ts/ux';
 import { tt } from '../game/text.js';
 
 /** Player-facing commands a guild may turn off with /disable. Admin and owner commands are not toggleable. */
@@ -91,10 +91,7 @@ export class EnabledGuard implements CanActivate {
           | undefined);
     if (!meta?.name) return true;
     if (await isCommandEnabled(this.store, guild.id, meta.name)) return true;
-    await replyEphemeral(
-      ix as EphemeralTarget,
-      tt(ix, 'game:settings.command-disabled', { command: meta.name }),
-    );
+    await replyEphemeral(ix, tt(ix, 'game:settings.command-disabled', { command: meta.name }));
     return false;
   }
 }
