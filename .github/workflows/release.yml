@@ -39,7 +39,13 @@ jobs:
       - name: Create Version PR or Publish
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          publish-script: bun run release
+          # ponytail: publish only once npm credentials exist. The first publish
+          # of a scoped package cannot use OIDC - npm answers 404 until the
+          # package exists with a trusted publisher - so add an npm automation
+          # token as the NPM_TOKEN secret and set the repository variable
+          # PUBLISH_ENABLED=true. Until then this only opens Version PRs.
+          publish-script: ${{ vars.PUBLISH_ENABLED == 'true' && 'bun run release' || '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: 'true'
