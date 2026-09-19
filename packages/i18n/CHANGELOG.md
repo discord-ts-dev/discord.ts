@@ -1,5 +1,12 @@
 # @discord.ts/i18n
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [d7f67e4]
+  - @discord.ts/common@1.2.0
+
 ## 0.3.0
 
 ### Minor Changes
