@@ -1,0 +1,79 @@
+---
+title: Redis
+description: The official Store adapter for multi-process bots, on Bun's native Redis client.
+---
+
+`@discord.ts/redis`. `RedisStore` implements the [Store](/docs/systems/store) port over Redis, so balances, quests, leaderboards and guild settings survive restarts and are shared across processes or shards.
+
+```bash
+bun add @discord.ts/redis
+```
+
+Register the store and the raw client through the provider registry:
+
+```ts
+import { Module } from '@discord.ts/common';
+import { DiscordModule } from '@discord.ts/core';
+import { redisProviders } from '@discord.ts/redis';
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [...redisProviders(process.env.REDIS_URL)],
+})
+export class AppModule {}
+```
+
+Every systems helper takes the store, and commands resolve it with `@Inject()`:
+
+```ts
+import { Command, Context, Inject, Injectable } from '@discord.ts/common';
+import { type RedisClientLike, REDIS } from '@discord.ts/redis';
+import { STORE, getBalance, type Store } from '@discord.ts/systems';
+import type { ChatInputCommandInteraction } from 'discord.js';
+
+@Injectable()
+export class WalletCommand {
+  constructor(
+    @Inject(STORE) private readonly store: Store,
+    @Inject(REDIS) private readonly redis: RedisClientLike,
+  ) {}
+
+  @Command({ name: 'wallet', description: 'Show your balance' })
+  async show(@Context() interaction: ChatInputCommandInteraction): Promise<void> {
+    await this.redis.set(`seen:${interaction.user.id}`, String(Date.now()));
+    await interaction.reply(`Balance: ${await getBalance(this.store, interaction.user.id)}`);
+  }
+}
+```
+
+## Store semantics
+
+- `update(keys, fn)` runs `WATCH` → `MGET` → `fn` → `MULTI`/`SET … KEEPTTL`/`DEL`/`ZADD` → `EXEC`, retrying when a watched key changes. Compound flows (`buy`, `claimDaily`) stay atomic across processes.
+- `incrBy` is an integer increment (truncate toward zero), like Redis `INCRBY`. Adapters agree on this through the shared conformance suite.
+- Equal scores order by member, like Redis, so `top()` and `rankOf()` return the same shape on every adapter.
+- A key holds either a string or a sorted set, never both.
+- `set` with a non-positive `ttlMs` behaves like an already-expired key.
+- Store operations serialize inside one `RedisStore`, so a transaction never interleaves with another store call. The raw `REDIS` client is not serialized.
+
+## Options
+
+```ts
+import { RedisStore } from '@discord.ts/redis';
+
+const store = new RedisStore(process.env.REDIS_URL);
+const configured = new RedisStore({
+  url: process.env.REDIS_URL,
+  options: { connectionTimeout: 5000, enableOfflineQueue: false },
+});
+const existing = new RedisStore({ client: myClient });
+```
+
+| Option    | Use                                                                                  |
+| --------- | ------------------------------------------------------------------------------------ |
+| `url`     | Connection URL. Defaults to Bun's resolution: `REDIS_URL`, then `localhost:6379`.    |
+| `options` | `RedisClientOptions` forwarded to Bun's client — timeouts, reconnect, offline queue. |
+| `client`  | Bring your own `RedisClientLike`; a store never closes a client it did not build.    |
+
+A store built from a URL owns its client; `close()` closes it. Call `close()` on shutdown — without lifecycle hooks, that is the app's job.
+
+Bun's client retries and queues commands while Redis is unreachable, so construction is safe but commands wait. Pass `{ enableOfflineQueue: false, connectionTimeout: 5000 }` when you want a dead Redis to fail fast in development.

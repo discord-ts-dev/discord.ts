@@ -6,6 +6,8 @@
     "guild-config",
     "custom-purchase",
     "store-migrations",
-    "audience-index"
+    "audience-index",
+    "prisma",
+    "drizzle"
   ]
 }

@@ -1,0 +1,32 @@
+{
+  "name": "@discord.ts/redis",
+  "version": "0.1.0",
+  "description": "discord.ts Redis Store adapter: Redis-backed persistence for systems",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint .",
+    "format": "oxfmt --write src",
+    "test": "bun test --preload=../../scripts/test-preload.ts"
+  },
+  "dependencies": {
+    "@discord.ts/common": "workspace:*",
+    "@discord.ts/systems": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

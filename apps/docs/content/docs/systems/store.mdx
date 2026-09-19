@@ -3,7 +3,7 @@ title: Store
 description: Thin async port plus in-memory adapter. No ORM.
 ---
 
-`Store` is the port. `MemoryStore` is the dev/test adapter. `FileStore` is the zero-dep single-process file adapter. Bring your own Redis adapter in prod by matching the interface.
+`Store` is the port. `MemoryStore` is the dev/test adapter, `FileStore` is the zero-dep single-process file adapter, and `@discord.ts/redis` ships `RedisStore` for multi-process deployments — see [Redis](/docs/redis).
 
 ```ts
 import { FileStore, MemoryStore, type Store } from '@discord.ts/systems';
@@ -29,7 +29,7 @@ const persisted: Store = new FileStore('data/bot.json');
 | `zrank(key, member, reverse?)`       | 0-based rank or `null`.                                                                                                            |
 | `del(key)`                           | Delete string and sorted keys.                                                                                                     |
 
-Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. Daily payouts land in `bal:` so they are spendable in the shop. App-defined guild values extend the settings prefix as `guild:<id>:<name>` — see the [guild config recipe](/docs/recipes/guild-config).
+Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. A key holds one type, string or sorted set, never both. Daily payouts land in `bal:` so they are spendable in the shop. App-defined guild values extend the settings prefix as `guild:<id>:<name>` — see the [guild config recipe](/docs/recipes/guild-config).
 
 The port carries no schema and no versioning: adapters keep opaque strings and sorted sets. Systems values have no version field, and app values are yours to evolve — see the [store value migrations recipe](/docs/recipes/store-migrations).
 

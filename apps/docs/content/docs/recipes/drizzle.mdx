@@ -1,0 +1,76 @@
+---
+title: Drizzle over bun:sqlite
+description: SQL-first app tables with Drizzle, injected through the provider registry.
+---
+
+Drizzle is app-side: your schema lives in TypeScript, migrations run through `drizzle-kit`, and queries are SQL you can read. Use it for app-owned tables; the systems [Store](/docs/systems/store) stays the port for game state.
+
+```ts
+// src/schema.ts
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+
+export const guildConfig = sqliteTable('guild_config', {
+  guildId: text('guild_id').primaryKey(),
+  announceChannel: text('announce_channel'),
+  welcomeRole: text('welcome_role'),
+});
+```
+
+```ts
+// src/db.ts
+import { Database } from 'bun:sqlite';
+import { drizzle } from 'drizzle-orm/bun-sqlite';
+import * as schema from './schema.js';
+
+export const DB = 'app:db';
+export type Db = ReturnType<typeof createDb>;
+
+function createDb() {
+  return drizzle(new Database(process.env.DATABASE_FILE ?? 'data/app.db'), { schema });
+}
+
+export const db = createDb();
+```
+
+```ts
+// src/app.module.ts
+import { Module } from '@discord.ts/common';
+import { DiscordModule } from '@discord.ts/core';
+import { DB, db } from './db.js';
+import { ConfigCommand } from './commands/config.command.js';
+
+@Module({
+  imports: [DiscordModule.forRootAsync()],
+  providers: [{ provide: DB, useValue: db }, ConfigCommand],
+})
+export class AppModule {}
+```
+
+```ts
+// src/commands/config.command.ts
+import { Command, Context, Inject, Injectable } from '@discord.ts/common';
+import { eq } from 'drizzle-orm';
+import type { ChatInputCommandInteraction } from 'discord.js';
+import { DB, type Db } from '../db.js';
+import { guildConfig } from '../schema.js';
+
+@Injectable()
+export class ConfigCommand {
+  constructor(@Inject(DB) private readonly db: Db) {}
+
+  @Command({ name: 'config', description: 'Show this guild‘s config' })
+  async show(@Context() interaction: ChatInputCommandInteraction): Promise<void> {
+    const [row] = await this.db
+      .select()
+      .from(guildConfig)
+      .where(eq(guildConfig.guildId, interaction.guildId ?? ''));
+    await interaction.reply(row?.announceChannel ?? 'No announcement channel set.');
+  }
+}
+```
+
+Notes:
+
+- Wrap compound writes in `db.transaction()`; the provider registry has no lifecycle hooks, so open the database at module load and let the process close it.
+- `bunx drizzle-kit push` is enough while iterating; add `drizzle-kit generate` plus `migrate` once the bot is deployed and data matters.
+- `bun:sqlite` ships with Bun, so this stack adds no native build step. For Postgres, swap in `drizzle-orm/bun-sql` or `drizzle-orm/postgres-js` and keep the same provider shape.

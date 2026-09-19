@@ -14,12 +14,27 @@ description: Runnable sample. Copy the wiring, keep the layout.
 
 ```ts
 // src/app.module.ts
-import { Module } from '@discord.ts/common';
+import { Module, type Provider } from '@discord.ts/common';
 import { DiscordModule } from '@discord.ts/core';
+import { redisProviders } from '@discord.ts/redis';
+import { MemoryStore, STORE } from '@discord.ts/systems';
+
+// REDIS_URL switches the systems store to Redis; without it, memory.
+const store: Provider[] = process.env.REDIS_URL
+  ? redisProviders(process.env.REDIS_URL)
+  : [{ provide: STORE, useValue: new MemoryStore() }];
 
 @Module({
   imports: [DiscordModule.forRootAsync()],
-  providers: [PingCommand, QuestCommand, RollCommand, ModerationCommand, ReadyListener],
+  providers: [
+    ...store,
+    PingCommand,
+    QuestCommand,
+    RollCommand,
+    LeaderboardCommand,
+    ModerationCommand,
+    ReadyListener,
+  ],
 })
 export class AppModule {}
 ```
@@ -43,13 +58,14 @@ console.log(`Deployed ${count} commands.`);
 
 ## What it shows
 
-| File                             | Shows                                                             |
-| -------------------------------- | ----------------------------------------------------------------- |
-| `commands/ping.command.ts`       | `@Command()` with a raw interaction param.                        |
-| `commands/roll.command.ts`       | `@Command()` + `@Options()` DTO with choices and `@Min` / `@Max`. |
-| `commands/quest.command.ts`      | Group factory + `@Subcommand()`.                                  |
-| `commands/moderation.command.ts` | 8 moderation commands with guards, `confirm()`, `paginate()`.     |
-| `events/ready.listener.ts`       | `@OnEvent(ClientReady)` log.                                      |
+| File                              | Shows                                                                |
+| --------------------------------- | -------------------------------------------------------------------- |
+| `commands/ping.command.ts`        | `@Command()` with a raw interaction param.                           |
+| `commands/roll.command.ts`        | `@Command()` + `@Options()` DTO with choices and `@Min` / `@Max`.    |
+| `commands/quest.command.ts`       | Group factory + `@Subcommand()`.                                     |
+| `commands/leaderboard.command.ts` | `@Inject(STORE)` and sorted-set scoring with `addScore()` / `top()`. |
+| `commands/moderation.command.ts`  | 8 moderation commands with guards, `confirm()`, `paginate()`.        |
+| `events/ready.listener.ts`        | `@OnEvent(ClientReady)` log.                                         |
 
 Run it:
 
@@ -58,5 +74,7 @@ cd apps/example
 DISCORD_TOKEN=... DISCORD_CLIENT_ID=... DISCORD_GUILD_ID=... SKIP_REGISTRATION=false bun run deploy
 DISCORD_TOKEN=... bun run dev
 ```
+
+Set `REDIS_URL=redis://localhost:6379` to run it against Redis; without it the example keeps its systems store in memory.
 
 Docker builds `apps/example/Dockerfile` on `oven/bun` and runs TS direct via `bun run start:bun`. No secrets baked in.

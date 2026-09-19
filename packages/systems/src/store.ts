@@ -122,7 +122,11 @@ export class MemoryStore implements Store {
       member,
       score,
     }));
-    entries.sort((a, b) => (reverse ? b.score - a.score : a.score - b.score));
+    entries.sort((a, b) => {
+      const byScore = reverse ? b.score - a.score : a.score - b.score;
+      if (byScore !== 0) return byScore;
+      return reverse ? b.member.localeCompare(a.member) : a.member.localeCompare(b.member);
+    });
     return entries;
   }
 
@@ -253,7 +257,11 @@ export class FileStore implements Store {
       member,
       score,
     }));
-    entries.sort((a, b) => (reverse ? b.score - a.score : a.score - b.score));
+    entries.sort((a, b) => {
+      const byScore = reverse ? b.score - a.score : a.score - b.score;
+      if (byScore !== 0) return byScore;
+      return reverse ? b.member.localeCompare(a.member) : a.member.localeCompare(b.member);
+    });
     return entries;
   }
 

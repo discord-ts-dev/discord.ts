@@ -6,9 +6,13 @@ Ubiquitous language. Glossary only. No implementation.
 
 - **Store**: the async key/value plus sorted-set port every system reads
   and writes through. `update()` is the atomic read-modify-write; `incrBy`
-  and `zincrBy` are single-key atomic increments. Implemented by
-  `MemoryStore` and the single-process file reference adapter `FileStore`,
-  plugged by adapters.
+  and `zincrBy` are single-key atomic increments. A key holds one type,
+  string or sorted set, never both. Implemented by `MemoryStore` and the
+  single-process file reference adapter `FileStore`, plugged by adapters.
+- **Store conformance suite**: the shared test surface that pins the port
+  contract across adapters: lazy TTL, integer `incrBy`, sorted-set ordering
+  (equal scores order by member), and atomic `update`. Test-only, in
+  `tests/store-conformance.ts`.
 - **Store keys**: `bal:` balance, `inv:` inventory, `daily:` index and
   streak, `quest:` state, `lb:` leaderboards, `guild:` settings, `vote:`
   stamps. Apps may address these keys; the value shapes belong to the
