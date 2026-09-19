@@ -28,6 +28,8 @@ await store.incrBy('bal:123', 50);
 
 Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. Daily payouts land in `bal:` so they are spendable in the shop. App-defined guild values extend the settings prefix as `guild:<id>:<name>` — see the [guild config recipe](/docs/recipes/guild-config).
 
+The port carries no schema and no versioning: adapters keep opaque strings and sorted sets. Systems values have no version field, and app values are yours to evolve — see the [store value migrations recipe](/docs/recipes/store-migrations).
+
 ## Atomic operations
 
 `update()` is the seam that makes read-modify-write safe: `fn` runs once, synchronously, with the current values of `keys`, and its writes and sorted-set entries apply together. Adapters serialize concurrent updates that share keys — MemoryStore and the JSON FileStore because `fn` is synchronous, Redis with `WATCH`/`MULTI` retries, Postgres with a transaction.

@@ -1,0 +1,45 @@
+---
+title: Store value migrations
+description: Version your stored values; the port has no schema or scan.
+---
+
+`Store` has no schema and no versioning. Adapters keep opaque strings and sorted sets; systems values are plain JSON with no version field; every read is an app-side `JSON.parse`.
+
+Put a version inside the value and upgrade at read time:
+
+```ts
+import type { Store } from '@discord.ts/systems';
+
+interface ZooV1 {
+  animals: Record<string, number>;
+}
+
+interface ZooV2 {
+  v: 2;
+  animals: Record<string, { count: number; shiny: boolean }>;
+}
+
+export async function getZoo(store: Store, userId: string): Promise<ZooV2 | null> {
+  const key = `zoo:${userId}`;
+  const raw = await store.get(key);
+  if (raw === null) return null;
+  const value = JSON.parse(raw) as ZooV1 | ZooV2;
+  if ('v' in value && value.v === 2) return value;
+  const upgraded: ZooV2 = {
+    v: 2,
+    animals: Object.fromEntries(
+      Object.entries(value.animals).map(([id, count]) => [id, { count, shiny: false }]),
+    ),
+  };
+  await store.set(key, JSON.stringify(upgraded));
+  return upgraded;
+}
+```
+
+Notes:
+
+- The port cannot enumerate keys: there is no scan. Batch migrations need your own index of subjects; otherwise migrate lazily on read, as above.
+- Treat a missing `v` as the oldest shape.
+- Adapters stay shape-blind: string in, string out. One adapter then serves every app.
+- Never change a shape in place. Old values parse into `undefined` fields and the failure is silent.
+- Values shared with a system (`bal:`, `inv:`, `quest:`) are that system's shapes — treat them as fixed and version your own keys.

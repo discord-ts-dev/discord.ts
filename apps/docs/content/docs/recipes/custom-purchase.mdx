@@ -1,0 +1,52 @@
+---
+title: Custom purchases
+description: Stock, taxes, and extra currencies on top of one atomic Store.update.
+---
+
+`buy()` covers one shape: `price × qty` against `bal:`. Stock limits, expiry, taxes, and second currencies are game rules, so they stay app-side — built on `Store.update` so the check and the writes commit together.
+
+This purchase takes the last unit of stock, charges the buyer, and adds the item in one atomic update:
+
+```ts
+import type { Store } from '@discord.ts/systems';
+
+type PurchaseResult =
+  | { ok: true; balance: number }
+  | { ok: false; reason: 'sold-out' | 'insufficient-funds'; balance: number };
+
+export async function buyLastUnit(
+  store: Store,
+  userId: string,
+  itemId: string,
+  price: number,
+): Promise<PurchaseResult> {
+  const stockKey = `stock:${itemId}`;
+  const balanceKey = `bal:${userId}`;
+  const inventoryKey = `inv:${userId}`;
+  return store.update<PurchaseResult>([stockKey, balanceKey, inventoryKey], (current) => {
+    const stock = Number(current[stockKey] ?? 0) || 0;
+    const balance = Number(current[balanceKey] ?? 0) || 0;
+    if (stock < 1) return { result: { ok: false, reason: 'sold-out', balance } };
+    if (balance < price) return { result: { ok: false, reason: 'insufficient-funds', balance } };
+    const inv = JSON.parse(current[inventoryKey] ?? '{}') as Record<string, number>;
+    inv[itemId] = (inv[itemId] ?? 0) + 1;
+    return {
+      result: { ok: true, balance: balance - price },
+      writes: {
+        [stockKey]: String(stock - 1),
+        [balanceKey]: String(balance - price),
+        [inventoryKey]: JSON.stringify(inv),
+      },
+    };
+  });
+}
+```
+
+Notes:
+
+- `fn` must be synchronous — parse with `JSON.parse` inside it, never `await`.
+- Failed checks return no `writes`, so the update is a no-op.
+- The adapter serializes updates that share keys (ADR 0010), so two buyers cannot oversell the last unit.
+- Keep the systems shapes for shared keys: `bal:` is a number string and `inv:` is `Record<string, number>` JSON, so `getBalance()`, `buy()`, and `useItem()` keep working on the same data. Keys like `stock:<item>` are yours.
+- To mirror a leaderboard the way `addBalance()` does, return `zadds: [{ key: 'lb:wealth', score: balance - price, member: userId }]` from the same update.
+- The same flow handles taxes (`Math.ceil(base * 1.05)`), a second currency (one app-owned balance key per currency), and expiry (a TTL on the stock key).
