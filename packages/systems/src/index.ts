@@ -1,4 +1,4 @@
-export { MemoryStore, STORE } from './store.js';
+export { FileStore, MemoryStore, STORE } from './store.js';
 export type { SortedEntry, Store, StoreUpdate, StoreWrites } from './store.js';
 export { TaskRunner, dayIndex, defineTask, msUntilDaily } from './scheduler.js';
 export type { DailyAt, TaskDef } from './scheduler.js';
