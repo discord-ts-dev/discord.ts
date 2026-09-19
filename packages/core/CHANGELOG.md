@@ -1,5 +1,43 @@
 # @discord.ts/core
 
+## 1.2.0
+
+### Minor Changes
+
+- d7f67e4: Deepen Discovery with `CommandDefinition`: decorator metadata becomes one
+  definition per top-level command (flags, options DTO, localizations, and a
+  plain handler or subcommand tree). `DiscordDiscoveryService.slash` becomes
+  `commands`; JSON rendering, boot Validation, dispatch matching, and argument
+  building consume definitions instead of re-reading Reflect metadata.
+  Structural conflicts (duplicate leaves, flag drift, plain/sub mixing) are
+  recorded by the builder and aggregated by `validateDiscoveryState()` as before,
+  so the one-error-before-REST behavior is unchanged. `optionsDto` is removed
+  from `discord-args`.
+- d7f67e4: Add real constructor injection. `@Inject(token)` records the token a
+  constructor parameter resolves from, and `createRuntime` builds providers —
+  classes and `{ provide, useValue }` values — through a `ProviderRegistry` that
+  constructs each provider once, resolves dependencies in declaration order, and
+  fails on duplicates, missing tokens, and cycles. Guards named in
+  `@UseGuards()` resolve through the same registry, so app guards inject
+  providers instead of defaulting to module singletons. `@discord.ts/systems`
+  exports the `STORE` token for apps plugging their Store adapter (ADR 0004).
+  Modules stay flat: only the root module's providers are read.
+
+### Patch Changes
+
+- d7f67e4: Deepen the reply module. `replyEphemeral()` and the new `replyEmbed()` now share
+  one delivery path, `deliver()`: it replies when the interaction is free, edits
+  when it is already acknowledged, and follows up when a private reply is wanted
+  after acknowledgement. An acknowledged Context no longer silently drops the
+  message, so `confirm()` followed by a result reply works instead of throwing.
+  `confirm()`, `paginate()`, and `pickOne()` send through the same path and use
+  the current `withResponse` API; the example, music-bot, and owo apps adopt it.
+- Updated dependencies [d7f67e4]
+- Updated dependencies [d7f67e4]
+  - @discord.ts/ux@1.2.0
+  - @discord.ts/common@1.2.0
+  - @discord.ts/i18n@0.3.1
+
 ## 1.1.0
 
 ### Minor Changes
