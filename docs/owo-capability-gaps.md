@@ -34,8 +34,9 @@ Modules.
    `isCommandEnabled` shipped; the guard that enforces it stayed app-local.
 4. **Author lock → `ux`** — [#47](https://github.com/discord-ts-dev/discord.ts/issues/47).
    Only `pickOne` has `allowedUserId`; five Paw button flows hand-roll checks.
-5. **`FileStore` → `systems`** — [#48](https://github.com/discord-ts-dev/discord.ts/issues/48).
-   The production adapter shipped separately as `@discord.ts/redis` ([#52](https://github.com/discord-ts-dev/discord.ts/issues/52), ADR 0011); `FileStore` remains the single-process reference adapter. ADR 0009's port exception; amends ADR 0004.
+5. **`FileStore` → `systems`** — shipped ([#48](https://github.com/discord-ts-dev/discord.ts/issues/48), [#54](https://github.com/discord-ts-dev/discord.ts/pull/54)).
+   The single-process reference adapter; runs the shared Store conformance suite.
+   The production adapter shipped separately as `@discord.ts/redis` ([#52](https://github.com/discord-ts-dev/discord.ts/issues/52), ADR 0011).
 
 ## Systems dynamism review (2026-09-18)
 

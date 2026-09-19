@@ -1,6 +1,6 @@
 // The Store port's shared contract (ADR 0010). Every adapter must pass this
-// suite: MemoryStore now, FileStore (#48) and RedisStore next. Test-only; not
-// part of any package's published surface.
+// suite: MemoryStore, FileStore, and RedisStore run it. Test-only; not part
+// of any package's published surface.
 //
 // One rule the suite does not exercise because Redis cannot express it: a key
 // holds either a string or a sorted set, never both. MemoryStore keeps the two
