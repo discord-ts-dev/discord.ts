@@ -3,21 +3,24 @@ title: Store
 description: Thin async port plus in-memory adapter. No ORM.
 ---
 
-`Store` is the port. `MemoryStore` is the single-process adapter. Bring your own Redis adapter in prod by matching the interface.
+`Store` is the port. `MemoryStore` is the dev/test adapter. `FileStore` is the zero-dep single-process file adapter. Bring your own Redis adapter in prod by matching the interface.
 
 ```ts
-import { MemoryStore, type Store } from '@discord.ts/systems';
+import { FileStore, MemoryStore, type Store } from '@discord.ts/systems';
 
 const store: Store = new MemoryStore();
 await store.set('bal:123', '100');
 await store.incrBy('bal:123', 50);
+
+// Single-process bot with persistence, no extra deps:
+const persisted: Store = new FileStore('data/bot.json');
 ```
 
 | Method                               | Use                                                                                                                                |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `get(key)`                           | String or `null`. Lazy TTL: expired keys die on read, no sweep timer.                                                              |
 | `set(key, value, ttlMs?)`            | Write with optional expiry.                                                                                                        |
-| `incrBy(key, amount)`                | Atomic increment. Returns next. Keeps the key's TTL.                                                                               |
+| `incrBy(key, amount)`                | Atomic integer increment (truncates toward zero, Redis `INCRBY`). Returns next. Keeps the key's TTL.                               |
 | `zincrBy(key, amount, member)`       | Atomic score increment. Returns next.                                                                                              |
 | `update(keys, fn)`                   | Atomic read-modify-write. `fn` gets current values and returns `{ result, writes?, zadds? }`; `null` writes delete, TTLs are kept. |
 | `zadd(key, score, member)`           | Upsert sorted-set entry.                                                                                                           |
@@ -43,3 +46,12 @@ await addBalance(store, userId, 100, { mirrorBoard: 'wealth' });
 await buy(store, userId, { id: 'lootbox', price: 200 }, 1, { mirrorBoard: 'wealth' });
 await claimDaily(store, userId, { amount: 100, mirrorBoard: 'wealth' });
 ```
+
+## FileStore limits
+
+`FileStore` keeps state in memory with lazy TTL (expired keys die on read)
+and syncs the whole JSON file (`file.tmp` + rename) on every write. Limits:
+single process only, JSON file must fit in memory, flush per write (no
+debounced batching). Swap for Redis/Prisma when more than one process writes
+or the file outgrows memory. This is the ADR 0004 amendment (ADR 0009 port
+exception): a zero-dep reference adapter, not a multi-process store.

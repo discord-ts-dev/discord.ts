@@ -7,7 +7,8 @@ Ubiquitous language. Glossary only. No implementation.
 - **Store**: the async key/value plus sorted-set port every system reads
   and writes through. `update()` is the atomic read-modify-write; `incrBy`
   and `zincrBy` are single-key atomic increments. Implemented by
-  `MemoryStore`, plugged by adapters.
+  `MemoryStore` and the single-process file reference adapter `FileStore`,
+  plugged by adapters.
 - **Store keys**: `bal:` balance, `inv:` inventory, `daily:` index and
   streak, `quest:` state, `lb:` leaderboards, `guild:` settings, `vote:`
   stamps. Apps may address these keys; the value shapes belong to the

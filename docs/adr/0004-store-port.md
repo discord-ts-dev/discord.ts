@@ -25,6 +25,9 @@ settings) needs somewhere to keep counters.
 - Streak, leaderboard, guild-settings helpers build on `Store` instead
   of each inventing storage. Memory adapter keeps the example bot
   dependency-free.
+- Amendment (ADR 0009 exception, #48): the framework also bundles a
+  zero-dep file adapter (`FileStore`) for single-process bots;
+  multi-process deployments still plug Redis/Prisma.
 
 ## Skipped
 
