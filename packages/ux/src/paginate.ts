@@ -7,16 +7,13 @@ import {
   type RepliableInteraction,
 } from 'discord.js';
 import { deliver, replyEphemeral } from './reply.js';
+import { normalizeCollectorOptions, type CollectorOptions } from './collector-options.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
 type PageTarget = RepliableInteraction;
 
-export interface PaginateOptions {
-  timeoutMs?: number;
-  /** Restrict paging to one user id; others get an ephemeral nudge. */
-  allowedUserId?: string;
-}
+export interface PaginateOptions extends CollectorOptions {}
 
 /** Prev/Next embed pager. Resolves when it times out. */
 export async function paginate(
@@ -24,10 +21,7 @@ export async function paginate(
   pages: EmbedBuilder[],
   timeoutOrOptions: number | PaginateOptions = 60_000,
 ): Promise<void> {
-  const opts: PaginateOptions =
-    typeof timeoutOrOptions === 'number' ? { timeoutMs: timeoutOrOptions } : timeoutOrOptions;
-  const timeoutMs = opts.timeoutMs ?? 60_000;
-  const allowedUserId = opts.allowedUserId;
+  const { timeoutMs, allowedUserId } = normalizeCollectorOptions(timeoutOrOptions, 60_000);
   if (!pages.length) return;
   if (pages.length === 1) {
     await deliver(target, { embeds: [pages[0]] });

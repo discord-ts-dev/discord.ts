@@ -7,16 +7,13 @@ import {
   type RepliableInteraction,
 } from 'discord.js';
 import { deliver, replyEphemeral } from './reply.js';
+import { normalizeCollectorOptions, type CollectorOptions } from './collector-options.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
 type ConfirmTarget = RepliableInteraction;
 
-export interface ConfirmOptions {
-  timeoutMs?: number;
-  /** Restrict confirmation to one user id; others get an ephemeral nudge. */
-  allowedUserId?: string;
-}
+export interface ConfirmOptions extends CollectorOptions {}
 
 /** Yes/No dialog. Accepts text or an embed payload. True on confirm. */
 export async function confirm(
@@ -24,10 +21,7 @@ export async function confirm(
   question: string | { content?: string; embeds?: EmbedBuilder[] },
   timeoutOrOptions: number | ConfirmOptions = 15_000,
 ): Promise<boolean> {
-  const opts: ConfirmOptions =
-    typeof timeoutOrOptions === 'number' ? { timeoutMs: timeoutOrOptions } : timeoutOrOptions;
-  const timeoutMs = opts.timeoutMs ?? 15_000;
-  const allowedUserId = opts.allowedUserId;
+  const { timeoutMs, allowedUserId } = normalizeCollectorOptions(timeoutOrOptions, 15_000);
   const tag = uid();
   const yes = `discord-ts:confirm:yes:${tag}`;
   const no = `discord-ts:confirm:no:${tag}`;

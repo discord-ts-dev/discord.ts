@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { EmbedBuilder, MessageFlags } from 'discord.js';
+import { ComponentType, EmbedBuilder, MessageFlags } from 'discord.js';
 import { paginate } from '../src/index.js';
 import { fakeTarget } from './collector.js';
 
@@ -104,5 +104,22 @@ describe('paginate', () => {
       captured.updates.map((u) => embedTitle(u)),
       ['Page 2'],
     );
+    assert.deepEqual(captured.collectorOptions, [
+      { componentType: ComponentType.Button, time: 60_000 },
+    ]);
+  });
+
+  test('forwards the timeout to the collector in every form', async () => {
+    const def = fakeTarget({ plan: (ids) => [ids[1] as string] });
+    await paginate(def.target as never, pages);
+    assert.deepEqual(def.captured.collectorOptions, [
+      { componentType: ComponentType.Button, time: 60_000 },
+    ]);
+
+    const num = fakeTarget({ plan: (ids) => [ids[1] as string] });
+    await paginate(num.target as never, pages, 5_000);
+    assert.deepEqual(num.captured.collectorOptions, [
+      { componentType: ComponentType.Button, time: 5_000 },
+    ]);
   });
 });

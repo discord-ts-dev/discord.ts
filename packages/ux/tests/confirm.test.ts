@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { EmbedBuilder, MessageFlags } from 'discord.js';
+import { ComponentType, EmbedBuilder, MessageFlags } from 'discord.js';
 import { confirm } from '../src/index.js';
 import { fakeTarget } from './collector.js';
 
@@ -85,7 +85,24 @@ describe('confirm', () => {
   });
 
   test('accepts object timeoutMs', async () => {
-    const { target } = fakeTarget({ plan: () => [], end: true });
+    const { target, captured } = fakeTarget({ plan: () => [], end: true });
     assert.equal(await confirm(target as never, 'Delete?', { timeoutMs: 10 }), false);
+    assert.deepEqual(captured.collectorOptions, [
+      { componentType: ComponentType.Button, time: 10 },
+    ]);
+  });
+
+  test('forwards the timeout to the collector in every form', async () => {
+    const def = fakeTarget({ plan: (ids) => [ids[0] as string] });
+    await confirm(def.target as never, 'Delete?');
+    assert.deepEqual(def.captured.collectorOptions, [
+      { componentType: ComponentType.Button, time: 15_000 },
+    ]);
+
+    const num = fakeTarget({ plan: (ids) => [ids[0] as string] });
+    await confirm(num.target as never, 'Delete?', 5_000);
+    assert.deepEqual(num.captured.collectorOptions, [
+      { componentType: ComponentType.Button, time: 5_000 },
+    ]);
   });
 });
