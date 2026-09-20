@@ -8,4 +8,5 @@ Ubiquitous language. Glossary only. No implementation.
 - **Confirm**: a Yes/No button dialog on a repliable interaction. `confirm()` takes text or embeds. Returns true on accept, false on cancel or timeout.
 - **Pager**: prev/next embed navigation on a repliable interaction. `paginate()` handles buttons until timeout.
 - **Picker**: single-select menu on a repliable interaction. `pickOne()` resolves the picked value, null on timeout.
+- **Author lock**: restriction of an interaction flow to a single initiating user. Non-authors get an ephemeral nudge and are ignored.
 - **Error embed**: the single red failure style. Built via `errorEmbed()`.

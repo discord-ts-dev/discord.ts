@@ -46,6 +46,6 @@ export class DexCommand {
           ),
       );
     }
-    await paginate(ctx, pages);
+    await paginate(ctx, pages, { allowedUserId: ctx.user.id });
   }
 }

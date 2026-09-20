@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
 import { paginate } from '../src/index.js';
 import { fakeTarget } from './collector.js';
 
@@ -70,5 +70,39 @@ describe('paginate', () => {
     await paginate(target as never, pages);
     assert.equal(captured.edits.length, 1);
     assert.equal(embedTitle(captured.edits[0]), 'Page 1');
+  });
+
+  test('nudges a user outside allowedUserId and ignores the page turn', async () => {
+    const { target, captured } = fakeTarget({
+      plan: (ids) => [ids[1] as string],
+      user: 'someone-else',
+    });
+    await paginate(target as never, pages, { allowedUserId: 'u1' });
+    assert.deepEqual(captured.updates, []);
+    assert.deepEqual(captured.nudges, [
+      { content: 'Not yours to page.', flags: MessageFlags.Ephemeral, withResponse: true },
+    ]);
+  });
+
+  test('accepts the allowed user', async () => {
+    const { target, captured } = fakeTarget({
+      plan: (ids) => [ids[1] as string],
+    });
+    await paginate(target as never, pages, { allowedUserId: 'u1' });
+    assert.deepEqual(
+      captured.updates.map((u) => embedTitle(u)),
+      ['Page 2'],
+    );
+  });
+
+  test('accepts object timeoutMs', async () => {
+    const { target, captured } = fakeTarget({
+      plan: (ids) => [ids[1] as string],
+    });
+    await paginate(target as never, pages, { timeoutMs: 60_000 });
+    assert.deepEqual(
+      captured.updates.map((u) => embedTitle(u)),
+      ['Page 2'],
+    );
   });
 });

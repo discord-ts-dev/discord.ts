@@ -14,15 +14,18 @@ import { confirm } from '@discord.ts/ux';
 
 const ok = await confirm(interaction, 'Ban this member?', 15_000);
 if (ok) await interaction.followUp('banned');
+
+// Lock the buttons to the initiator; others get an ephemeral nudge.
+await confirm(interaction, 'Divorce?', { allowedUserId: interaction.user.id });
 ```
 
-| Arg         | Default | Notes                                |
-| ----------- | ------- | ------------------------------------ |
-| `target`    | —       | Repliable interaction.               |
-| `question`  | —       | `string` or `{ content?, embeds? }`. |
-| `timeoutMs` | `15000` | Collector lifetime.                  |
+| Arg         | Default | Notes                                                    |
+| ----------- | ------- | -------------------------------------------------------- |
+| `target`    | —       | Repliable interaction.                                   |
+| `question`  | —       | `string` or `{ content?, embeds? }`.                     |
+| `timeoutMs` | `15000` | Collector lifetime, or `{ timeoutMs?, allowedUserId? }`. |
 
-Buttons use unique ids per call. After pick it edits to `Confirmed.` / `Cancelled.` and clears components.
+Non-authors are nudged with `Not yours to confirm.` and ignored; the collector keeps waiting. Buttons use unique ids per call. After pick it edits to `Confirmed.` / `Cancelled.` and clears components.
 
 ## Paginate
 
@@ -32,13 +35,37 @@ Prev / Next embed pager. One page replies direct. Resolves when it times out.
 import { paginate } from '@discord.ts/ux';
 
 await paginate(interaction, [page1, page2, page3], 60_000);
+
+// Lock paging to the viewer.
+await paginate(interaction, pages, { allowedUserId: interaction.user.id });
 ```
 
-| Arg         | Default | Notes                                 |
-| ----------- | ------- | ------------------------------------- |
-| `target`    | —       | Repliable interaction.                |
-| `pages`     | —       | `EmbedBuilder[]`. Empty returns void. |
-| `timeoutMs` | `60000` | Collector lifetime.                   |
+| Arg         | Default | Notes                                                    |
+| ----------- | ------- | -------------------------------------------------------- |
+| `target`    | —       | Repliable interaction.                                   |
+| `pages`     | —       | `EmbedBuilder[]`. Empty returns void.                    |
+| `timeoutMs` | `60000` | Collector lifetime, or `{ timeoutMs?, allowedUserId? }`. |
+
+Non-authors are nudged with `Not yours to page.` and ignored.
+
+## Author lock
+
+Guard factory for component handlers. Restricts a flow to one initiating user; non-authors get an ephemeral nudge and the handler is skipped.
+
+```ts
+import { authorLock } from '@discord.ts/ux';
+
+// Usable via `@UseGuards(authorLock(...))` once core accepts configured
+// guard instances (#46). Until then, call it directly:
+const locked = authorLock(() => gameId.split('_').pop(), {
+  deny: () => 'Not yours to use.',
+});
+if (!(await locked.canActivate(interaction))) return;
+```
+
+Unknown initiator (`resolveUserId` returns `null`/`undefined`) passes through fail-open, deferring to the handler — documented as deliberate. Default deny is `Not yours to use.` (English house style), overridable via `opts.deny(ix)`.
+
+When not to lock: leave open flows open — `drop` claims, `captcha`/`giveaway` presses — and keep multi-party checks (`battle` sides, `trade` receiver/either) app-side.
 
 ## Error embed
 

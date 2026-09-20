@@ -6,18 +6,28 @@ import {
   type EmbedBuilder,
   type RepliableInteraction,
 } from 'discord.js';
-import { deliver } from './reply.js';
+import { deliver, replyEphemeral } from './reply.js';
 
 const uid = (): string => Math.random().toString(36).slice(2, 10);
 
 type ConfirmTarget = RepliableInteraction;
 
+export interface ConfirmOptions {
+  timeoutMs?: number;
+  /** Restrict confirmation to one user id; others get an ephemeral nudge. */
+  allowedUserId?: string;
+}
+
 /** Yes/No dialog. Accepts text or an embed payload. True on confirm. */
 export async function confirm(
   target: ConfirmTarget,
   question: string | { content?: string; embeds?: EmbedBuilder[] },
-  timeoutMs = 15_000,
+  timeoutOrOptions: number | ConfirmOptions = 15_000,
 ): Promise<boolean> {
+  const opts: ConfirmOptions =
+    typeof timeoutOrOptions === 'number' ? { timeoutMs: timeoutOrOptions } : timeoutOrOptions;
+  const timeoutMs = opts.timeoutMs ?? 15_000;
+  const allowedUserId = opts.allowedUserId;
   const tag = uid();
   const yes = `discord-ts:confirm:yes:${tag}`;
   const no = `discord-ts:confirm:no:${tag}`;
@@ -34,7 +44,11 @@ export async function confirm(
         createMessageComponentCollector(o: unknown): {
           on(
             e: string,
-            fn: (i: { customId: string; update(m: unknown): Promise<unknown> }) => void,
+            fn: (i: {
+              customId: string;
+              user: { id: string };
+              update(m: unknown): Promise<unknown>;
+            }) => void,
           ): void;
           stop(): void;
         };
@@ -43,6 +57,10 @@ export async function confirm(
     let done = false;
     collector.on('collect', (i) => {
       if (i.customId !== yes && i.customId !== no) return;
+      if (allowedUserId && i.user.id !== allowedUserId) {
+        void replyEphemeral(i, 'Not yours to confirm.');
+        return;
+      }
       done = true;
       collector.stop();
       void i.update({ content: i.customId === yes ? 'Confirmed.' : 'Cancelled.', components: [] });

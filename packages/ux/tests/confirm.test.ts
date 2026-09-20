@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, MessageFlags } from 'discord.js';
 import { confirm } from '../src/index.js';
 import { fakeTarget } from './collector.js';
 
@@ -65,5 +65,27 @@ describe('confirm', () => {
   test('resolves false when delivery fails', async () => {
     const target = { reply: async () => null };
     assert.equal(await confirm(target as never, 'Delete?'), false);
+  });
+
+  test('nudges a user outside allowedUserId and keeps waiting', async () => {
+    const { target, captured } = fakeTarget({
+      plan: (ids) => [ids[0] as string],
+      user: 'someone-else',
+      end: true,
+    });
+    assert.equal(await confirm(target as never, 'Delete?', { allowedUserId: 'u1' }), false);
+    assert.deepEqual(captured.nudges, [
+      { content: 'Not yours to confirm.', flags: MessageFlags.Ephemeral, withResponse: true },
+    ]);
+  });
+
+  test('accepts the allowed user', async () => {
+    const { target } = fakeTarget({ plan: (ids) => [ids[0] as string] });
+    assert.equal(await confirm(target as never, 'Delete?', { allowedUserId: 'u1' }), true);
+  });
+
+  test('accepts object timeoutMs', async () => {
+    const { target } = fakeTarget({ plan: () => [], end: true });
+    assert.equal(await confirm(target as never, 'Delete?', { timeoutMs: 10 }), false);
   });
 });
