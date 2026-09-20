@@ -6,8 +6,7 @@ import { initI18n } from '@discord.ts/i18n';
 import { MessageFlags } from 'discord.js';
 import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
 import { DiscordExecutionContext } from '@discord.ts/core';
-import { setCommandEnabled } from '@discord.ts/systems';
-import { EnabledGuard } from '../src/guards/enabled.guard.js';
+import { EnabledGuard, setCommandEnabled } from '@discord.ts/systems';
 import { FileStore } from '../src/game/store.js';
 
 initI18n({ defaultLocale: 'en', languages: ['en'] }, join(import.meta.dir, '..'));

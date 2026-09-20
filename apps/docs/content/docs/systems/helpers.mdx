@@ -39,4 +39,20 @@ await setCommandEnabled(store, guildId, 'shop', false);
 await isCommandEnabled(store, guildId, 'shop'); // false
 ```
 
+Enforce the toggles with `EnabledGuard`:
+
+```ts
+import { EnabledGuard } from '@discord.ts/systems';
+
+const enabled = new EnabledGuard(store, {
+  deny: (ix, name) => `\`/${name}\` is disabled in this server.`,
+});
+
+@UseGuards(enabled)
+@Command({ name: 'shop', description: 'Paw shop' })
+async handle() {}
+```
+
+DMs and un-decorated handlers pass; subcommands toggle by group name. The default deny is the hardcoded English line above; apps override it with i18n.
+
 Other per-guild values (verification role, announcement channel, rules) use `guild:<id>:<name>` keys — see the [guild config recipe](/docs/recipes/guild-config).
