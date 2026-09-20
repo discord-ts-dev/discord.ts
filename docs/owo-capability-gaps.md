@@ -21,6 +21,7 @@ Modules.
 | Vote reward: `awardVote`                                            | systems |
 | Help grouping: `buildHelp`                                          | systems |
 | Confirm / pager / picker / error embed / `replyEphemeral`           | ux      |
+| Author lock: `allowedUserId` on confirm/paginate, `authorLock` guard | ux      |
 | Mentions, snowflake, amount parser, word filter, vote payload parse | utils   |
 | Native i18n: catalogs, `t`, locale resolution                       | i18n    |
 
@@ -32,8 +33,8 @@ Modules.
    Deletes three hand-maintained lists: Paw `HELP` (129), Paw `TOGGLEABLE` (50), music-bot `COMMANDS` (41).
 3. **Guild enabled guard → `systems`, configured guard instances → `core`** — [#46](https://github.com/discord-ts-dev/discord.ts/issues/46).
    `isCommandEnabled` shipped; the guard that enforces it stayed app-local.
-4. **Author lock → `ux`** — [#47](https://github.com/discord-ts-dev/discord.ts/issues/47).
-   Only `pickOne` has `allowedUserId`; five Paw button flows hand-roll checks.
+4. **Author lock → `ux`** — shipped ([#47](https://github.com/discord-ts-dev/discord.ts/issues/47)).
+   `confirm`/`paginate` take `{ allowedUserId }`; `authorLock` guards component handlers. owo adopts it on marriage/reset confirms, dex/zoo pagers, and blackjack buttons; drop/captcha/giveaway stay open, battle/trade stay multi-party app-side.
 5. **`FileStore` → `systems`** — shipped ([#48](https://github.com/discord-ts-dev/discord.ts/issues/48), [#54](https://github.com/discord-ts-dev/discord.ts/pull/54)).
    The single-process reference adapter; runs the shared Store conformance suite.
    The production adapter shipped separately as `@discord.ts/redis` ([#52](https://github.com/discord-ts-dev/discord.ts/issues/52), ADR 0011).

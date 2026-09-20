@@ -1,6 +1,7 @@
 import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
 import { Cooldown } from '@discord.ts/core';
 import { getBalance } from '@discord.ts/systems';
+import { authorLock } from '@discord.ts/ux';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -114,14 +115,12 @@ export class BlackjackCommand {
 
   /** Loads the game; only the owner may act, and a missing game means expired. */
   private async load(ix: ButtonInteraction, gameId: string): Promise<Game | null> {
-    const owner = gameId.split('_').pop();
-    if (owner !== ix.user.id) {
-      await ix.reply({
-        content: tt(ix, 'game:blackjack.not-yours'),
-        flags: MessageFlags.Ephemeral,
-      });
-      return null;
-    }
+    // ponytail: authorLock via direct call until core accepts configured guard
+    // instances (#46); then this becomes `@UseGuards(authorLock(...))`.
+    const locked = authorLock(() => gameId.split('_').pop(), {
+      deny: (source) => tt(source, 'game:blackjack.not-yours'),
+    });
+    if (!(await locked.canActivate(ix))) return null;
     const raw = await store.get(gameKey(gameId));
     if (!raw) {
       await ix.reply({

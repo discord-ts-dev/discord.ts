@@ -11,6 +11,7 @@ export interface Captured {
   edits: unknown[];
   updates: unknown[];
   nudges: unknown[];
+  collectorOptions: unknown[];
 }
 
 export interface FakeOptions {
@@ -33,28 +34,37 @@ export function customIdsOf(payload: unknown): string[] {
 
 /** Fake interaction target with a synchronous component collector. */
 export function fakeTarget(opts: FakeOptions = {}) {
-  const captured: Captured = { replies: [], edits: [], updates: [], nudges: [] };
+  const captured: Captured = {
+    replies: [],
+    edits: [],
+    updates: [],
+    nudges: [],
+    collectorOptions: [],
+  };
   const msg = {
-    createMessageComponentCollector: (_o: unknown) => ({
-      on: (event: string, fn: (arg: unknown) => void): void => {
-        if (event === 'end') {
-          if (opts.end) fn(undefined);
-          return;
-        }
-        if (event !== 'collect') return;
-        const ids = customIdsOf(captured.replies.at(-1) ?? captured.edits.at(-1));
-        for (const id of (opts.plan ?? noCollect)(ids)) {
-          fn({
-            customId: id,
-            values: [id],
-            user: { id: opts.user ?? 'u1' },
-            update: async (m: unknown) => void captured.updates.push(m),
-            reply: async (m: unknown) => void captured.nudges.push(m),
-          });
-        }
-      },
-      stop: (): void => undefined,
-    }),
+    createMessageComponentCollector: (o: unknown) => {
+      captured.collectorOptions.push(o);
+      return {
+        on: (event: string, fn: (arg: unknown) => void): void => {
+          if (event === 'end') {
+            if (opts.end) fn(undefined);
+            return;
+          }
+          if (event !== 'collect') return;
+          const ids = customIdsOf(captured.replies.at(-1) ?? captured.edits.at(-1));
+          for (const id of (opts.plan ?? noCollect)(ids)) {
+            fn({
+              customId: id,
+              values: [id],
+              user: { id: opts.user ?? 'u1' },
+              update: async (m: unknown) => void captured.updates.push(m),
+              reply: async (m: unknown) => void captured.nudges.push(m),
+            });
+          }
+        },
+        stop: (): void => undefined,
+      };
+    },
   };
   const target: Record<string, unknown> = {
     // Mirrors discord.js `withResponse: true`: the message rides in resource.

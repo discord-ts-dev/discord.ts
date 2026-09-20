@@ -59,6 +59,6 @@ export class ZooCommand {
           .setDescription(`${lines.join('\n')}\n\n${tt(ctx, 'game:zoo.totals', totals)}`),
       );
     }
-    await paginate(ctx, pages);
+    await paginate(ctx, pages, { allowedUserId: ctx.user.id });
   }
 }

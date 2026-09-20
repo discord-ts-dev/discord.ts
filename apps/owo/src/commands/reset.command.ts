@@ -24,13 +24,17 @@ export class ResetCommand {
     if (!target) return replyEphemeral(ctx, tt(ctx, 'game:reset.fail'));
 
     const what = dto.what === 'coins' ? 'pawcoins' : dto.what === 'zoo' ? 'zoo' : 'everything';
-    const accepted = await confirm(ctx, {
-      embeds: [
-        new EmbedBuilder()
-          .setColor(COLORS.error)
-          .setDescription(tt(ctx, 'game:reset.confirm', { what, user: `<@${target}>` })),
-      ],
-    });
+    const accepted = await confirm(
+      ctx,
+      {
+        embeds: [
+          new EmbedBuilder()
+            .setColor(COLORS.error)
+            .setDescription(tt(ctx, 'game:reset.confirm', { what, user: `<@${target}>` })),
+        ],
+      },
+      { allowedUserId: ctx.user.id },
+    );
     if (!accepted) return;
 
     if (dto.what === 'coins' || dto.what === 'all') {

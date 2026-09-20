@@ -64,13 +64,19 @@ export class MarriageCommand {
       await replyEphemeral(ctx, tt(ctx, 'game:marry.not-married'));
       return;
     }
-    const done = await confirm(ctx, {
-      embeds: [
-        new EmbedBuilder()
-          .setColor(COLORS.error)
-          .setDescription(tt(ctx, 'game:marry.divorce-confirm', { user: `<@${current.spouse}>` })),
-      ],
-    });
+    const done = await confirm(
+      ctx,
+      {
+        embeds: [
+          new EmbedBuilder()
+            .setColor(COLORS.error)
+            .setDescription(
+              tt(ctx, 'game:marry.divorce-confirm', { user: `<@${current.spouse}>` }),
+            ),
+        ],
+      },
+      { allowedUserId: ctx.user.id },
+    );
     if (!done) return;
     const result = await divorce(store, ctx.user.id);
     if (!result.ok) {
