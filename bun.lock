@@ -195,6 +195,11 @@
     "packages/systems": {
       "name": "@discord.ts/systems",
       "version": "0.3.0",
+      "dependencies": {
+        "@discord.ts/common": "workspace:*",
+        "@discord.ts/ux": "workspace:*",
+        "reflect-metadata": "^0.2.2",
+      },
       "devDependencies": {
         "typescript": "^7.0.2",
       },

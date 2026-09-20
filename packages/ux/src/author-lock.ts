@@ -41,8 +41,8 @@ function userIdOf(ix: unknown): string | undefined {
  * Author lock for component handlers. Restricts a flow to one initiating user;
  * non-authors get an ephemeral nudge and the handler is skipped. Unknown
  * initiator (resolver returns null/undefined) passes through fail-open,
- * deferring to the handler. Usable via `@UseGuards(authorLock(...))` once the
- * core accepts configured guard instances (#46).
+ * deferring to the handler. Usable via `@UseGuards(authorLock(...))` as a
+ * configured guard instance.
  */
 export function authorLock(
   resolveUserId: AuthorResolver,

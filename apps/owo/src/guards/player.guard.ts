@@ -1,11 +1,11 @@
 import { Inject, UseGuards, type CanActivate } from '@discord.ts/common';
 import type { DiscordExecutionContext } from '@discord.ts/core';
-import { STORE, type Store } from '@discord.ts/systems';
+import { EnabledGuard, STORE, type Store } from '@discord.ts/systems';
 import { banOf } from '../game/bans.js';
 import { replyEphemeral } from '@discord.ts/ux';
+import { store as appStore } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { isPaused } from '../game/warns.js';
-import { EnabledGuard } from './enabled.guard.js';
 
 /** Bot-level ban: a banned user cannot run player commands. */
 export class BannedGuard implements CanActivate {
@@ -36,9 +36,14 @@ export class PausedGuard implements CanActivate {
   }
 }
 
+/** Guild toggle instance: enforcement lives in systems `EnabledGuard`; the deny text stays app i18n. */
+const enabledGuard = new EnabledGuard(appStore, {
+  deny: (ix, name) => tt(ix, 'game:settings.command-disabled', { command: name }),
+});
+
 /** Class or method decorator: guild toggle, bot ban list, and the bot-wide pause. */
 export const PlayerGuarded = (): MethodDecorator & ClassDecorator =>
-  UseGuards(EnabledGuard, BannedGuard, PausedGuard) as unknown as MethodDecorator & ClassDecorator;
+  UseGuards(enabledGuard, BannedGuard, PausedGuard) as unknown as MethodDecorator & ClassDecorator;
 
 function interactionUserId(ix: Record<string, unknown>): string | undefined {
   return (

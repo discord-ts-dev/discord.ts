@@ -32,6 +32,9 @@ Ubiquitous language. Glossary only. No implementation.
   `useItem()`, topped up via `addBalance()`.
 - **Guild settings**: per-guild per-command enable flags.
   Read via `getSettings()`, toggled via `setCommandEnabled()`.
+  Enforced by `EnabledGuard`.
+- **EnabledGuard**: Store-backed guard, `new EnabledGuard(store, { deny? })`.
+  DMs and undecorated handlers pass; subcommands toggle by group name.
 - **Vote reward**: currency awarded for a bot-list vote webhook. Awarded via
   `awardVote()`; the payload parse is a pure helper in `utils`.
 - **Help entries**: grouped command metadata. Built via `buildHelp()`.

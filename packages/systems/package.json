@@ -22,6 +22,11 @@
     "format": "oxfmt --write src",
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
+  "dependencies": {
+    "@discord.ts/common": "workspace:*",
+    "@discord.ts/ux": "workspace:*",
+    "reflect-metadata": "^0.2.2"
+  },
   "devDependencies": {
     "typescript": "^7.0.2"
   }

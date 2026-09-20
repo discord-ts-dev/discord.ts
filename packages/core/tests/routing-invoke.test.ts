@@ -172,6 +172,27 @@ describe('DiscordRoutingService pipes and guards', () => {
     assert.deepEqual(h.calls, ['allowed']);
   });
 
+  test('uses a configured guard instance as-is, carrying its constructor args', async () => {
+    let allow = false;
+    let calls = 0;
+    const configured = {
+      async canActivate(): Promise<boolean> {
+        calls += 1;
+        return allow;
+      },
+    };
+    const h = setup();
+    const handler = handlerFor(h, 'run');
+    onMethod(handler, UseGuards(configured));
+    await invokeWith(h, handler, {});
+    assert.deepEqual(h.calls, []);
+    assert.equal(calls, 1);
+    allow = true;
+    await invokeWith(h, handler, {});
+    assert.deepEqual(h.calls, ['run']);
+    assert.equal(calls, 2);
+  });
+
   test('uses guard instances from the registry and honors replyError edge cases', async () => {
     const used: string[] = [];
     class MapGuard {

@@ -13,7 +13,7 @@ Ubiquitous language. Glossary only. No implementation.
 - **Routing**: dispatch of interactions to handlers with guards and validation. Owned by `DiscordRoutingService`, reads `Discovery` state.
 - **Validation**: boot check of every definition (names, limits, duplicates). Throws aggregated before any REST call.
 - **Command definition**: one top-level slash command built from `@Command()` / `@Subcommand()` metadata: its flags, options DTO, localizations, and either a plain handler or a subcommand tree. The builder records structural conflicts (duplicates, flag drift, plain/sub mixing) as issues for Validation to aggregate.
-- **Guard**: a `CanActivate` check before a command. Used via `@UseGuards()`. Reads interaction via `DiscordExecutionContext`.
+- **Guard**: a `CanActivate` check before a command. Used via `@UseGuards()`. Reads interaction via `DiscordExecutionContext`. A class or an already-configured instance (`{ canActivate }`); instances are used as-is, carrying constructor arguments (e.g. `authorLock(...)`).
 - **Sync**: push of command JSON to Discord REST. Auto on bootstrap unless `skipRegistration`. Target is global or `development` guilds.
 - **Deploy**: sync without login. Done via `deployWithModule(AppModule)` or `bun run deploy` in the app.
 - **Validated options**: an `Options` DTO checked on each call. Required fields plus `class-validator` rules plus `@UsePipes()`. Fail replies ephemeral and blocks the handler.

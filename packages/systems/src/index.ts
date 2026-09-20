@@ -11,6 +11,8 @@ export { addBalance, buy, getBalance, inventory, useItem } from './shop.js';
 export type { BuyResult, MirrorOptions, ShopItem } from './shop.js';
 export { getSettings, isCommandEnabled, setCommandEnabled } from './guild-settings.js';
 export type { GuildSettings } from './guild-settings.js';
+export { EnabledGuard } from './enabled-guard.js';
+export type { EnabledDeny, EnabledGuardOptions } from './enabled-guard.js';
 export { awardVote } from './vote.js';
 export { buildHelp } from './help.js';
 export type { HelpCommand, HelpSection } from './help.js';

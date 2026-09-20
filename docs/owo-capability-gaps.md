@@ -18,6 +18,7 @@ Modules.
 | Quests: assign / progress / reroll / complete                       | systems |
 | Shop + inventory: `buy` / `useItem` / `addBalance`                  | systems |
 | Guild settings: enable flags (`isCommandEnabled`)                   | systems |
+| EnabledGuard + configured guard instances (`@UseGuards(instance)`)  | core, systems |
 | Vote reward: `awardVote`                                            | systems |
 | Help grouping: `buildHelp`                                          | systems |
 | Confirm / pager / picker / error embed / `replyEphemeral`           | ux      |
@@ -31,8 +32,8 @@ Modules.
    Three copies inside Paw (`rng.pickRarity`, `slots.pickSymbol`, `lottery.drawWinner`).
 2. **Registry-driven help → `common` / `core` / `systems`** — [#45](https://github.com/discord-ts-dev/discord.ts/issues/45).
    Deletes three hand-maintained lists: Paw `HELP` (129), Paw `TOGGLEABLE` (50), music-bot `COMMANDS` (41).
-3. **Guild enabled guard → `systems`, configured guard instances → `core`** — [#46](https://github.com/discord-ts-dev/discord.ts/issues/46).
-   `isCommandEnabled` shipped; the guard that enforces it stayed app-local.
+3. **Guild enabled guard → `systems`, configured guard instances → `core`** — shipped (#46).
+   `EnabledGuard(store, { deny? })` enforces `isCommandEnabled`; `resolveGuard` uses configured `{ canActivate }` instances as-is. owo adopts it in `PlayerGuarded`.
 4. **Author lock → `ux`** — shipped ([#47](https://github.com/discord-ts-dev/discord.ts/issues/47)).
    `confirm`/`paginate` take `{ allowedUserId }`; `authorLock` guards component handlers. owo adopts it on marriage/reset confirms, dex/zoo pagers, and blackjack buttons; drop/captcha/giveaway stay open, battle/trade stay multi-party app-side.
 5. **`FileStore` → `systems`** — shipped ([#48](https://github.com/discord-ts-dev/discord.ts/issues/48), [#54](https://github.com/discord-ts-dev/discord.ts/pull/54)).

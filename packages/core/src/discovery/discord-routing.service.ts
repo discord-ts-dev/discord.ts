@@ -239,6 +239,15 @@ export class DiscordRoutingService {
   }
 
   private resolveGuard(g: unknown): { canActivate(ctx: unknown): unknown } {
+    // Configured guard instance (e.g. `new EnabledGuard(store, ...)` or
+    // `authorLock(...)`): used as-is so constructor arguments survive.
+    if (
+      typeof g === 'object' &&
+      g !== null &&
+      typeof (g as { canActivate?: unknown }).canActivate === 'function'
+    ) {
+      return g as { canActivate(ctx: unknown): unknown };
+    }
     return this.registry.resolveOrCreate(g as Type<{ canActivate(ctx: unknown): unknown }>);
   }
 }
