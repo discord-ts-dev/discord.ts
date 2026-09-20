@@ -100,6 +100,32 @@ describe('RedisStore update conflicts', () => {
 });
 
 describe('RedisStore client tolerance', () => {
+  test('fake client answers every command through send', async () => {
+    const client = new FakeRedisClient();
+    expect(await client.send('GET', ['missing'])).toBeNull();
+    expect(await client.send('SET', ['k', 'v'])).toBe('OK');
+    expect(await client.send('GET', ['k'])).toBe('v');
+    expect(await client.send('MGET', ['k', 'missing'])).toEqual(['v', null]);
+    expect(await client.send('INCRBY', ['n', '2'])).toBe(2);
+    expect(await client.send('DEL', ['k', 'n'])).toBe(2);
+    expect(await client.send('ZADD', ['b', '1', 'a'])).toBe(1);
+    expect(await client.send('ZINCRBY', ['b', '2', 'a'])).toBe(3);
+    expect(await client.send('ZSCORE', ['b', 'a'])).toBe(3);
+    expect(await client.send('ZSCORE', ['b', 'x'])).toBeNull();
+    expect(await client.send('ZSCORE', ['missing', 'x'])).toBeNull();
+    expect(await client.send('ZRANK', ['b', 'a'])).toBe(0);
+    expect(await client.send('ZRANK', ['b', 'x'])).toBeNull();
+    expect(await client.send('ZREVRANK', ['b', 'a'])).toBe(0);
+    expect(await client.send('ZREVRANK', ['b', 'x'])).toBeNull();
+    expect(await client.send('ZRANGE', ['b', '0', '-1'])).toEqual(['a']);
+    expect(await client.send('WATCH', ['b'])).toBe('OK');
+    expect(await client.send('UNWATCH', [])).toBe('OK');
+    expect(await client.send('MULTI', [])).toBe('OK');
+    expect(await client.send('SET', ['w', '1'])).toBe('QUEUED');
+    expect(await client.send('EXEC', [])).toEqual(['OK']);
+    await expect(client.send('NOPE', [])).rejects.toThrow('unsupported command');
+  });
+
   test('reads members from a plain zrange without scores', async () => {
     const client = new FakeRedisClient();
     await client.zadd('b', 1, 'a');
