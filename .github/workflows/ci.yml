@@ -37,6 +37,29 @@ jobs:
     with:
       run: bun run test
 
+  redis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      - name: Redis integration suite
+        run: bun test --preload=./scripts/test-preload.ts packages/redis/tests/integration.test.ts
+        env:
+          REDIS_URL: redis://127.0.0.1:6379
+
   scripts:
     uses: ./.github/workflows/_task.yml
     secrets: inherit
@@ -44,7 +67,7 @@ jobs:
       run: bun run scripts:check
 
   build:
-    needs: [lint, typecheck, format, test]
+    needs: [lint, typecheck, format, test, redis]
     uses: ./.github/workflows/_task.yml
     secrets: inherit
     with:

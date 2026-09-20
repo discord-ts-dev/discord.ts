@@ -9,6 +9,7 @@
     "cli",
     "utils",
     "systems",
+    "redis",
     "ux",
     "example",
     "---Recipes---",
