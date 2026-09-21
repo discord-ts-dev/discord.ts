@@ -9,12 +9,17 @@ import { flip } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { CoinflipDto } from './dto/owo.dto.js';
+import { CoinflipDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class CoinflipCommand {
-  @Command({ name: 'coinflip', description: 'Bet pawcoins on a coin flip' })
+  @Command({
+    name: 'coinflip',
+    description: 'Bet pawcoins on a coin flip',
+    category: 'Economy',
+    toggleable: true,
+  })
   @Cooldown(3)
   async coinflip(
     @Context() ctx: ChatInputCommandInteraction,

@@ -73,6 +73,12 @@ function checkOptionField(where: string, key: string, f: OptionFieldMeta, errs: 
 function checkDto(where: string, leaf: CommandLeaf, errs: string[]): void {
   const Dto = leaf.options;
   if (!Dto) return;
+  if (Dto === Object) {
+    errs.push(
+      `${where}: @Options() DTO resolved to Object; a type-only import erased the class — import it as a value`,
+    );
+    return;
+  }
   const fields: Record<string, OptionFieldMeta> =
     Reflect.getMetadata(OPTION_FIELD_METADATA, Dto) ?? {};
   const entries = Object.entries(fields);

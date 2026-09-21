@@ -63,7 +63,7 @@ export class MusicHudCommand {
     );
   }
 
-  @Command({ name: 'nowplaying', description: 'Show current track' })
+  @Command({ name: 'nowplaying', description: 'Show current track', category: 'Music' })
   @Cooldown(5)
   async nowplaying(
     @Context() ctx: ChatInputCommandInteraction,
@@ -85,7 +85,7 @@ export class MusicHudCommand {
     await ctx.reply({ embeds: [embed], components: [this.controlRow(guild.id)] });
   }
 
-  @Command({ name: 'autoplay', description: 'Toggle autoplay' })
+  @Command({ name: 'autoplay', description: 'Toggle autoplay', category: 'Music' })
   @Cooldown(5)
   async autoplay(
     @Context() ctx: ChatInputCommandInteraction,
@@ -98,7 +98,7 @@ export class MusicHudCommand {
     await ctx.reply(`Autoplay: ${next ? 'on' : 'off'}.`);
   }
 
-  @Command({ name: 'loop', description: 'Loop track, queue, or off' })
+  @Command({ name: 'loop', description: 'Loop track, queue, or off', category: 'Music' })
   @Cooldown(5)
   async loop(
     @Context() ctx: ChatInputCommandInteraction,
@@ -110,7 +110,7 @@ export class MusicHudCommand {
     await ctx.reply(`Loop: ${mode}.`);
   }
 
-  @Command({ name: 'search', description: 'Search songs' })
+  @Command({ name: 'search', description: 'Search songs', category: 'Music' })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
   @SameVoice()
@@ -154,7 +154,7 @@ export class MusicHudCommand {
     await ctx.followUp({ content: done });
   }
 
-  @Command({ name: 'lyric', description: 'Get lyrics' })
+  @Command({ name: 'lyric', description: 'Get lyrics', category: 'Music' })
   @Cooldown(5)
   async lyric(
     @Context() ctx: ChatInputCommandInteraction,

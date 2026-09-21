@@ -21,7 +21,7 @@ import {
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { TradeDto } from './dto/community.dto.js';
+import { TradeDto } from './dto/community.dto.js';
 
 const ACCEPT_ID = /^owo:tr:a_/;
 const DECLINE_ID = /^owo:tr:d_/;
@@ -29,7 +29,12 @@ const DECLINE_ID = /^owo:tr:d_/;
 @Injectable()
 @PlayerGuarded()
 export class TradeCommand {
-  @Command({ name: 'trade', description: 'Offer an item to another user' })
+  @Command({
+    name: 'trade',
+    description: 'Offer an item to another user',
+    category: 'Economy',
+    toggleable: true,
+  })
   async trade(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TradeDto,

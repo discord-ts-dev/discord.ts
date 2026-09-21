@@ -9,12 +9,16 @@ import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { setZoo } from '../game/zoo.js';
-import type { ResetDto } from './dto/owo.dto.js';
+import { ResetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @RequireGuild()
 export class ResetCommand {
-  @Command({ name: 'reset', description: 'Wipe pawcoins or zoo for a user (manage server)' })
+  @Command({
+    name: 'reset',
+    description: 'Wipe pawcoins or zoo for a user (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async reset(
     @Context() ctx: ChatInputCommandInteraction,

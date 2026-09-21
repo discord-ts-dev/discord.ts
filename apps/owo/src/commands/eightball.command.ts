@@ -4,12 +4,17 @@ import { COLORS } from '../game/config.js';
 import { eightball } from '../game/social.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { EightballDto } from './dto/owo.dto.js';
+import { EightballDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class EightballCommand {
-  @Command({ name: 'eightball', description: 'Ask the magic 8 ball' })
+  @Command({
+    name: 'eightball',
+    description: 'Ask the magic 8 ball',
+    category: 'Social',
+    toggleable: true,
+  })
   async eightball(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: EightballDto,

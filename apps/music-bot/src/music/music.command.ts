@@ -41,7 +41,7 @@ export class MusicCommand {
     return this.player.queueOf(guild.id).tracks.length >= NON_PREMIUM_QUEUE_CAP;
   }
 
-  @Command({ name: 'join', description: 'Join your voice channel' })
+  @Command({ name: 'join', description: 'Join your voice channel', category: 'Music' })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
   @RequireVoice()
@@ -60,7 +60,7 @@ export class MusicCommand {
     );
   }
 
-  @Command({ name: 'leave', description: 'Leave voice channel' })
+  @Command({ name: 'leave', description: 'Leave voice channel', category: 'Music' })
   @Cooldown(5)
   async leave(
     @Context() ctx: ChatInputCommandInteraction,
@@ -70,7 +70,7 @@ export class MusicCommand {
     await ctx.reply('Left voice channel and cleared queue.');
   }
 
-  @Command({ name: 'play', description: 'Play a song or URL' })
+  @Command({ name: 'play', description: 'Play a song or URL', category: 'Music' })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
   @SameVoice()
@@ -95,7 +95,7 @@ export class MusicCommand {
     await ctx.reply({ embeds: [embed] });
   }
 
-  @Command({ name: 'playnext', description: 'Add a song to play next' })
+  @Command({ name: 'playnext', description: 'Add a song to play next', category: 'Music' })
   @Cooldown(5)
   @RequireBotPermissions(PermissionFlagsBits.Connect, PermissionFlagsBits.Speak)
   @SameVoice()
@@ -114,7 +114,7 @@ export class MusicCommand {
     await ctx.reply(`Will play next: ${trackLine(track!)}`);
   }
 
-  @Command({ name: 'pause', description: 'Pause playback' })
+  @Command({ name: 'pause', description: 'Pause playback', category: 'Music' })
   @Cooldown(5)
   @SameVoice()
   async pause(
@@ -125,7 +125,7 @@ export class MusicCommand {
     await ctx.reply('Paused.');
   }
 
-  @Command({ name: 'resume', description: 'Resume playback' })
+  @Command({ name: 'resume', description: 'Resume playback', category: 'Music' })
   @Cooldown(5)
   @SameVoice()
   async resume(
@@ -136,7 +136,7 @@ export class MusicCommand {
     await ctx.reply('Resumed.');
   }
 
-  @Command({ name: 'skip', description: 'Skip current track' })
+  @Command({ name: 'skip', description: 'Skip current track', category: 'Music' })
   @Cooldown(5)
   @SameVoice()
   async skip(
@@ -147,7 +147,7 @@ export class MusicCommand {
     await ctx.reply(next ? `Skipped. Now: ${trackLine(next)}` : 'Skipped. Queue empty.');
   }
 
-  @Command({ name: 'replay', description: 'Replay current track' })
+  @Command({ name: 'replay', description: 'Replay current track', category: 'Music' })
   @Cooldown(5)
   async replay(
     @Context() ctx: ChatInputCommandInteraction,
@@ -157,7 +157,7 @@ export class MusicCommand {
     await ctx.reply(current ? `Replaying: ${trackLine(current)}` : 'Nothing to replay.');
   }
 
-  @Command({ name: 'seek', description: 'Seek in current track' })
+  @Command({ name: 'seek', description: 'Seek in current track', category: 'Music' })
   @Cooldown(5)
   @SameVoice()
   async seek(
@@ -175,7 +175,7 @@ export class MusicCommand {
     await ctx.reply(current ? `Seek ${current.name} to ${formatTime(ms)}.` : 'Nothing playing.');
   }
 
-  @Command({ name: 'volume', description: 'Set volume 0-200' })
+  @Command({ name: 'volume', description: 'Set volume 0-200', category: 'Music' })
   @Cooldown(5)
   @SameVoice()
   async volume(
@@ -187,7 +187,7 @@ export class MusicCommand {
     await ctx.reply(`Volume: ${dto.level}.`);
   }
 
-  @Command({ name: 'queue', description: 'Show current queue' })
+  @Command({ name: 'queue', description: 'Show current queue', category: 'Music' })
   @Cooldown(5)
   async queue(
     @Context() ctx: ChatInputCommandInteraction,
@@ -210,7 +210,7 @@ export class MusicCommand {
     await paginate(ctx, pages);
   }
 
-  @Command({ name: 'clearqueue', description: 'Clear the queue' })
+  @Command({ name: 'clearqueue', description: 'Clear the queue', category: 'Music' })
   @Cooldown(5)
   async clearqueue(
     @Context() ctx: ChatInputCommandInteraction,
@@ -220,7 +220,7 @@ export class MusicCommand {
     await ctx.reply('Queue cleared.');
   }
 
-  @Command({ name: 'shuffle', description: 'Shuffle the queue' })
+  @Command({ name: 'shuffle', description: 'Shuffle the queue', category: 'Music' })
   @Cooldown(5)
   async shuffle(
     @Context() ctx: ChatInputCommandInteraction,
@@ -230,7 +230,7 @@ export class MusicCommand {
     await ctx.reply('Shuffled.');
   }
 
-  @Command({ name: 'remove', description: 'Remove a track by position' })
+  @Command({ name: 'remove', description: 'Remove a track by position', category: 'Music' })
   @Cooldown(5)
   async remove(
     @Context() ctx: ChatInputCommandInteraction,

@@ -5,12 +5,16 @@ import { MessageFlags, PermissionFlagsBits, type ChatInputCommandInteraction } f
 import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
-import type { GiveDto } from './dto/owo.dto.js';
+import { GiveDto } from './dto/owo.dto.js';
 
 @Injectable()
 @RequireGuild()
 export class GiveCommand {
-  @Command({ name: 'give', description: 'Grant pawcoins to a user (manage server)' })
+  @Command({
+    name: 'give',
+    description: 'Grant pawcoins to a user (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async give(@Context() ctx: ChatInputCommandInteraction, @Options() dto: GiveDto): Promise<void> {
     const target = userIdOf(dto.user);

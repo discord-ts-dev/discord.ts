@@ -6,12 +6,16 @@ import { replyEphemeral } from '@discord.ts/ux';
 import { isPaused, setPaused, warnUser, warningsOf } from '../game/warns.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
-import type { BotReplyDto, EchoDto, WarnDto } from './dto/community.dto.js';
+import { BotReplyDto, EchoDto, WarnDto } from './dto/community.dto.js';
 
 @Injectable()
 @RequireGuild()
 export class AdminCommand {
-  @Command({ name: 'echo', description: 'Make the bot say something (manage server)' })
+  @Command({
+    name: 'echo',
+    description: 'Make the bot say something (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async echo(@Context() ctx: ChatInputCommandInteraction, @Options() dto: EchoDto): Promise<void> {
     const channel = ctx.channel;
@@ -23,7 +27,11 @@ export class AdminCommand {
     await replyEphemeral(ctx, tt(ctx, 'game:admin.echo-sent'));
   }
 
-  @Command({ name: 'reply', description: 'Reply to a message as the bot (manage server)' })
+  @Command({
+    name: 'reply',
+    description: 'Reply to a message as the bot (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async reply(
     @Context() ctx: ChatInputCommandInteraction,
@@ -43,7 +51,7 @@ export class AdminCommand {
     }
   }
 
-  @Command({ name: 'warn', description: 'Warn a user (manage server)' })
+  @Command({ name: 'warn', description: 'Warn a user (manage server)', category: 'Admin' })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async warn(@Context() ctx: ChatInputCommandInteraction, @Options() dto: WarnDto): Promise<void> {
     const target = userIdOf(dto.user);
@@ -55,7 +63,11 @@ export class AdminCommand {
     );
   }
 
-  @Command({ name: 'warnings', description: 'Show warnings for a user (manage server)' })
+  @Command({
+    name: 'warnings',
+    description: 'Show warnings for a user (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async warnings(
     @Context() ctx: ChatInputCommandInteraction,
@@ -72,7 +84,11 @@ export class AdminCommand {
     );
   }
 
-  @Command({ name: 'pausebot', description: 'Pause or resume Paw for everyone (manage server)' })
+  @Command({
+    name: 'pausebot',
+    description: 'Pause or resume Paw for everyone (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async pausebot(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const next = !(await isPaused(store));

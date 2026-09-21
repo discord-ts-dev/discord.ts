@@ -4,12 +4,17 @@ import { COLORS } from '../game/config.js';
 import { evaluate } from '../game/math.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { MathDto } from './dto/owo.dto.js';
+import { MathDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class MathCommand {
-  @Command({ name: 'math', description: 'Evaluate a math expression' })
+  @Command({
+    name: 'math',
+    description: 'Evaluate a math expression',
+    category: 'Utility',
+    toggleable: true,
+  })
   async math(@Context() ctx: ChatInputCommandInteraction, @Options() dto: MathDto): Promise<void> {
     const result = evaluate(dto.expression);
     if (!result.ok) {

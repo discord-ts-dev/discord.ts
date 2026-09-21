@@ -29,7 +29,7 @@ import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { getZoo } from '../game/zoo.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { BattleDto } from './dto/battle.dto.js';
+import { BattleDto } from './dto/battle.dto.js';
 
 const MOVE_ID = /^owo:bt:(attack|defend|special)_/;
 
@@ -57,7 +57,12 @@ function bestAnimal(zoo: Record<string, number>): Animal | null {
 @Injectable()
 @PlayerGuarded()
 export class BattleCommand {
-  @Command({ name: 'battle', description: 'Battle another user with your strongest animal' })
+  @Command({
+    name: 'battle',
+    description: 'Battle another user with your strongest animal',
+    category: 'Battle',
+    toggleable: true,
+  })
   @Cooldown(10)
   async battle(
     @Context() ctx: ChatInputCommandInteraction,

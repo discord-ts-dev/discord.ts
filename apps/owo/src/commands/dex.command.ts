@@ -14,7 +14,12 @@ const PAGE_SIZE = 12;
 @Injectable()
 @PlayerGuarded()
 export class DexCommand {
-  @Command({ name: 'dex', description: 'Dex: every species, caught or not' })
+  @Command({
+    name: 'dex',
+    description: 'Dex: every species, caught or not',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   async dex(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const zoo = await getZoo(store, ctx.user.id);
     const sorted = [...ROSTER].sort(

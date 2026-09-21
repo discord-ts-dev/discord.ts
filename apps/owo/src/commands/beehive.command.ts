@@ -19,7 +19,9 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 
 const Beehive = createCommandGroupDecorator({
   name: 'beehive',
-  description: 'Passive honey: bees make honey while you are away',
+  description: 'Passive honey: bees make honey; view, buy, collect, sell',
+  category: 'Economy',
+  toggleable: true,
 });
 
 @Injectable()

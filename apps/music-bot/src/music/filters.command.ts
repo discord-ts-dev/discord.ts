@@ -11,7 +11,11 @@ import type { ChatInputCommandInteraction, Guild as DiscordGuild } from 'discord
 import { GuildPlayer } from './guild-player.js';
 import { describeLiveFilter } from './lavalink-filters.js';
 
-const Filters = createCommandGroupDecorator({ name: 'filters', description: 'Audio filters' });
+const Filters = createCommandGroupDecorator({
+  name: 'filters',
+  description: 'Audio filters',
+  category: 'Filters',
+});
 
 @Injectable()
 @Filters()

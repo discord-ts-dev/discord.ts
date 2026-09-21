@@ -7,7 +7,7 @@ import { levelFromXp } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { TopDto } from './dto/owo.dto.js';
+import { TopDto } from './dto/owo.dto.js';
 
 const LIMIT = 10;
 
@@ -16,7 +16,12 @@ const BOARDS = [XP_BOARD, WEALTH_BOARD, ZOO_BOARD] as const;
 @Injectable()
 @PlayerGuarded()
 export class TopCommand {
-  @Command({ name: 'top', description: 'Leaderboards: XP, wealth, or zoo size' })
+  @Command({
+    name: 'top',
+    description: 'Leaderboards: XP, wealth, or zoo size',
+    category: 'Economy',
+    toggleable: true,
+  })
   async top(@Context() ctx: ChatInputCommandInteraction, @Options() dto: TopDto): Promise<void> {
     const board = BOARDS.find((b) => b === (dto.board ?? XP_BOARD)) ?? XP_BOARD;
     const [rows, mine] = await Promise.all([

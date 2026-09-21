@@ -18,7 +18,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class UpgradeCommand {
-  @Command({ name: 'upgrade', description: 'Upgrade your hunting luck (better catch chance)' })
+  @Command({
+    name: 'upgrade',
+    description: 'Upgrade your hunting luck (better catch chance)',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   async upgrade(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const level = await upgradeLevel(store, ctx.user.id);
     if (level >= UPGRADE_MAX_LEVEL) {

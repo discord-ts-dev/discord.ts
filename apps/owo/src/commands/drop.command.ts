@@ -16,14 +16,19 @@ import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { BetDto } from './dto/owo.dto.js';
+import { BetDto } from './dto/owo.dto.js';
 
 const CLAIM_ID = /^owo:drop_/;
 
 @Injectable()
 @PlayerGuarded()
 export class DropCommand {
-  @Command({ name: 'drop', description: 'Drop pawcoins for anyone to grab' })
+  @Command({
+    name: 'drop',
+    description: 'Drop pawcoins for anyone to grab',
+    category: 'Economy',
+    toggleable: true,
+  })
   @Cooldown(10)
   async drop(@Context() ctx: ChatInputCommandInteraction, @Options() dto: BetDto): Promise<void> {
     const amount = await readBet(ctx, dto.amount);

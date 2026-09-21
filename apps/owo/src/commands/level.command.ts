@@ -8,12 +8,17 @@ import { xpToNext } from '../game/rng.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { UserTargetDto } from './dto/owo.dto.js';
+import { UserTargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class LevelCommand {
-  @Command({ name: 'level', description: 'Show XP, level, and progress' })
+  @Command({
+    name: 'level',
+    description: 'Show XP, level, and progress',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   async level(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: UserTargetDto,

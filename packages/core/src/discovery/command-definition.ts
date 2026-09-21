@@ -8,6 +8,7 @@ import {
   type CommandMeta,
   type SubcommandMeta,
 } from '@discord.ts/common';
+import type { LocalizationMap } from 'discord.js';
 import { explicitPair } from './discord-localize.js';
 import type { Handler, LocalizationPair } from './handler.types.js';
 
@@ -33,6 +34,16 @@ export interface CommandGroupDefinition {
   subcommands: CommandLeaf[];
 }
 
+/** Registry digest of one top-level command for help rendering and enable/disable feeds. */
+export interface HelpEntry {
+  name: string;
+  description: string;
+  category?: string;
+  /** Explicit metadata merged with the i18n catalog. */
+  descriptionLocalizations?: LocalizationMap;
+  toggleable: boolean;
+}
+
 /**
  * One top-level slash command. `plain`, `subcommands`, and `groups` are
  * mutually exclusive once valid; the builder records structural conflicts in
@@ -43,10 +54,16 @@ export interface CommandDefinition {
   description: string;
   localizations?: LocalizationPair;
   flags: CommandFlags;
+  /** Help grouping label from top-level metadata. */
+  category?: string;
+  /** Guilds may switch this command off, whole. From top-level metadata. */
+  toggleable?: boolean;
   plain?: CommandLeaf;
   subcommands: CommandLeaf[];
   groups: CommandGroupDefinition[];
   issues: string[];
+  /** Non-fatal findings from the builder, logged at boot. */
+  warnings?: string[];
 }
 
 function who(h: Handler): string {
@@ -83,12 +100,20 @@ function optionsDto(h: Handler): (new () => object) | undefined {
   return types[idxs[0]] as new () => object;
 }
 
+function strayHelpFields(meta: object): boolean {
+  const m = meta as { category?: unknown; toggleable?: unknown };
+  return m.category !== undefined || m.toggleable !== undefined;
+}
+
 interface Draft {
   top: string;
   topDescription: string;
   topLocalizations?: LocalizationPair;
+  topCategory?: string;
+  topToggleable?: boolean;
   flags: CommandFlags;
   leaf: CommandLeaf;
+  warnings?: string[];
 }
 
 function draftsOf(instances: object[]): Draft[] {
@@ -116,13 +141,27 @@ function draftsOf(instances: object[]): Draft[] {
           top: cmd.name,
           topDescription: cmd.description,
           topLocalizations: explicitPair(cmd),
+          topCategory: cmd.category,
+          topToggleable: cmd.toggleable,
           flags: commandFlags(cmd),
           leaf: { ...base, description: cmd.description, options },
         });
       } else if (sub && (group ?? methodGroup)) {
+        const warns: string[] = [];
+        if (group && (methodGroup?.category !== undefined || methodGroup?.toggleable !== undefined))
+          warns.push(
+            `${who(base)}: /${group.name} ${methodGroup?.name} sets category/toggleable on a sub-group; only the top level applies`,
+          );
+        if (strayHelpFields(sub))
+          warns.push(
+            `${who(base)}: /${group?.name ?? cmd?.name ?? methodGroup?.name ?? sub.name} ${sub.name} sets category/toggleable on a subcommand; only the top level applies`,
+          );
         drafts.push({
           top: group?.name ?? cmd?.name ?? methodGroup?.name ?? sub.name,
           topDescription: group?.description ?? cmd?.description ?? sub.description,
+          topCategory: (group ?? cmd ?? methodGroup)?.category,
+          topToggleable: (group ?? cmd ?? methodGroup)?.toggleable,
+          warnings: warns.length ? warns : undefined,
           topLocalizations: group
             ? explicitPair(group)
             : cmd
@@ -156,6 +195,13 @@ function draftsOf(instances: object[]): Draft[] {
           top: cmd.name,
           topDescription: cmd.description,
           topLocalizations: explicitPair(cmd),
+          topCategory: cmd.category,
+          topToggleable: cmd.toggleable,
+          warnings: strayHelpFields(sub)
+            ? [
+                `${who(base)}: /${cmd.name} ${sub.name} sets category/toggleable on a subcommand; only the top level applies`,
+              ]
+            : undefined,
           flags: commandFlags(cmd),
           leaf: {
             ...base,
@@ -180,14 +226,18 @@ export function buildCommandDefinitions(instances: object[]): CommandDefinition[
   const definitions: CommandDefinition[] = [];
   for (const [name, drafts] of byTop) {
     const first = drafts[0] as Draft;
+    const warnings = drafts.flatMap((d) => d.warnings ?? []);
     const def: CommandDefinition = {
       name,
       description: first.topDescription,
       localizations: first.topLocalizations,
       flags: first.flags,
+      category: first.topCategory,
+      toggleable: first.topToggleable,
       subcommands: [],
       groups: [],
       issues: [],
+      ...(warnings.length ? { warnings } : {}),
     };
     const plains: CommandLeaf[] = [];
     const seen = new Map<string, string>();
@@ -229,33 +279,7 @@ export function buildCommandDefinitions(instances: object[]): CommandDefinition[
   return definitions;
 }
 
-export function commandLeaves(def: CommandDefinition): CommandLeaf[] {
-  return [
-    ...(def.plain ? [def.plain] : []),
-    ...def.subcommands,
-    ...def.groups.flatMap((g) => g.subcommands),
-  ];
-}
-
-/**
- * Resolve the leaf a Discord call addresses. Grouped subs win; then a direct
- * subcommand with the same name answers when no group was sent; then the plain
- * handler.
- */
-export function matchCommandLeaf(
-  def: CommandDefinition,
-  group: string | null,
-  sub: string | null,
-): CommandLeaf | null {
-  if (!sub) return def.plain ?? null;
-  if (group) {
-    const grouped = def.groups
-      .find((g) => g.name === group)
-      ?.subcommands.find((l) => l.sub === sub);
-    if (grouped) return grouped;
-  }
-  return def.subcommands.find((l) => l.sub === sub) ?? null;
-}
+export { commandLeaves, matchCommandLeaf } from './command-leaves.js';
 
 /** Slash JSON for one definition. Re-exported; rendering lives in command-render.ts. */
 export { renderCommandDefinition } from './command-render.js';

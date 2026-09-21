@@ -7,6 +7,7 @@ import {
   Autocomplete,
   BUTTON_METADATA,
   Button,
+  COMMAND_GROUP_METADATA,
   COMMAND_METADATA,
   CONTEXT_MENU_METADATA,
   ChannelSelect,
@@ -31,6 +32,7 @@ import {
   SELECT_METADATA,
   StringSelect,
   UserSelect,
+  createCommandGroupDecorator,
 } from '../src/index.js';
 
 type Loose = (target: object, key?: string | symbol, descriptor?: PropertyDescriptor) => unknown;
@@ -52,6 +54,35 @@ describe('Command', () => {
     const meta = { name: 'ping', description: 'Reply with pong' };
     loose(Command(meta))(Probe.prototype, 'run', descriptor());
     assert.deepEqual(metaOf(COMMAND_METADATA), meta);
+  });
+
+  test('carries help fields through untouched', () => {
+    const meta = {
+      name: 'hunt',
+      description: 'Catch animals',
+      category: 'Gameplay',
+      toggleable: true,
+    };
+    loose(Command(meta))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(COMMAND_METADATA), meta);
+  });
+});
+
+describe('command group decorators', () => {
+  test('base help fields survive an override merge', () => {
+    const Shop = createCommandGroupDecorator({
+      name: 'shop',
+      description: 'Paw shop',
+      category: 'Economy',
+      toggleable: true,
+    });
+    loose(Shop({ description: 'Shop and bag' }))(Probe.prototype, 'run', descriptor());
+    assert.deepEqual(metaOf(COMMAND_GROUP_METADATA), {
+      name: 'shop',
+      description: 'Shop and bag',
+      category: 'Economy',
+      toggleable: true,
+    });
   });
 });
 

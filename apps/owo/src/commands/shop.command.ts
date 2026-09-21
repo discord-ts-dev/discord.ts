@@ -15,9 +15,14 @@ import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { addAnimal } from '../game/zoo.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { ShopItemDto } from './dto/owo.dto.js';
+import { ShopItemDto } from './dto/owo.dto.js';
 
-const Shop = createCommandGroupDecorator({ name: 'shop', description: 'Paw shop and bag' });
+const Shop = createCommandGroupDecorator({
+  name: 'shop',
+  description: 'Paw shop and bag: list, buy, use, inventory',
+  category: 'Economy',
+  toggleable: true,
+});
 
 @Injectable()
 @PlayerGuarded()

@@ -55,4 +55,47 @@ async handle() {}
 
 DMs and un-decorated handlers pass; subcommands toggle by group name. The default deny is the hardcoded English line above; apps override it with i18n.
 
+## Registry-driven help
+
+Skip the hand-maintained command list: `DiscordDiscoveryService.helpEntries()` returns the
+registry's `HelpEntry` feed (`{ name, description, category?, descriptionLocalizations?, toggleable }`),
+and systems renders it without importing core.
+
+```ts
+import { DISCORD_DISCOVERY, Inject } from '@discord.ts/common';
+import type { DiscordDiscoveryService } from '@discord.ts/core';
+import { buildHelpFromRegistry } from '@discord.ts/systems';
+
+class HelpCommand {
+  constructor(@Inject(DISCORD_DISCOVERY) private readonly discovery: DiscordDiscoveryService) {}
+
+  async help(locale: string) {
+    const sections = buildHelpFromRegistry(this.discovery.helpEntries(), { locale });
+    // sections: [{ category, commands: [{ name, description }] }], General last
+  }
+}
+```
+
+One entry per top-level command; a group counts once, by group name. A description in
+`descriptionLocalizations` (explicit or catalog) wins for its locale, else the base description.
+
+`toggleableNames(entries)` lists the commands declared `toggleable` — the feed for
+enable/disable pickers. Discord caps static option choices at 25, so drive the picker with
+autocomplete instead of `choices`:
+
+```ts
+import { toggleableNames } from '@discord.ts/systems';
+
+@Autocomplete('disable')
+async disableChoices(@Context() ix: AutocompleteInteraction): Promise<void> {
+  const focused = ix.options.getFocused().toLowerCase();
+  const names = toggleableNames(this.discovery.helpEntries())
+    .filter((name) => name.includes(focused))
+    .slice(0, 25);
+  await ix.respond(names.map((name) => ({ name: `/${name}`, value: name })));
+}
+```
+
+Pair with `setCommandEnabled()` above and `EnabledGuard` enforcement. See `apps/owo` for the whole flow.
+
 Other per-guild values (verification role, announcement channel, rules) use `guild:<id>:<name>` keys — see the [guild config recipe](/docs/recipes/guild-config).

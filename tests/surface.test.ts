@@ -9,11 +9,11 @@ import * as utils from '@discord.ts/utils';
 import * as ux from '@discord.ts/ux';
 
 const surfaces = {
-  common: [common, ['Command', 'DiscordLogger']],
+  common: [common, ['Command', 'DiscordLogger', 'DISCORD_DISCOVERY']],
   core: [core, ['DiscordModule', 'bootstrapApp', 'Cooldown']],
   i18n: [i18n, ['t', 'initI18n', 'resolveLocale', 'lookup']],
   redis: [redis, ['RedisStore', 'REDIS', 'redisProviders']],
-  systems: [systems, ['MemoryStore', 'claimDaily', 'awardVote']],
+  systems: [systems, ['MemoryStore', 'claimDaily', 'awardVote', 'buildHelpFromRegistry', 'toggleableNames']],
   utils: [utils, ['parseMentionId', 'parseAmount', 'containsBlocked']],
   ux: [ux, ['confirm', 'paginate', 'pickOne', 'errorEmbed']],
 } as const;

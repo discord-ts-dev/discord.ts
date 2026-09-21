@@ -16,11 +16,13 @@ import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { premiumTierOf, shopPrice } from '../game/premium.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { WeaponChoiceDto } from './dto/battle.dto.js';
+import { WeaponChoiceDto } from './dto/battle.dto.js';
 
 const Weapons = createCommandGroupDecorator({
   name: 'weapons',
   description: 'Buy, equip, and inspect battle weapons',
+  category: 'Battle',
+  toggleable: true,
 });
 
 @Injectable()

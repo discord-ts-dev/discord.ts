@@ -11,7 +11,7 @@ import { captchaRoleOf, setCaptchaRole } from '../game/captcha.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { CaptchaRoleDto } from './dto/community.dto.js';
+import { CaptchaRoleDto } from './dto/community.dto.js';
 
 const VERIFY_ID = /^owo:verify_/;
 
@@ -19,7 +19,11 @@ const VERIFY_ID = /^owo:verify_/;
 @PlayerGuarded()
 @RequireGuild()
 export class CaptchaCommand {
-  @Command({ name: 'captcha', description: 'Set the verification role (manage server)' })
+  @Command({
+    name: 'captcha',
+    description: 'Set the verification role (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async captcha(
     @Context() ctx: ChatInputCommandInteraction,

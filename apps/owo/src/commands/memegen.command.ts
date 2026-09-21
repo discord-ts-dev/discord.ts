@@ -10,9 +10,14 @@ import { replyEphemeral } from '@discord.ts/ux';
 import { renderMeme } from '../game/meme.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { MemeOneDto, MemeTwoDto } from './dto/memegen.dto.js';
+import { MemeOneDto, MemeTwoDto } from './dto/memegen.dto.js';
 
-const Memegen = createCommandGroupDecorator({ name: 'memegen', description: 'Draw a quick meme' });
+const Memegen = createCommandGroupDecorator({
+  name: 'memegen',
+  description: 'Draw a quick meme: caption, drake, distracted, more',
+  category: 'Utility',
+  toggleable: true,
+});
 
 @Injectable()
 @PlayerGuarded()

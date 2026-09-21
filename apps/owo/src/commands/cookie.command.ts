@@ -5,12 +5,17 @@ import { cookieKey } from '../game/social.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { TargetDto } from './dto/owo.dto.js';
+import { TargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class CookieCommand {
-  @Command({ name: 'cookie', description: 'Give a cookie to someone' })
+  @Command({
+    name: 'cookie',
+    description: 'Give a cookie to someone',
+    category: 'Social',
+    toggleable: true,
+  })
   async cookie(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TargetDto,

@@ -12,12 +12,16 @@ import { animalById, RARITIES } from '../game/roster.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { addAnimal } from '../game/zoo.js';
-import type { GiveAnimalDto } from './dto/owo.dto.js';
+import { GiveAnimalDto } from './dto/owo.dto.js';
 
 @Injectable()
 @RequireGuild()
 export class GiveAnimalCommand {
-  @Command({ name: 'giveanimal', description: 'Grant zoo animals to a user (manage server)' })
+  @Command({
+    name: 'giveanimal',
+    description: 'Grant zoo animals to a user (manage server)',
+    category: 'Admin',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async giveanimal(
     @Context() ctx: ChatInputCommandInteraction,

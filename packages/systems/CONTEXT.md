@@ -37,4 +37,5 @@ Ubiquitous language. Glossary only. No implementation.
   DMs and undecorated handlers pass; subcommands toggle by group name.
 - **Vote reward**: currency awarded for a bot-list vote webhook. Awarded via
   `awardVote()`; the payload parse is a pure helper in `utils`.
-- **Help entries**: grouped command metadata. Built via `buildHelp()`.
+- **Help commands**: the display shape `{ name, description, category? }` that `buildHelp()` groups into **help sections** (sorted, `General` last). Distinct from core's _Help entry_: a registry digest before locale resolution; Help commands are rendered, single-locale text.
+- **Registry help feed**: core-shaped entries (`name`, `description`, `category?`, `descriptionLocalizations?`, `toggleable`) consumed structurally — systems never imports core. `buildHelpFromRegistry()` resolves one locale's descriptions into Help commands; `toggleableNames()` lists the toggleable ones.

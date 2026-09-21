@@ -53,7 +53,7 @@ A ticket pot. Tickets cost pawcoins, one weighted winner takes the pot on each d
 _Avoid_: raffle, giveaway
 
 **Toggle**:
-A guild-level `enable`/`disable` for one command. Enforced by systems `EnabledGuard` through `PlayerGuarded`.
+A guild-level `enable`/`disable` for one top-level command, offered only for commands declared Toggleable; a group toggles whole, by group name. Enforced by systems `EnabledGuard` through `PlayerGuarded`.
 _Avoid_: switch, flag
 
 **Owoify**:

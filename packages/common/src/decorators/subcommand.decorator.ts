@@ -7,6 +7,10 @@ export interface CommandGroupMeta {
   description: string;
   nameLocalizations?: LocalizationMap;
   descriptionLocalizations?: LocalizationMap;
+  /** Free-form help grouping label. Top-level only; raw string, never localized. */
+  category?: string;
+  /** Guilds may switch this group off, whole. Informational; drives enable/disable choice feeds. */
+  toggleable?: boolean;
 }
 
 export interface SubcommandMeta {

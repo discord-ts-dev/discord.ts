@@ -14,9 +14,10 @@ import {
   commandLeaves,
   renderCommandDefinition,
   type CommandDefinition,
+  type HelpEntry,
 } from './command-definition.js';
 import { DiscordSyncService } from './discord-sync.service.js';
-import { unknownLocales } from './discord-localize.js';
+import { localizedPair, unknownLocales } from './discord-localize.js';
 import { validateDiscoveryState } from './discord-validate.js';
 import type {
   AutocompleteEntry,
@@ -54,6 +55,8 @@ export class DiscordDiscoveryService {
   init(instances: object[]): void {
     this.commands.push(...buildCommandDefinitions(instances));
     this.scan(instances);
+    for (const def of this.commands)
+      for (const warning of def.warnings ?? []) this.logger.warn(warning);
     validateDiscoveryState(this);
     const unknown = unknownLocales();
     if (unknown.length)
@@ -83,6 +86,18 @@ export class DiscordDiscoveryService {
       out.push(mb.toJSON());
     }
     return out;
+  }
+
+  /** Help feed: one entry per top-level command, in registry order; a group counts once, by group name. */
+  helpEntries(): HelpEntry[] {
+    return this.commands.map((def) => ({
+      name: def.name,
+      description: def.description,
+      category: def.category,
+      descriptionLocalizations: localizedPair(`commands:${def.name}`, def.localizations)
+        ?.description,
+      toggleable: def.toggleable ?? false,
+    }));
   }
 
   // ponytail: Nest RoutesResolver style, one line per route plus summary

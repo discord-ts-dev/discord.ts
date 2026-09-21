@@ -21,7 +21,12 @@ class EmoteDto {
 @Injectable()
 @PlayerGuarded()
 export class EmoteCommand {
-  @Command({ name: 'emote', description: 'Hug, pat, poke, or slap someone' })
+  @Command({
+    name: 'emote',
+    description: 'Hug, pat, poke, or slap someone',
+    category: 'Social',
+    toggleable: true,
+  })
   async emote(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: EmoteDto,

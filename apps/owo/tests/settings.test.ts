@@ -8,6 +8,7 @@ import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/co
 import { DiscordExecutionContext } from '@discord.ts/core';
 import { EnabledGuard, setCommandEnabled } from '@discord.ts/systems';
 import { FileStore } from '../src/game/store.js';
+import { SettingsCommand } from '../src/commands/settings.command.js';
 
 initI18n({ defaultLocale: 'en', languages: ['en'] }, join(import.meta.dir, '..'));
 
@@ -79,5 +80,53 @@ describe('EnabledGuard', () => {
       ShopGroup,
     );
     expect(await guard.canActivate(context)).toBe(false);
+  });
+});
+
+describe('registry-driven enable', () => {
+  const entries = [
+    { name: 'hunt', description: 'Catch animals', category: 'Gameplay', toggleable: true },
+    { name: 'zoo', description: 'Your zoo', category: 'Gameplay', toggleable: true },
+    { name: 'ban', description: 'Ban a user', category: 'Admin', toggleable: false },
+  ];
+  const discovery = { helpEntries: () => entries };
+
+  test('autocomplete answers with filtered toggleable names, slash-labelled', async () => {
+    let responded: { name: string; value: string }[] = [];
+    const ix = {
+      options: { getFocused: () => 'HU' },
+      respond: async (choices: { name: string; value: string }[]) => {
+        responded = choices;
+      },
+    };
+    const cmd = new SettingsCommand(discovery as never);
+    await cmd.enableChoices(ix as never);
+    expect(responded).toEqual([{ name: '/hunt', value: 'hunt' }]);
+  });
+
+  test('disable autocomplete answers the whole toggleable set when nothing is typed', async () => {
+    let responded: { name: string; value: string }[] = [];
+    const ix = {
+      options: { getFocused: () => '' },
+      respond: async (choices: { name: string; value: string }[]) => {
+        responded = choices;
+      },
+    };
+    const cmd = new SettingsCommand(discovery as never);
+    await cmd.disableChoices(ix as never);
+    expect(responded.map((c) => c.value)).toEqual(['hunt', 'zoo']);
+  });
+
+  test('disable rejects a non-toggleable command without touching settings', async () => {
+    const cmd = new SettingsCommand(discovery as never);
+    let content = '';
+    const ctx = {
+      guild: { id: 'guild-unused' },
+      reply: async (body: { content: string }) => {
+        content = body.content;
+      },
+    };
+    await cmd.disable(ctx as never, { command: 'ban' });
+    expect(content).toContain('/ban');
   });
 });

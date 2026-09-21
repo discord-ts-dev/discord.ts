@@ -8,7 +8,12 @@ import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
 
-const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily quests' });
+const Quest = createCommandGroupDecorator({
+  name: 'quest',
+  description: 'Daily quests: view, reroll, claim',
+  category: 'Gameplay',
+  toggleable: true,
+});
 
 @Injectable()
 @PlayerGuarded()

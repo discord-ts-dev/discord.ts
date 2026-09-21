@@ -8,7 +8,7 @@ import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { getZoo, zooTotals } from '../game/zoo.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { UserTargetDto } from './dto/owo.dto.js';
+import { UserTargetDto } from './dto/owo.dto.js';
 
 const RARITY_ORDER: Rarity[] = ['common', 'uncommon', 'rare', 'legendary'];
 const PAGE_SIZE = 15;
@@ -16,7 +16,12 @@ const PAGE_SIZE = 15;
 @Injectable()
 @PlayerGuarded()
 export class ZooCommand {
-  @Command({ name: 'zoo', description: 'Show a zoo: every animal a user has caught' })
+  @Command({
+    name: 'zoo',
+    description: 'Show a zoo: every animal a user has caught',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   async zoo(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: UserTargetDto,

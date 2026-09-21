@@ -12,12 +12,7 @@ import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { knownUsers } from '../game/users.js';
-import type {
-  AnnounceChannelDto,
-  AnnounceDto,
-  DmUsersDto,
-  GiveAllDto,
-} from './dto/community.dto.js';
+import { AnnounceChannelDto, AnnounceDto, DmUsersDto, GiveAllDto } from './dto/community.dto.js';
 
 // ponytail: broadcast caps. Discord rate limits do the rest; raise when the
 // user index moves to SQL and a real queue exists.
@@ -30,6 +25,7 @@ export class BroadcastCommand {
   @Command({
     name: 'setannouncement',
     description: 'Pick this server announcement channel (manage server)',
+    category: 'Admin',
   })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async setannouncement(
@@ -43,6 +39,7 @@ export class BroadcastCommand {
   @Command({
     name: 'announcement',
     description: 'Post to every server announcement channel (bot owner)',
+    category: 'Admin',
   })
   @RequireOwner()
   async announcement(
@@ -70,7 +67,11 @@ export class BroadcastCommand {
     );
   }
 
-  @Command({ name: 'giveall', description: 'Grant pawcoins to every known user (bot owner)' })
+  @Command({
+    name: 'giveall',
+    description: 'Grant pawcoins to every known user (bot owner)',
+    category: 'Admin',
+  })
   @RequireOwner()
   async giveall(
     @Context() ctx: ChatInputCommandInteraction,
@@ -84,7 +85,7 @@ export class BroadcastCommand {
     );
   }
 
-  @Command({ name: 'msgusers', description: 'DM every known user (bot owner)' })
+  @Command({ name: 'msgusers', description: 'DM every known user (bot owner)', category: 'Admin' })
   @RequireOwner()
   async msgusers(
     @Context() ctx: ChatInputCommandInteraction,

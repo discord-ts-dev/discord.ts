@@ -16,7 +16,7 @@ import { enterGiveaway, startGiveaway } from '../game/giveaway.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { GiveawayDto } from './dto/community.dto.js';
+import { GiveawayDto } from './dto/community.dto.js';
 
 const ENTER_ID = /^owo:gv:e_/;
 
@@ -24,7 +24,7 @@ const ENTER_ID = /^owo:gv:e_/;
 @PlayerGuarded()
 @RequireGuild()
 export class GiveawayCommand {
-  @Command({ name: 'giveaway', description: 'Start a giveaway (manage server)' })
+  @Command({ name: 'giveaway', description: 'Start a giveaway (manage server)', category: 'Admin' })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async giveaway(
     @Context() ctx: ChatInputCommandInteraction,
