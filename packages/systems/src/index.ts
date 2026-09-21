@@ -14,5 +14,5 @@ export type { GuildSettings } from './guild-settings.js';
 export { EnabledGuard } from './enabled-guard.js';
 export type { EnabledDeny, EnabledGuardOptions } from './enabled-guard.js';
 export { awardVote } from './vote.js';
-export { buildHelp } from './help.js';
-export type { HelpCommand, HelpSection } from './help.js';
+export { buildHelp, buildHelpFromRegistry, toggleableNames } from './help.js';
+export type { HelpCommand, HelpSection, RegistryHelpEntry } from './help.js';

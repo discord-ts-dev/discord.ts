@@ -7,7 +7,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class InviteCommand {
-  @Command({ name: 'invite', description: 'Get the invite link for Paw' })
+  @Command({
+    name: 'invite',
+    description: 'Get the invite link for Paw',
+    category: 'Utility',
+    toggleable: true,
+  })
   async invite(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const id = ctx.client.application?.id;
     const url = id

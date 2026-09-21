@@ -16,7 +16,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class HuntCommand {
-  @Command({ name: 'hunt', description: 'Catch a wild animal for your zoo' })
+  @Command({
+    name: 'hunt',
+    description: 'Catch a wild animal for your zoo',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   @Cooldown(GAME.huntCooldownSeconds)
   async hunt(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const level = await upgradeLevel(store, ctx.user.id);

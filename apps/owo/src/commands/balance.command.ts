@@ -6,12 +6,17 @@ import { COLORS } from '../game/config.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { UserTargetDto } from './dto/owo.dto.js';
+import { UserTargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class BalanceCommand {
-  @Command({ name: 'balance', description: 'Show pawcoin balance' })
+  @Command({
+    name: 'balance',
+    description: 'Show pawcoin balance',
+    category: 'Economy',
+    toggleable: true,
+  })
   async balance(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: UserTargetDto,

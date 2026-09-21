@@ -13,7 +13,12 @@ class WordDto {
 @Injectable()
 @PlayerGuarded()
 export class DefineCommand {
-  @Command({ name: 'define', description: 'Look up a word in the dictionary' })
+  @Command({
+    name: 'define',
+    description: 'Look up a word in the dictionary',
+    category: 'Utility',
+    toggleable: true,
+  })
   async define(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: WordDto,

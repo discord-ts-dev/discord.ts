@@ -12,12 +12,12 @@ import { banOf, banUser, bans, unbanUser } from '../game/bans.js';
 import { COLORS } from '../game/config.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
-import type { BanDto, TargetDto, UserTargetDto } from './dto/owo.dto.js';
+import { BanDto, TargetDto, UserTargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @RequireGuild()
 export class BanCommand {
-  @Command({ name: 'ban', description: 'Ban a user from Paw (manage server)' })
+  @Command({ name: 'ban', description: 'Ban a user from Paw (manage server)', category: 'Admin' })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async ban(@Context() ctx: ChatInputCommandInteraction, @Options() dto: BanDto): Promise<void> {
     const target = userIdOf(dto.user);
@@ -27,7 +27,7 @@ export class BanCommand {
     await replyEphemeral(ctx, tt(ctx, 'game:ban.done', { user: target, reason }));
   }
 
-  @Command({ name: 'unban', description: 'Lift a Paw ban (manage server)' })
+  @Command({ name: 'unban', description: 'Lift a Paw ban (manage server)', category: 'Admin' })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async unban(
     @Context() ctx: ChatInputCommandInteraction,
@@ -44,7 +44,7 @@ export class BanCommand {
     );
   }
 
-  @Command({ name: 'banstatus', description: 'Show Paw bans (manage server)' })
+  @Command({ name: 'banstatus', description: 'Show Paw bans (manage server)', category: 'Admin' })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async banstatus(
     @Context() ctx: ChatInputCommandInteraction,

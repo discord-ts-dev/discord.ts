@@ -3,12 +3,17 @@ import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { TextOptionDto } from './dto/community.dto.js';
+import { TextOptionDto } from './dto/community.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class SuggestCommand {
-  @Command({ name: 'suggest', description: 'Post a suggestion with vote reactions' })
+  @Command({
+    name: 'suggest',
+    description: 'Post a suggestion with vote reactions',
+    category: 'Utility',
+    toggleable: true,
+  })
   async suggest(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TextOptionDto,

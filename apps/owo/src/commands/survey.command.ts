@@ -14,14 +14,19 @@ import { startSurvey, voteSurvey, type SurveyState } from '../game/community.js'
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { SurveyDto } from './dto/community.dto.js';
+import { SurveyDto } from './dto/community.dto.js';
 
 const VOTE_ID = /^owo:sv:(\d+)_(.+)$/;
 
 @Injectable()
 @PlayerGuarded()
 export class SurveyCommand {
-  @Command({ name: 'survey', description: 'Start a quick button poll' })
+  @Command({
+    name: 'survey',
+    description: 'Start a quick button poll',
+    category: 'Utility',
+    toggleable: true,
+  })
   async survey(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: SurveyDto,

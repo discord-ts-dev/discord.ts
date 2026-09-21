@@ -9,12 +9,17 @@ import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { getZoo, zooTotals } from '../game/zoo.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { UserTargetDto } from './dto/owo.dto.js';
+import { UserTargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class ProfileCommand {
-  @Command({ name: 'profile', description: 'Show pawcoins, level, and zoo summary' })
+  @Command({
+    name: 'profile',
+    description: 'Show pawcoins, level, and zoo summary',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   async profile(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: UserTargetDto,

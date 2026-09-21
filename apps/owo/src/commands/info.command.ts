@@ -9,7 +9,7 @@ import { tt } from '../game/text.js';
 @Injectable()
 @RequireGuild()
 export class InfoCommand {
-  @Command({ name: 'stats', description: 'Show Paw stats' })
+  @Command({ name: 'stats', description: 'Show Paw stats', category: 'Utility' })
   async stats(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const memory = process.memoryUsage().heapUsed / (1024 * 1024);
     const embed = new EmbedBuilder()
@@ -37,7 +37,7 @@ export class InfoCommand {
     await ctx.reply({ embeds: [embed] });
   }
 
-  @Command({ name: 'shard', description: 'Show shard status' })
+  @Command({ name: 'shard', description: 'Show shard status', category: 'Utility' })
   async shard(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const shard = ctx.client.shard;
     const text = shard
@@ -49,7 +49,11 @@ export class InfoCommand {
     await ctx.reply(text);
   }
 
-  @Command({ name: 'guildlink', description: 'Create an invite for this server (manage server)' })
+  @Command({
+    name: 'guildlink',
+    description: 'Create an invite for this server (manage server)',
+    category: 'Utility',
+  })
   @RequirePermissions(PermissionFlagsBits.ManageGuild)
   async guildlink(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const channel = ctx.channel;

@@ -18,11 +18,13 @@ import {
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { ChecklistAddDto, ChecklistIdDto } from './dto/community.dto.js';
+import { ChecklistAddDto, ChecklistIdDto } from './dto/community.dto.js';
 
 const Checklist = createCommandGroupDecorator({
   name: 'checklist',
-  description: 'Your personal checklist',
+  description: 'Your personal checklist: add, done, remove, list',
+  category: 'Utility',
+  toggleable: true,
 });
 
 @Injectable()

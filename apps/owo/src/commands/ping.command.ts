@@ -6,7 +6,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class PingCommand {
-  @Command({ name: 'ping', description: 'Check the bot round trip' })
+  @Command({
+    name: 'ping',
+    description: 'Check the bot round trip',
+    category: 'Utility',
+    toggleable: true,
+  })
   async ping(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const sent = await ctx.reply({ content: tt(ctx, 'game:ping.pinging'), fetchReply: true });
     const roundTrip = sent.createdTimestamp - ctx.createdTimestamp;

@@ -7,12 +7,17 @@ import { accept, decline, divorce, propose, relation } from '../game/relations.j
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { TargetDto } from './dto/owo.dto.js';
+import { TargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class MarriageCommand {
-  @Command({ name: 'marry', description: 'Propose to someone' })
+  @Command({
+    name: 'marry',
+    description: 'Propose to someone',
+    category: 'Social',
+    toggleable: true,
+  })
   async marry(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TargetDto,
@@ -27,7 +32,12 @@ export class MarriageCommand {
     await ctx.reply(tt(ctx, 'game:marry.proposed', { user: `<@${target}>` }));
   }
 
-  @Command({ name: 'accept', description: 'Accept a marriage proposal' })
+  @Command({
+    name: 'accept',
+    description: 'Accept a marriage proposal',
+    category: 'Social',
+    toggleable: true,
+  })
   async accept(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TargetDto,
@@ -42,7 +52,12 @@ export class MarriageCommand {
     await ctx.reply(tt(ctx, 'game:marry.wed', { a: `<@${ctx.user.id}>`, b: `<@${from}>` }));
   }
 
-  @Command({ name: 'decline', description: 'Decline a marriage proposal' })
+  @Command({
+    name: 'decline',
+    description: 'Decline a marriage proposal',
+    category: 'Social',
+    toggleable: true,
+  })
   async decline(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TargetDto,
@@ -57,7 +72,12 @@ export class MarriageCommand {
     await ctx.reply(tt(ctx, 'game:marry.declined', { user: `<@${from}>` }));
   }
 
-  @Command({ name: 'divorce', description: 'End your marriage' })
+  @Command({
+    name: 'divorce',
+    description: 'End your marriage',
+    category: 'Social',
+    toggleable: true,
+  })
   async divorce(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const current = await relation(store, ctx.user.id);
     if (!current.spouse) {

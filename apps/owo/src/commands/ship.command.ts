@@ -5,12 +5,17 @@ import { COLORS } from '../game/config.js';
 import { shipPercent } from '../game/social.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { ShipDto } from './dto/owo.dto.js';
+import { ShipDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class ShipCommand {
-  @Command({ name: 'ship', description: 'Measure the love between two users' })
+  @Command({
+    name: 'ship',
+    description: 'Measure the love between two users',
+    category: 'Social',
+    toggleable: true,
+  })
   async ship(@Context() ctx: ChatInputCommandInteraction, @Options() dto: ShipDto): Promise<void> {
     const first = userIdOf(dto.first);
     const second = userIdOf(dto.second);

@@ -8,12 +8,17 @@ import { slotMultiplier, spinSlot } from '../game/slots.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { BetDto } from './dto/owo.dto.js';
+import { BetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class SlotsCommand {
-  @Command({ name: 'slots', description: 'Spin the slot machine' })
+  @Command({
+    name: 'slots',
+    description: 'Spin the slot machine',
+    category: 'Economy',
+    toggleable: true,
+  })
   @Cooldown(3)
   async slots(@Context() ctx: ChatInputCommandInteraction, @Options() dto: BetDto): Promise<void> {
     const userId = ctx.user.id;

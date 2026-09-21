@@ -5,12 +5,17 @@ import { COLORS } from '../game/config.js';
 import { parseTranslation } from '../game/words.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { TranslateDto } from './dto/community.dto.js';
+import { TranslateDto } from './dto/community.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class TranslateCommand {
-  @Command({ name: 'translate', description: 'Translate text between languages' })
+  @Command({
+    name: 'translate',
+    description: 'Translate text between languages',
+    category: 'Utility',
+    toggleable: true,
+  })
   async translate(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: TranslateDto,

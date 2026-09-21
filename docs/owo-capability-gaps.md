@@ -21,6 +21,7 @@ Modules.
 | EnabledGuard + configured guard instances (`@UseGuards(instance)`)  | core, systems |
 | Vote reward: `awardVote`                                            | systems |
 | Help grouping: `buildHelp`                                          | systems |
+| Registry-driven help: `category`/`toggleable`, `helpEntries()`       | common, core, systems |
 | Confirm / pager / picker / error embed / `replyEphemeral`           | ux      |
 | Author lock: `allowedUserId` on confirm/paginate, `authorLock` guard | ux      |
 | Mentions, snowflake, amount parser, word filter, vote payload parse | utils   |
@@ -30,8 +31,8 @@ Modules.
 
 1. **`weightedPick` → `utils`** — [#44](https://github.com/discord-ts-dev/discord.ts/issues/44).
    Three copies inside Paw (`rng.pickRarity`, `slots.pickSymbol`, `lottery.drawWinner`).
-2. **Registry-driven help → `common` / `core` / `systems`** — [#45](https://github.com/discord-ts-dev/discord.ts/issues/45).
-   Deletes three hand-maintained lists: Paw `HELP` (129), Paw `TOGGLEABLE` (50), music-bot `COMMANDS` (41).
+2. **Registry-driven help → `common` / `core` / `systems`** — shipped (#45).
+   `@Command()`/group `category` + `toggleable`, `DiscordDiscoveryService.helpEntries()`, `buildHelpFromRegistry`/`toggleableNames`. Paw deleted `HELP` (75) and `TOGGLEABLE` (49, now autocomplete-driven), music-bot deleted `COMMANDS` (40).
 3. **Guild enabled guard → `systems`, configured guard instances → `core`** — shipped (#46).
    `EnabledGuard(store, { deny? })` enforces `isCommandEnabled`; `resolveGuard` uses configured `{ canActivate }` instances as-is. owo adopts it in `PlayerGuarded`.
 4. **Author lock → `ux`** — shipped ([#47](https://github.com/discord-ts-dev/discord.ts/issues/47)).
@@ -131,7 +132,7 @@ canvas, trade/giveaway/marriage rules, relations and luck, economy policy
 - **P0** — Store port: shipped (ADR 0004). Task runner: shipped (ADR 0005).
   Production Store adapter: shipped (`@discord.ts/redis`, ADR 0011).
 - **P1** — daily/streak, `topN`/`rankOf`, amount parser: shipped.
-  `weightedPick`: #44. Help from registry: #45. Guild enable guard: #46.
+  `weightedPick`: #44. Help from registry: shipped (#45). Guild enable guard: #46.
   Author-only guard: #47.
 - **P2** — word filter: shipped; censor recipe documented. Vote reward:
   shipped; webhook recipe documented. i18n: shipped beyond plan.

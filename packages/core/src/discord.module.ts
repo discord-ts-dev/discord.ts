@@ -1,6 +1,7 @@
 import { Client } from 'discord.js';
 import {
   DISCORD_CLIENT,
+  DISCORD_DISCOVERY,
   DISCORD_MODULE_OPTIONS,
   DISCORD_OWNERS,
   MODULE_METADATA,
@@ -114,6 +115,7 @@ export async function createRuntime(
   const discovery = new DiscordDiscoveryService(client, options, sync);
   const registry = new ProviderRegistry([
     { provide: DISCORD_CLIENT, useValue: client },
+    { provide: DISCORD_DISCOVERY, useValue: discovery },
     { provide: DISCORD_MODULE_OPTIONS, useValue: options },
     { provide: DISCORD_OWNERS, useValue: options.owners ?? [] },
     CooldownGuard,

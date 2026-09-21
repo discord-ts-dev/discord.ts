@@ -7,6 +7,8 @@ Ubiquitous language. Glossary only. No implementation.
 - **Command**: a slash invocation `/name`. Declared with `@Command()`. Method-level.
 - **Subcommand**: a child of a command or group. Declared with `@Subcommand()`. Group made with `createCommandGroupDecorator()`.
 - **Command flags**: `nsfw`, `defaultMemberPermissions`, `contexts`, `dmPermission`. Top-level only; Discord sends them there.
+- **Command category**: free-form label grouping a command in help output. Optional metadata on command and group declarations. Raw string, never localized. Top-level only; a sub-level value is ignored.
+- **Toggleable**: declares a command a guild may switch off, default `false`. Optional metadata on command and group declarations. Informational — it feeds enable/disable choice lists, never enforcement. Top-level only; a sub-level value is ignored.
 - **Localization map**: partial record of Discord locale codes to strings. Explicit on metadata or filled from the i18n catalog.
 - **Context menu**: right-click action on user or message. Declared with `@ContextMenu()`.
 - **Component**: button or select menu attached to a message. Declared with `@Button()`, `@StringSelect()`, `@UserSelect()`, `@RoleSelect()`, `@ChannelSelect()`, `@MentionableSelect()`. Matched by `customId`.

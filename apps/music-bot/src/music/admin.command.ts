@@ -27,6 +27,7 @@ export class AdminCommand {
   @Command({
     name: 'language',
     description: 'Show or change bot language',
+    category: 'Admin',
   })
   @RequirePermissions(PermissionFlagsBits.Administrator)
   async language(
@@ -50,7 +51,7 @@ export class AdminCommand {
     await ctx.reply(t('success.language_change', undefined, match));
   }
 
-  @Command({ name: 'addpremium', description: 'Grant premium (owner)' })
+  @Command({ name: 'addpremium', description: 'Grant premium (owner)', category: 'Admin' })
   @RequireOwner()
   async addpremium(
     @Context() ctx: ChatInputCommandInteraction,
@@ -64,6 +65,7 @@ export class AdminCommand {
   @Command({
     name: 'revokepremium',
     description: 'Revoke premium (owner)',
+    category: 'Admin',
   })
   @RequireOwner()
   async revokepremium(
@@ -77,6 +79,7 @@ export class AdminCommand {
   @Command({
     name: 'register',
     description: 'Register guild/user row (dev)',
+    category: 'Admin',
   })
   @RequireOwner()
   async register(
@@ -87,7 +90,7 @@ export class AdminCommand {
     await ctx.reply(created ? `${botConfig.emoji.done}` : 'Already exists.');
   }
 
-  @Command({ name: 'data', description: 'Show stored row (dev)' })
+  @Command({ name: 'data', description: 'Show stored row (dev)', category: 'Admin' })
   @RequireOwner()
   async data(
     @Context() ctx: ChatInputCommandInteraction,
@@ -97,7 +100,7 @@ export class AdminCommand {
     await ctx.reply(`\`\`\`json\n${JSON.stringify(row, null, 2).slice(0, 1900)}\n\`\`\``);
   }
 
-  @Command({ name: 'eval', description: 'Evaluate code (owner)' })
+  @Command({ name: 'eval', description: 'Evaluate code (owner)', category: 'Admin' })
   @RequireOwner()
   async evalJs(
     @Context() ctx: ChatInputCommandInteraction,
@@ -127,7 +130,7 @@ export class AdminCommand {
     }
   }
 
-  @Command({ name: 'restart', description: 'Restart bot (owner)' })
+  @Command({ name: 'restart', description: 'Restart bot (owner)', category: 'Admin' })
   @Cooldown(30)
   @RequireOwner()
   async restart(@Context() ctx: ChatInputCommandInteraction): Promise<void> {

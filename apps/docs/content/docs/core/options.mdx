@@ -47,6 +47,10 @@ export class RollDto {
 }
 ```
 
+Import the DTO class **as a value** (`import { RollDto }`, never `import type { RollDto }`).
+`@Options()` resolves the class from parameter type metadata, which a type-only import erases;
+a boot check rejects an erased parameter with `@Options() DTO resolved to Object`.
+
 | Decorator              | Kind        |
 | ---------------------- | ----------- |
 | `@StringOption()`      | string      |

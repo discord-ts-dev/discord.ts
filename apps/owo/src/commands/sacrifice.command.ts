@@ -9,12 +9,17 @@ import { tt } from '../game/text.js';
 import { sacrificeXp } from '../game/upgrades.js';
 import { getZoo, setZoo } from '../game/zoo.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { SellDto } from './dto/owo.dto.js';
+import { SellDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class SacrificeCommand {
-  @Command({ name: 'sacrifice', description: 'Trade zoo animals for xp' })
+  @Command({
+    name: 'sacrifice',
+    description: 'Trade one zoo animal for xp',
+    category: 'Economy',
+    toggleable: true,
+  })
   async sacrifice(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: SellDto,

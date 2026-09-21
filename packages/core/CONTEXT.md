@@ -12,7 +12,8 @@ Ubiquitous language. Glossary only. No implementation.
 - **Discovery**: scan of providers into handler state plus command JSON plus login. Owned by `DiscordDiscoveryService`.
 - **Routing**: dispatch of interactions to handlers with guards and validation. Owned by `DiscordRoutingService`, reads `Discovery` state.
 - **Validation**: boot check of every definition (names, limits, duplicates). Throws aggregated before any REST call.
-- **Command definition**: one top-level slash command built from `@Command()` / `@Subcommand()` metadata: its flags, options DTO, localizations, and either a plain handler or a subcommand tree. The builder records structural conflicts (duplicates, flag drift, plain/sub mixing) as issues for Validation to aggregate.
+- **Command definition**: one top-level slash command built from `@Command()` / `@Subcommand()` metadata: its flags, options DTO, localizations, help metadata (`category`, `toggleable`), and either a plain handler or a subcommand tree. The builder records structural conflicts (duplicates, flag drift, plain/sub mixing) as issues for Validation to aggregate.
+- **Help entry**: the registry digest of one top-level command — name, description, optional category, localizations, `toggleable`. Produced by `DiscordDiscoveryService.helpEntries()`, one per Command definition; a group counts once, by group name. Feeds help rendering and enable/disable choices.
 - **Guard**: a `CanActivate` check before a command. Used via `@UseGuards()`. Reads interaction via `DiscordExecutionContext`. A class or an already-configured instance (`{ canActivate }`); instances are used as-is, carrying constructor arguments (e.g. `authorLock(...)`).
 - **Sync**: push of command JSON to Discord REST. Auto on bootstrap unless `skipRegistration`. Target is global or `development` guilds.
 - **Deploy**: sync without login. Done via `deployWithModule(AppModule)` or `bun run deploy` in the app.

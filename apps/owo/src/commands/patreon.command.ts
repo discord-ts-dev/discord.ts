@@ -14,11 +14,16 @@ import {
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { SetTierDto } from './dto/community.dto.js';
+import { SetTierDto } from './dto/community.dto.js';
 
 @Injectable()
 export class PatreonCommand {
-  @Command({ name: 'patreon', description: 'Support Paw and see premium perks' })
+  @Command({
+    name: 'patreon',
+    description: 'Support Paw and see premium perks',
+    category: 'Utility',
+    toggleable: true,
+  })
   @PlayerGuarded()
   async patreon(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const tier = await premiumTierOf(store, ctx.user.id);
@@ -45,7 +50,11 @@ export class PatreonCommand {
 
   // The owner grant is deliberately outside PlayerGuarded: a paused or
   // guild-disabled bot must still be fixable.
-  @Command({ name: 'settier', description: 'Grant a premium tier to a user (bot owner)' })
+  @Command({
+    name: 'settier',
+    description: 'Grant a premium tier to a user (bot owner)',
+    category: 'Admin',
+  })
   @RequireOwner()
   async settier(
     @Context() ctx: ChatInputCommandInteraction,

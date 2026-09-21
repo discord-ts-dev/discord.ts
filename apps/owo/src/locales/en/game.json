@@ -116,7 +116,8 @@
   "settings": {
     "enabled": "`/{command}` is enabled in this server.",
     "disabled": "`/{command}` is disabled in this server.",
-    "command-disabled": "`/{command}` is disabled in this server."
+    "command-disabled": "`/{command}` is disabled in this server.",
+    "unknown-command": "No toggleable command `/{command}` exists — type to search the list."
   },
   "ban": {
     "blocked": "You are banned from Paw: {reason}",

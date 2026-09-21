@@ -6,7 +6,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class ColorCommand {
-  @Command({ name: 'color', description: 'Show a random color' })
+  @Command({
+    name: 'color',
+    description: 'Show a random color',
+    category: 'Utility',
+    toggleable: true,
+  })
   async color(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const value = Math.floor(Math.random() * 0xffffff);
     const hex = `#${value.toString(16).padStart(6, '0').toUpperCase()}`;

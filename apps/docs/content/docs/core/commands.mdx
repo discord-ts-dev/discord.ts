@@ -30,6 +30,18 @@ export class RollCommand {
 | `dmPermission`             | `boolean`                            | Allow use in DMs.                                |
 | `nameLocalizations`        | `LocalizationMap`                    | Localized names.                                 |
 | `descriptionLocalizations` | `LocalizationMap`                    | Localized descriptions.                          |
+| `category`                 | `string`                             | Help grouping label. Raw string, top level only. |
+| `toggleable`               | `boolean`                            | Guilds may switch it off. Default `false`.       |
+
+## Help metadata
+
+`category` and `toggleable` ride on `@Command()` and group metadata and surface through
+`DiscordDiscoveryService.helpEntries()`: one `HelpEntry` per top-level command (a group counts
+once, by group name), with descriptions already merged against the i18n catalog. `toggleable` is
+informational — it feeds enable/disable choice sources, never enforcement, which stays with the
+`guild:` settings and `EnabledGuard`. A value on a subcommand or sub-group changes nothing and
+logs one boot warning. Help rendering from the registry lives in
+[systems helpers](/docs/systems/helpers).
 
 ## Localization
 

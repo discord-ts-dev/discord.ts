@@ -9,7 +9,12 @@ const prayerKey = (userId: string) => `prayer:${userId}`;
 @Injectable()
 @PlayerGuarded()
 export class PrayCommand {
-  @Command({ name: 'pray', description: 'Pray to the paw gods' })
+  @Command({
+    name: 'pray',
+    description: 'Pray to the paw gods',
+    category: 'Social',
+    toggleable: true,
+  })
   async pray(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const count = await store.incrBy(prayerKey(ctx.user.id), 1);
     await ctx.reply(tt(ctx, 'game:pray.done', { count }));

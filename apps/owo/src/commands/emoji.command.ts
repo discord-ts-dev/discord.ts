@@ -8,7 +8,7 @@ import {
 } from 'discord.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { EmojiDto } from './dto/community.dto.js';
+import { EmojiDto } from './dto/community.dto.js';
 
 const CUSTOM_EMOJI = /^<a?:(\w+):(\d+)>$/;
 
@@ -19,6 +19,8 @@ export class EmojiCommand {
   @Command({
     name: 'emoji',
     description: 'Copy a custom emoji into this server (manage expressions)',
+    category: 'Utility',
+    toggleable: true,
   })
   @RequirePermissions(PermissionFlagsBits.ManageGuildExpressions)
   async emoji(

@@ -11,7 +11,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class DailyCommand {
-  @Command({ name: 'daily', description: 'Claim your daily pawcoins' })
+  @Command({
+    name: 'daily',
+    description: 'Claim your daily pawcoins',
+    category: 'Gameplay',
+    toggleable: true,
+  })
   async daily(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const tier = await premiumTierOf(store, ctx.user.id);
     const result = await claimDaily(store, ctx.user.id, {

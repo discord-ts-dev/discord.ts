@@ -172,4 +172,13 @@ describe('menu and component validation', () => {
       'autocomplete targets missing command "missing"',
     );
   });
+
+  test('rejects an @Options() DTO erased to Object by a type-only import', () => {
+    expectsError(
+      base({
+        commands: [def({ plain: leaf({ options: Object as unknown as new () => object }) })],
+      }),
+      'resolved to Object',
+    );
+  });
 });

@@ -26,7 +26,7 @@ import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { BetDto } from './dto/owo.dto.js';
+import { BetDto } from './dto/owo.dto.js';
 
 const HIT_ID = /^owo:bj:hit_/;
 const STAND_ID = /^owo:bj:stand_/;
@@ -56,7 +56,12 @@ function row(gameId: string, source: unknown): ActionRowBuilder<ButtonBuilder> {
 @Injectable()
 @PlayerGuarded()
 export class BlackjackCommand {
-  @Command({ name: 'blackjack', description: 'Play blackjack against the dealer' })
+  @Command({
+    name: 'blackjack',
+    description: 'Play blackjack against the dealer',
+    category: 'Economy',
+    toggleable: true,
+  })
   @Cooldown(5)
   async blackjack(
     @Context() ctx: ChatInputCommandInteraction,

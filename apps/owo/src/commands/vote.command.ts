@@ -6,7 +6,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class VoteCommand {
-  @Command({ name: 'vote', description: 'Vote for Paw on the bot lists' })
+  @Command({
+    name: 'vote',
+    description: 'Vote for Paw on the bot lists',
+    category: 'Utility',
+    toggleable: true,
+  })
   async vote(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     await ctx.reply(tt(ctx, 'game:vote.body'));
   }

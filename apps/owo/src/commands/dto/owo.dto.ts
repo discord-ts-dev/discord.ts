@@ -3,7 +3,6 @@ import { Max, Min } from 'class-validator';
 import type { User } from 'discord.js';
 import { SHOP_ITEMS } from '../../game/config.js';
 import { ROSTER } from '../../game/roster.js';
-import { TOGGLEABLE } from '../../guards/enabled.guard.js';
 
 export class UserTargetDto {
   @UserOption({ name: 'user', description: 'Whose data to show (default: you)', required: false })
@@ -84,7 +83,7 @@ export class ToggleDto {
     name: 'command',
     description: 'Command to toggle in this server',
     required: true,
-    choices: TOGGLEABLE.map((name) => ({ name: `/${name}`, value: name })),
+    autocomplete: true,
   })
   command!: string;
 }

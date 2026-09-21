@@ -18,7 +18,7 @@ export class PlaylistCommand {
     @Inject(PremiumService) private readonly premium: PremiumService,
   ) {}
 
-  @Command({ name: 'playlist', description: 'List your playlists' })
+  @Command({ name: 'playlist', description: 'List your playlists', category: 'Playlist' })
   @Cooldown(5)
   async list(@Context() ctx: ChatInputCommandInteraction, @Author() author: User): Promise<void> {
     const list = this.playlists.listPlaylists(author.id);
@@ -28,7 +28,7 @@ export class PlaylistCommand {
     );
   }
 
-  @Command({ name: 'playlist-create', description: 'Create a playlist' })
+  @Command({ name: 'playlist-create', description: 'Create a playlist', category: 'Playlist' })
   @Cooldown(5)
   async create(
     @Context() ctx: ChatInputCommandInteraction,
@@ -44,6 +44,7 @@ export class PlaylistCommand {
   @Command({
     name: 'playlist-add',
     description: 'Add a song to a playlist',
+    category: 'Playlist',
   })
   @Cooldown(5)
   async add(
@@ -63,6 +64,7 @@ export class PlaylistCommand {
   @Command({
     name: 'playlist-load',
     description: 'Load a playlist into queue',
+    category: 'Playlist',
   })
   @Cooldown(5)
   async load(
@@ -74,7 +76,7 @@ export class PlaylistCommand {
     await reply(ctx, tracks ? `Loaded ${dto.name} (${tracks.length}).` : 'Playlist not found.');
   }
 
-  @Command({ name: 'playlist-delete', description: 'Delete a playlist' })
+  @Command({ name: 'playlist-delete', description: 'Delete a playlist', category: 'Playlist' })
   @Cooldown(5)
   async remove(
     @Context() ctx: ChatInputCommandInteraction,
@@ -88,6 +90,7 @@ export class PlaylistCommand {
   @Command({
     name: 'playlist-remove',
     description: 'Remove a song from a playlist',
+    category: 'Playlist',
   })
   @Cooldown(5)
   async removeSong(
@@ -101,6 +104,7 @@ export class PlaylistCommand {
   @Command({
     name: 'playlist-steal',
     description: "Copy another user's playlist",
+    category: 'Playlist',
   })
   @Cooldown(5)
   async steal(

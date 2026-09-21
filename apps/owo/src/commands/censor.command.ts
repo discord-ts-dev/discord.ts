@@ -10,11 +10,12 @@ import { PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.j
 import { censorWord, censoredWords, uncensorWord } from '../game/community.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';
-import type { CensorWordDto } from './dto/community.dto.js';
+import { CensorWordDto } from './dto/community.dto.js';
 
 const Censor = createCommandGroupDecorator({
   name: 'censor',
   description: 'Guild word filter: add, remove, or list words',
+  category: 'Settings',
 });
 
 @Injectable()

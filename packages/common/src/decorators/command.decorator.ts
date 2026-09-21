@@ -14,6 +14,10 @@ export interface CommandMeta extends CommandFlags {
   description: string;
   nameLocalizations?: LocalizationMap;
   descriptionLocalizations?: LocalizationMap;
+  /** Free-form help grouping label. Top-level only; raw string, never localized. */
+  category?: string;
+  /** Guilds may switch this command off. Informational; drives enable/disable choice feeds. */
+  toggleable?: boolean;
 }
 
 export const Command = (meta: CommandMeta): MethodDecorator => SetMetadata(COMMAND_METADATA, meta);

@@ -11,11 +11,13 @@ import { buyTickets, lotteryState } from '../game/lottery.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { LotteryBuyDto } from './dto/owo.dto.js';
+import { LotteryBuyDto } from './dto/owo.dto.js';
 
 const Lottery = createCommandGroupDecorator({
   name: 'lottery',
-  description: 'Ticket lottery: the pot pays one winner every hour',
+  description: 'Ticket lottery: buy tickets; the pot pays one winner hourly',
+  category: 'Economy',
+  toggleable: true,
 });
 
 @Injectable()

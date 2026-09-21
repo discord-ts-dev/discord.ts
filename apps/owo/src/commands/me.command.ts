@@ -11,7 +11,12 @@ import { PlayerGuarded } from '../guards/player.guard.js';
 @Injectable()
 @PlayerGuarded()
 export class MeCommand {
-  @Command({ name: 'me', description: 'Your ranks across the boards' })
+  @Command({
+    name: 'me',
+    description: 'Your ranks across the boards',
+    category: 'Economy',
+    toggleable: true,
+  })
   async me(@Context() ctx: ChatInputCommandInteraction): Promise<void> {
     const userId = ctx.user.id;
     const [xp, wealth, zoo, balance] = await Promise.all([

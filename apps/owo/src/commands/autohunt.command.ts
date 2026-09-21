@@ -17,11 +17,13 @@ import { COLORS } from '../game/config.js';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { ChargesDto } from './dto/community.dto.js';
+import { ChargesDto } from './dto/community.dto.js';
 
 const Autohunt = createCommandGroupDecorator({
   name: 'autohunt',
-  description: 'Idle hunting: charges hunt for you every few minutes',
+  description: 'Idle hunting: charges hunt for you; view and buy charges',
+  category: 'Economy',
+  toggleable: true,
 });
 
 @Injectable()

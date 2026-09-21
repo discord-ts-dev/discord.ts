@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
-import { Command, Module } from '@discord.ts/common';
+import { Command, DISCORD_DISCOVERY, Inject, Module } from '@discord.ts/common';
 import { DiscordModule, createRuntime } from '../src/index.js';
 
 describe('Boot scan', () => {
@@ -37,6 +37,27 @@ describe('Boot scan', () => {
         discovery.commands.map((c) => c.name),
         ['ping', 'roll'],
       );
+    } finally {
+      await discovery.stop();
+    }
+  });
+
+  test('provides the discovery service under DISCORD_DISCOVERY', async () => {
+    class UsesDiscovery {
+      constructor(@Inject(DISCORD_DISCOVERY) readonly disc: unknown) {}
+    }
+    class TokenApp {}
+    Module({
+      imports: [
+        DiscordModule.forRoot({ token: 'test-token', clientId: 'test-client', intents: [] }),
+      ],
+      providers: [UsesDiscovery],
+    })(TokenApp);
+
+    const { discovery, instances } = await createRuntime(TokenApp);
+    try {
+      const used = instances.find((i) => i instanceof UsesDiscovery);
+      assert.equal(used?.disc, discovery);
     } finally {
       await discovery.stop();
     }

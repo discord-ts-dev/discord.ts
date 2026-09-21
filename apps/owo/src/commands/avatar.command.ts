@@ -3,12 +3,17 @@ import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';
-import type { UserTargetDto } from './dto/owo.dto.js';
+import { UserTargetDto } from './dto/owo.dto.js';
 
 @Injectable()
 @PlayerGuarded()
 export class AvatarCommand {
-  @Command({ name: 'avatar', description: 'Show a user avatar' })
+  @Command({
+    name: 'avatar',
+    description: 'Show a user avatar',
+    category: 'Utility',
+    toggleable: true,
+  })
   async avatar(
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: UserTargetDto,

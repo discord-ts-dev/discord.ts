@@ -62,6 +62,8 @@ export class MusicCommand {
 
 The registry resolves every `@Inject()` token before constructing the class, in declaration order, and fails at boot on duplicate providers, missing tokens, or dependency cycles. Guards named in `@UseGuards()` resolve through the same registry on first use, so a guard can inject providers too. Modules are flat: only the root module's `providers` are read.
 
+Built-in tokens are always available: `DISCORD_CLIENT`, `DISCORD_MODULE_OPTIONS`, `DISCORD_OWNERS`, and `DISCORD_DISCOVERY` (the `DiscordDiscoveryService`, for `helpEntries()` and other registry reads).
+
 ## DI helpers
 
 | Helper                            | Use                                                                |
