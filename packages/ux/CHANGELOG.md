@@ -1,5 +1,18 @@
 # @discord.ts/ux
 
+## 1.2.0
+
+### Minor Changes
+
+- 5f5be1c: Author lock for interactions. `confirm()` and `paginate()` accept `{ timeoutMs?, allowedUserId? }` alongside the existing number form; non-authors get an ephemeral nudge and are ignored. New `authorLock(resolveUserId, { deny? })` guard factory for component handlers with fail-open on unknown initiator. owo adopts `allowedUserId` on marriage/reset confirms and dex/zoo pagers, and `authorLock` on blackjack buttons.
+- d7f67e4: Deepen the reply module. `replyEphemeral()` and the new `replyEmbed()` now share
+  one delivery path, `deliver()`: it replies when the interaction is free, edits
+  when it is already acknowledged, and follows up when a private reply is wanted
+  after acknowledgement. An acknowledged Context no longer silently drops the
+  message, so `confirm()` followed by a result reply works instead of throwing.
+  `confirm()`, `paginate()`, and `pickOne()` send through the same path and use
+  the current `withResponse` API; the example, music-bot, and owo apps adopt it.
+
 ## 1.1.0
 
 ### Minor Changes

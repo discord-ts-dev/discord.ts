@@ -1,6 +1,6 @@
 {
   "name": "@discord.ts/i18n",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "discord.ts native i18n: namespaced locale catalogs, translate, locale resolve",
   "license": "MIT",
   "files": [
