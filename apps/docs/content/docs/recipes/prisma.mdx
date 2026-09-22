@@ -5,11 +5,18 @@ description: Postgres tables beside the systems Store, injected through the prov
 
 Prisma is app-side: your schema, your migrations, your queries. Use it for app-owned tables — guild config, playlists, premium — while the systems [Store](/docs/systems/store) keeps game state. The two coexist; neither knows about the other.
 
+Prisma 7 needs the client, a driver adapter, and the driver itself: `bun add @prisma/client @prisma/adapter-pg pg` and `bun add -d prisma dotenv`.
+
 ```prisma
 // prisma/schema.prisma
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// No url here: Prisma 7 reads the connection string from prisma.config.ts.
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Guild {
@@ -20,14 +27,35 @@ model Guild {
 ```
 
 ```ts
+// prisma.config.ts
+import { config } from 'dotenv';
+import { defineConfig } from 'prisma/config';
+
+// Prisma 7 no longer loads .env files on its own.
+config({ quiet: true });
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  migrations: { path: 'prisma/migrations' },
+  // Plain process.env rather than the env() helper: env() throws while this
+  // file loads, which would break `prisma generate` where no URL is set.
+  datasource: { url: process.env.DATABASE_URL },
+});
+```
+
+```ts
 // src/db.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/prisma/client.js';
 
 export const PRISMA = 'app:prisma';
 export type Prisma = PrismaClient;
 
-// Prisma connects on first query; construction only reads DATABASE_URL.
-export const prisma = new PrismaClient();
+// Prisma 7 has no built-in connector — the adapter owns the pool. Connects on
+// first query; construction only reads the connection string.
+export const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 ```
 
 ```ts
@@ -70,6 +98,9 @@ export class ConfigCommand {
 
 Notes:
 
+- The client is generated code you import, not `@prisma/client`: `bunx prisma generate` writes `src/generated/prisma` from the `output` field. Gitignore it and run generate before typecheck — `apps/music-bot` does it in its `build` and `typecheck` scripts. Generate needs no `DATABASE_URL`; `migrate` and `db push` do.
+- `runtime = "bun"` is a valid generator field for clarity, but `nodejs` and `bun` share one code path, so it is not required here.
+- A PostgreSQL schema is no longer a `?schema=` query parameter on the connection string. Pass it as the adapter's second argument instead: `new PrismaPg({ connectionString }, { schema: 'public' })`.
 - The provider registry is synchronous, so value providers hand out an already-constructed client. There is no `useFactory` and no lifecycle hook: hydrate caches from a `@OnceEvent(Events.ClientReady)` listener, write through to Prisma in the same handler, and call `prisma.$disconnect()` wherever your process handles shutdown.
 - Gate the provider on `DATABASE_URL` (as above) when the bot must still boot without a database; consumers then guard on a missing token themselves or you register a null-object client instead.
-- `bunx prisma generate` before typecheck/build, and `bunx prisma migrate deploy` on deploy. Prisma 7 requires a driver adapter — see Prisma's upgrade guide if you move past the 6.x line this repo's music-bot uses.
+- `bunx prisma migrate deploy` on deploy. `prisma.config.ts` also covers `prisma migrate` and `prisma db` commands, so keep it next to the schema.

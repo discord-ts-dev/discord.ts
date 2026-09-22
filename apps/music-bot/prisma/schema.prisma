@@ -1,10 +1,15 @@
 generator client {
-  provider = "prisma-client-js"
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "bun"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
 }
 
+// The connection URL lives in prisma.config.ts, not here.
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Playlist {
@@ -29,10 +34,10 @@ model Track {
 }
 
 model Guild {
-  guildId     String   @id
+  guildId     String    @id
   premiumFrom DateTime?
   premiumTo   DateTime?
-  language    String   @default("EnglishUS")
+  language    String    @default("EnglishUS")
 }
 
 model User {

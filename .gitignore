@@ -5,5 +5,8 @@ dist/
 .turbo/
 apps/owo/data/
 
+# Prisma generated client (bun run db:generate)
+apps/music-bot/src/generated/
+
 # Turborepo
 .turbo
