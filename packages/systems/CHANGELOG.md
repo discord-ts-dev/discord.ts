@@ -1,5 +1,56 @@
 # @discord.ts/systems
 
+## 0.4.0
+
+### Minor Changes
+
+- 30313b2: Configured guard instances plus `EnabledGuard`. Core `resolveGuard` accepts an already-configured `{ canActivate }` instance and uses it as-is, so constructor arguments survive (`authorLock(...)` builds on this). Systems gains `new EnabledGuard(store, { deny? })` next to `isCommandEnabled`: DMs and un-decorated handlers pass, subcommands toggle by group name, default deny is hardcoded English, apps override with i18n. owo adopts it in `PlayerGuarded`; `enabled.guard.ts` keeps `TOGGLEABLE` only.
+- 033afd4: Bundle the `FileStore` reference adapter (ADR 0004 amendment via ADR 0009
+  port exception). `new FileStore(file)` keeps state in memory with lazy TTL
+  and syncs the whole JSON file (`file.tmp` + rename) per write — single
+  process only, no options object. Pin integer `incrBy` (truncate toward zero,
+  Redis `INCRBY`); `MemoryStore` is patched to match. owo adopts the framework
+  adapter with the same `OWO_DATA_FILE` default.
+- d7f67e4: Add real constructor injection. `@Inject(token)` records the token a
+  constructor parameter resolves from, and `createRuntime` builds providers —
+  classes and `{ provide, useValue }` values — through a `ProviderRegistry` that
+  constructs each provider once, resolves dependencies in declaration order, and
+  fails on duplicates, missing tokens, and cycles. Guards named in
+  `@UseGuards()` resolve through the same registry, so app guards inject
+  providers instead of defaulting to module singletons. `@discord.ts/systems`
+  exports the `STORE` token for apps plugging their Store adapter (ADR 0004).
+  Modules stay flat: only the root module's providers are read.
+- 1bc0112: Registry-driven help and toggleable commands. `@Command()` and group metadata carry `category` and
+  `toggleable` (top level only; sub-level values warn at boot). `DiscordDiscoveryService.helpEntries()`
+  returns one `HelpEntry` per top-level command — a group counts once, by group name — with
+  descriptions merged from the i18n catalog; the service is injectable via the new `DISCORD_DISCOVERY`
+  token. Systems adds `buildHelpFromRegistry()` (locale-resolved sections) and `toggleableNames()`.
+  Validation now errors on an `@Options()` DTO erased by `import type` (`DTO resolved to Object`).
+  Paw deletes its `HELP` and `TOGGLEABLE` lists — `/enable` and `/disable` pick from the registry via
+  autocomplete — and music-bot deletes its `COMMANDS` list.
+- d7f67e4: Carry atomicity as an operation (ADR 0010). `Store` gains
+  `update(keys, fn)` — one atomic read-modify-write over current values, with
+  TTL-preserving writes and sorted-set writes applied together — plus
+  `zincrBy` for atomic score increments. Shop, Daily, Quest, Leaderboard, and
+  Guild settings express their updates through it, so compound flows no longer
+  interleave. `addBalance`, `buy`, and `claimDaily` accept `{ mirrorBoard }` to
+  keep one board equal to the new balance in the same update. Keys move behind
+  one internal module and the scheme is documented as a data contract.
+  `MemoryStore` and `incrBy` now preserve TTLs.
+
+### Patch Changes
+
+- 8850420: Pin `incrBy` to integer semantics: increments truncate toward zero (Redis
+  `INCRBY` behavior) instead of storing fractional sums. Sorted-set ties now
+  order by member like Redis, and the port is pinned by a shared conformance
+  suite.
+- Updated dependencies [5f5be1c]
+- Updated dependencies [d7f67e4]
+- Updated dependencies [d7f67e4]
+- Updated dependencies [1bc0112]
+  - @discord.ts/ux@1.2.0
+  - @discord.ts/common@1.2.0
+
 ## 0.3.0
 
 ### Minor Changes

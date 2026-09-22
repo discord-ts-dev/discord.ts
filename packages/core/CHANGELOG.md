@@ -1,5 +1,56 @@
 # @discord.ts/core
 
+## 1.2.0
+
+### Minor Changes
+
+- d7f67e4: Deepen Discovery with `CommandDefinition`: decorator metadata becomes one
+  definition per top-level command (flags, options DTO, localizations, and a
+  plain handler or subcommand tree). `DiscordDiscoveryService.slash` becomes
+  `commands`; JSON rendering, boot Validation, dispatch matching, and argument
+  building consume definitions instead of re-reading Reflect metadata.
+  Structural conflicts (duplicate leaves, flag drift, plain/sub mixing) are
+  recorded by the builder and aggregated by `validateDiscoveryState()` as before,
+  so the one-error-before-REST behavior is unchanged. `optionsDto` is removed
+  from `discord-args`.
+- d7f67e4: Add real constructor injection. `@Inject(token)` records the token a
+  constructor parameter resolves from, and `createRuntime` builds providers —
+  classes and `{ provide, useValue }` values — through a `ProviderRegistry` that
+  constructs each provider once, resolves dependencies in declaration order, and
+  fails on duplicates, missing tokens, and cycles. Guards named in
+  `@UseGuards()` resolve through the same registry, so app guards inject
+  providers instead of defaulting to module singletons. `@discord.ts/systems`
+  exports the `STORE` token for apps plugging their Store adapter (ADR 0004).
+  Modules stay flat: only the root module's providers are read.
+- 1bc0112: Registry-driven help and toggleable commands. `@Command()` and group metadata carry `category` and
+  `toggleable` (top level only; sub-level values warn at boot). `DiscordDiscoveryService.helpEntries()`
+  returns one `HelpEntry` per top-level command — a group counts once, by group name — with
+  descriptions merged from the i18n catalog; the service is injectable via the new `DISCORD_DISCOVERY`
+  token. Systems adds `buildHelpFromRegistry()` (locale-resolved sections) and `toggleableNames()`.
+  Validation now errors on an `@Options()` DTO erased by `import type` (`DTO resolved to Object`).
+  Paw deletes its `HELP` and `TOGGLEABLE` lists — `/enable` and `/disable` pick from the registry via
+  autocomplete — and music-bot deletes its `COMMANDS` list.
+
+### Patch Changes
+
+- d7f67e4: Deepen the reply module. `replyEphemeral()` and the new `replyEmbed()` now share
+  one delivery path, `deliver()`: it replies when the interaction is free, edits
+  when it is already acknowledged, and follows up when a private reply is wanted
+  after acknowledgement. An acknowledged Context no longer silently drops the
+  message, so `confirm()` followed by a result reply works instead of throwing.
+  `confirm()`, `paginate()`, and `pickOne()` send through the same path and use
+  the current `withResponse` API; the example, music-bot, and owo apps adopt it.
+- 30313b2: Configured guard instances plus `EnabledGuard`. Core `resolveGuard` accepts an already-configured `{ canActivate }` instance and uses it as-is, so constructor arguments survive (`authorLock(...)` builds on this). Systems gains `new EnabledGuard(store, { deny? })` next to `isCommandEnabled`: DMs and un-decorated handlers pass, subcommands toggle by group name, default deny is hardcoded English, apps override with i18n. owo adopts it in `PlayerGuarded`; `enabled.guard.ts` keeps `TOGGLEABLE` only.
+- Updated dependencies [5f5be1c]
+- Updated dependencies [d7f67e4]
+- Updated dependencies [d7f67e4]
+- Updated dependencies [1bc0112]
+- Updated dependencies [1f11e97]
+  - @discord.ts/ux@1.2.0
+  - @discord.ts/common@1.2.0
+  - @discord.ts/utils@0.4.0
+  - @discord.ts/i18n@0.3.1
+
 ## 1.1.0
 
 ### Minor Changes
