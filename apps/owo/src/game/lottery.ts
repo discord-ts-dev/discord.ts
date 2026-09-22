@@ -1,4 +1,5 @@
 import { defineTask, getBalance, type Store } from '@discord.ts/systems';
+import { weightedPick } from '@discord.ts/utils';
 import { GAME } from './config.js';
 import { credit } from './economy.js';
 import { store as appStore } from './store.js';
@@ -31,15 +32,8 @@ export function drawWinner(
   tickets: LotteryTicket[],
   rand: () => number = Math.random,
 ): string | null {
-  const entries = tickets.filter((t) => t.count > 0);
-  const total = entries.reduce((sum, t) => sum + t.count, 0);
-  if (total <= 0) return null;
-  let roll = rand() * total;
-  for (const entry of entries) {
-    roll -= entry.count;
-    if (roll < 0) return entry.userId;
-  }
-  return (entries[entries.length - 1] as LotteryTicket).userId;
+  const entries = tickets.map((t) => ({ value: t.userId, weight: t.count }));
+  return weightedPick(entries, rand) ?? null;
 }
 
 export type BuyResult =

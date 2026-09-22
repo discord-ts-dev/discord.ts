@@ -12,3 +12,5 @@ Ubiquitous language. Glossary only. No implementation.
 - **Amount**: a bet or transfer size. Parsed via `parseAmount()`.
 - **Blocked word**: an entry in a blocklist. Checked via `containsBlocked()`, redacted via `maskBlocked()`.
 - **Vote payload**: a bot-list webhook body. Parsed via `parseVotePayload()`.
+- **Weighted pick**: a value drawn with probability proportional to its weight. Drawn via `weightedPick()`. A draw, not the `ux` select-menu picker.
+- **Weight**: a value's share of a weighted pick, proportional to its chance of being drawn. A value with no share is not in the draw.
