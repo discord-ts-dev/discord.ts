@@ -1,4 +1,5 @@
-import { RARITIES, ROSTER, type Animal, type Rarity } from './roster.js';
+import { weightedPick, type Weighted } from '@discord.ts/utils';
+import { RARITIES, RARITY_ORDER, ROSTER, type Animal, type Rarity } from './roster.js';
 
 export type Rand = () => number;
 
@@ -6,15 +7,15 @@ export function rollCatch(chance: number, rand: Rand = Math.random): boolean {
   return rand() < chance;
 }
 
+const RARITY_WEIGHTS: Weighted<Rarity>[] = RARITY_ORDER.map((rarity) => ({
+  value: rarity,
+  weight: RARITIES[rarity].weight,
+}));
+
 export function pickRarity(rand: Rand = Math.random): Rarity {
-  const tiers = Object.entries(RARITIES) as [Rarity, { weight: number }][];
-  const total = tiers.reduce((sum, [, def]) => sum + def.weight, 0);
-  let roll = rand() * total;
-  for (const [rarity, def] of tiers) {
-    roll -= def.weight;
-    if (roll < 0) return rarity;
-  }
-  return (tiers.at(-1) as [Rarity, unknown])[0];
+  // ponytail: constant positive weights, so the draw always resolves; the
+  // fallback keeps a retuned all-zero table on the weakest tier, not a crash.
+  return weightedPick(RARITY_WEIGHTS, rand) ?? RARITY_ORDER[0];
 }
 
 export function pickAnimal(rand: Rand = Math.random, roster: Animal[] = ROSTER): Animal {

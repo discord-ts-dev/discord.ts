@@ -3,7 +3,7 @@ title: Utils
 description: Pure helpers. No client, no framework deps.
 ---
 
-`@discord.ts/utils`. Zero framework deps. Pure string checks.
+`@discord.ts/utils`. Zero framework deps. Pure string checks and pure draws.
 
 ```ts
 import { parseMentionId, isSnowflake, userIdOf } from '@discord.ts/utils';
@@ -57,3 +57,21 @@ const voter = parseVotePayload(body); // string | null
 ```
 
 For a webhook handler with auth and dedupe, see the [vote webhook recipe](/docs/recipes/vote-webhook).
+
+## Weighted pick
+
+Draw a value with probability proportional to its weight. The random source is injectable, so games roll the same way in tests as in production.
+
+```ts
+import { weightedPick } from '@discord.ts/utils';
+
+weightedPick(
+  [
+    { value: 'common', weight: 60 },
+    { value: 'rare', weight: 3 },
+  ],
+  () => 0.97,
+); // 'rare'
+```
+
+Weights must be finite; positive weights take part in the draw, the rest do not, and `random` returns a number in `[0, 1)`. Empty input, or no weight that can take part, returns `undefined` — it never throws. Paw draws loot rarities, slot symbols, and lottery winners this way.

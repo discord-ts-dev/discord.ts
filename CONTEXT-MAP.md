@@ -8,7 +8,7 @@ Multi-context repo. Read the `CONTEXT.md` for each context relevant to the topic
 | ----------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
 | `common`    | `packages/common/CONTEXT.md`  | Foundation: metadata keys, decorators, types, logger                                             |
 | `core`      | `packages/core/CONTEXT.md`    | Runtime: module, discovery, routing, sync, guards, config                                        |
-| `utils`     | `packages/utils/CONTEXT.md`   | Pure helpers: mentions, ids, message guards, amounts, word filter                                |
+| `utils`     | `packages/utils/CONTEXT.md`   | Pure helpers: mentions, ids, message guards, amounts, word filter, weighted picks                |
 | `i18n`      | `packages/i18n/CONTEXT.md`    | Native i18n: namespaced catalogs, translate, locales                                             |
 | `systems`   | `packages/systems/CONTEXT.md` | Store-backed systems: tasks, daily, quests, shop, leaderboard, guild settings, help, vote reward |
 | `redis`     | `packages/redis/CONTEXT.md`   | Redis Store adapter: Bun-native client, provider helpers                                         |

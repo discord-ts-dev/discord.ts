@@ -24,13 +24,13 @@ Modules.
 | Registry-driven help: `category`/`toggleable`, `helpEntries()`       | common, core, systems |
 | Confirm / pager / picker / error embed / `replyEphemeral`           | ux      |
 | Author lock: `allowedUserId` on confirm/paginate, `authorLock` guard | ux      |
-| Mentions, snowflake, amount parser, word filter, vote payload parse | utils   |
+| Mentions, snowflake, amount parser, word filter, vote payload parse, weighted pick | utils   |
 | Native i18n: catalogs, `t`, locale resolution                       | i18n    |
 
 ## Queued promotions (ranked by dedupe)
 
-1. **`weightedPick` → `utils`** — [#44](https://github.com/discord-ts-dev/discord.ts/issues/44).
-   Three copies inside Paw (`rng.pickRarity`, `slots.pickSymbol`, `lottery.drawWinner`).
+1. **`weightedPick` → `utils`** — shipped ([#44](https://github.com/discord-ts-dev/discord.ts/issues/44)).
+   Three copies inside Paw collapsed (`rng.pickRarity`, `slots.pickSymbol`, `lottery.drawWinner`); `spinSlot` lost its unused `symbols` parameter.
 2. **Registry-driven help → `common` / `core` / `systems`** — shipped (#45).
    `@Command()`/group `category` + `toggleable`, `DiscordDiscoveryService.helpEntries()`, `buildHelpFromRegistry`/`toggleableNames`. Paw deleted `HELP` (75) and `TOGGLEABLE` (49, now autocomplete-driven), music-bot deleted `COMMANDS` (40).
 3. **Guild enabled guard → `systems`, configured guard instances → `core`** — shipped (#46).
@@ -112,6 +112,7 @@ actual contract.
 | ------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | `math` expression evaluator                       | One consumer (`/math`); niche                                       | A second app needs it                                             |
 | Unique-sample draw (`pickWinners`)                | One consumer (giveaways)                                            | A second app needs it                                             |
+| Uniform pick (`arr[Math.floor(rand()*len)]`)      | One expression today; `weightedPick` would lengthen it               | A second app needs a shared random-source surface                  |
 | Premium tiers                                     | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans) | A third app, or a shared design                                   |
 | `GuildSettings` widening / arbitrary guild keys   | Recipe instead                                                      | A second app needs it                                             |
 | Helper hooks (`onClaim`, `onPurchase`)            | Wrap at the call site; side effects run after the atomic write      | Two apps need the same post-write effect co-located with a helper |
@@ -132,7 +133,7 @@ canvas, trade/giveaway/marriage rules, relations and luck, economy policy
 - **P0** — Store port: shipped (ADR 0004). Task runner: shipped (ADR 0005).
   Production Store adapter: shipped (`@discord.ts/redis`, ADR 0011).
 - **P1** — daily/streak, `topN`/`rankOf`, amount parser: shipped.
-  `weightedPick`: #44. Help from registry: shipped (#45). Guild enable guard: #46.
+  `weightedPick`: shipped (#44). Help from registry: shipped (#45). Guild enable guard: #46.
   Author-only guard: #47.
 - **P2** — word filter: shipped; censor recipe documented. Vote reward:
   shipped; webhook recipe documented. i18n: shipped beyond plan.

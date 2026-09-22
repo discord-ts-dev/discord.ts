@@ -1,3 +1,5 @@
+import { weightedPick, type Weighted } from '@discord.ts/utils';
+
 export interface SlotSymbol {
   id: string;
   emoji: string;
@@ -20,18 +22,16 @@ export const SLOT_SYMBOLS: SlotSymbol[] = [
 
 export const SLOT_REELS = 3;
 
-function pickSymbol(rand: () => number, symbols: SlotSymbol[]): SlotSymbol {
-  const total = symbols.reduce((sum, s) => sum + s.weight, 0);
-  let roll = rand() * total;
-  for (const symbol of symbols) {
-    roll -= symbol.weight;
-    if (roll < 0) return symbol;
-  }
-  return symbols[symbols.length - 1] as SlotSymbol;
-}
+const SYMBOL_WEIGHTS: Weighted<SlotSymbol>[] = SLOT_SYMBOLS.map((symbol) => ({
+  value: symbol,
+  weight: symbol.weight,
+}));
 
-export function spinSlot(rand: () => number = Math.random, symbols = SLOT_SYMBOLS): SlotSymbol[] {
-  return Array.from({ length: SLOT_REELS }, () => pickSymbol(rand, symbols));
+export function spinSlot(rand: () => number = Math.random): SlotSymbol[] {
+  // A [0,1) roll over five positive weights always lands; the fallback keeps a
+  // retuned all-zero table on the cheapest symbol instead of an undefined reel.
+  const pick = (): SlotSymbol => weightedPick(SYMBOL_WEIGHTS, rand) ?? SYMBOL_WEIGHTS[0].value;
+  return Array.from({ length: SLOT_REELS }, pick);
 }
 
 /** Multiplier for a spin result: triple pays `three`, leading pair pays `two`. */

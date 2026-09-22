@@ -49,3 +49,5 @@ export { parseAmount } from './amount.js';
 export type { AmountResult } from './amount.js';
 export { containsBlocked, maskBlocked } from './words.js';
 export { parseVotePayload } from './vote.js';
+export { weightedPick } from './random.js';
+export type { Weighted } from './random.js';

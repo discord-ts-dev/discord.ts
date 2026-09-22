@@ -14,7 +14,7 @@ const surfaces = {
   i18n: [i18n, ['t', 'initI18n', 'resolveLocale', 'lookup']],
   redis: [redis, ['RedisStore', 'REDIS', 'redisProviders']],
   systems: [systems, ['MemoryStore', 'claimDaily', 'awardVote', 'buildHelpFromRegistry', 'toggleableNames']],
-  utils: [utils, ['parseMentionId', 'parseAmount', 'containsBlocked']],
+  utils: [utils, ['parseMentionId', 'parseAmount', 'containsBlocked', 'weightedPick']],
   ux: [ux, ['confirm', 'paginate', 'pickOne', 'errorEmbed']],
 } as const;
 
