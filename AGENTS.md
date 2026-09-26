@@ -6,6 +6,10 @@ A public API or feature change updates `apps/docs/content` in the same change. S
 
 ## Agent skills
 
+### Discord bots
+
+Building, changing, or debugging a bot. See `.agents/skills/discord-bot/SKILL.md`.
+
 ### Issue tracker
 
 Issues live in GitHub Issues. See `docs/agents/issue-tracker.md`.

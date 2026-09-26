@@ -101,3 +101,5 @@ await replyEmbed(interaction, errorEmbed('Ban failed.'), true);
 | `replyEphemeral` | Text-only ephemeral.                                                                      |
 | `replyEmbed`     | One embed, private when the third argument is `true`.                                     |
 | `ReplyTarget`    | Structural target shape; real interactions satisfy it.                                    |
+
+It picks the method from the target's state and never defers for you. A handler that does slow work calls `deferReply()` on the interaction first, then delivers into the deferred target.
