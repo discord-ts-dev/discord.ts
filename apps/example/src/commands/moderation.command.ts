@@ -127,9 +127,13 @@ export class ModerationCommand {
     const userId = userIdOf(dto.target);
     if (!userId) return replyError(ctx, 'Unknown user.');
     const reason = dto.reason ?? 'No reason';
-    const ok = await confirm(ctx, {
-      embeds: [modEmbed('ban?', 0xed4245).setDescription(`Ban <@${userId}>?\n${reason}`)],
-    });
+    const ok = await confirm(
+      ctx,
+      {
+        embeds: [modEmbed('ban?', 0xed4245).setDescription(`Ban <@${userId}>?\n${reason}`)],
+      },
+      { allowedUserId: ctx.user.id },
+    );
     if (!ok) return;
     try {
       await guild.members.ban(userId, { reason });
@@ -202,9 +206,13 @@ export class ModerationCommand {
     @Context() ctx: ChatInputCommandInteraction,
     @Options() dto: ClearDto,
   ): Promise<void> {
-    const ok = await confirm(ctx, {
-      embeds: [modEmbed('clear?', 0x3498db).setDescription(`Delete ${dto.count} messages?`)],
-    });
+    const ok = await confirm(
+      ctx,
+      {
+        embeds: [modEmbed('clear?', 0x3498db).setDescription(`Delete ${dto.count} messages?`)],
+      },
+      { allowedUserId: ctx.user.id },
+    );
     if (!ok) return;
     try {
       const channel = ctx.channel;
