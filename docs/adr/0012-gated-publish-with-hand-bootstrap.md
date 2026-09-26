@@ -39,7 +39,10 @@ save, so a mistake surfaces only as a failed publish.
 - `NPM_TOKEN` is a bootstrap credential, not the steady state — npm prefers
   OIDC whenever it is available. Once all eight trusted publishers are verified,
   the token can be revoked and publishing access set to require 2FA and disallow
-  tokens.
+  tokens. npm is also retiring tokens that bypass 2FA: restricted for account
+  changes since Aug 2026, and for direct publishing from Jan 2027. A bootstrap
+  token is therefore a months-old workaround with an expiry, not a fallback to
+  keep.
 - A trusted publisher created today defaults to `npm stage publish` only, and
   `changeset publish` calls `npm publish`. Each one must have `npm publish`
   explicitly ticked, or every later CI publish fails with `ENEEDAUTH`.
