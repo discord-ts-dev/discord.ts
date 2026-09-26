@@ -1,0 +1,50 @@
+---
+title: Agent skill
+description: discord-bot, an installable skill for agents writing bots on discord.ts.
+---
+
+`discord-bot` teaches an agent the order of operations for shipping a bot that works in a real guild. It lives in this repo at `.agents/skills/discord-bot/` and is discoverable by the [skills CLI](https://www.npmjs.com/package/skills).
+
+<Cards>
+  <Card title="Quickstart" href="/docs/quickstart" />
+  <Card title="Example bot" href="/docs/example" />
+</Cards>
+
+## Install
+
+```bash
+npx skills add discord-ts-dev/discord.ts --skill discord-bot
+```
+
+The CLI symlinks the skill into the agents it finds: `.agents/skills/` for a project, `~/.config/opencode/skills/` with `-g`. Use `--copy` where symlinks are unavailable.
+
+| Flag                   | Does                                                      |
+| ---------------------- | --------------------------------------------------------- |
+| `-a, --agent <agents>` | Target specific agents, e.g. `-a opencode -a claude-code` |
+| `-g, --global`         | Install to the user directory instead of the project      |
+| `-s, --skill <names>`  | Install specific skills; `'*'` for all                    |
+| `-l, --list`           | List what the repo offers without installing              |
+| `-y, --yes`            | Skip confirmation prompts                                 |
+
+Try it without installing anything:
+
+```bash
+npx skills use discord-ts-dev/discord.ts@discord-bot
+```
+
+## What it carries
+
+Six steps, each ending on an observable check rather than a feeling: **find the surface**, **declare**, **wire**, **answer**, **persist**, **prove**. The first step exists because a discord.js habit written into a `@discord.ts/*` module typechecks and then silently does nothing — the skill keeps a map of those traps.
+
+Two rules sit above all six, because they decide how every handler is written:
+
+- **Silent failure** — a handler that throws produces no user-visible error. The routing service catches and logs it so the gateway loop survives, so the user sees nothing at all. Every handler owns its failure reply.
+- **One reply** — an interaction is answered exactly once: `reply`, or `deferReply` and then `editReply` / `followUp`. A handler that awaits slow work before its first reply has already missed the deadline.
+
+Platform numbers are verified against `discord.js` v14 and Discord's docs, and the limits older guides repeat but the docs no longer publish are flagged so they stop propagating. The skill also carries the deliberate anti-fix list: no `paths` in the root tsconfig, no prefix surface, flat modules, no domain code in the framework, and `ponytail:` as the repo's own do-not-refactor marker.
+
+## Where it fits
+
+These pages document the API surface — what `@Command()` accepts, what `deployWithModule()` does. The skill documents the judgment those pages do not make: what to do first, what silently no-ops, and what Discord punishes you for.
+
+Inside a discord.ts checkout every path it cites resolves. Installed into another repository, the Discord platform rules still apply and the framework pointers do not.

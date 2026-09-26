@@ -49,6 +49,18 @@ DISCORD_TOKEN=... bun run dev
 
 Glossary map at `CONTEXT-MAP.md`. Skills config in `AGENTS.md`.
 
+## Agent skill
+
+`discord-bot` teaches an agent the order of operations for shipping a bot that works in a real guild: intents and permissions, the interaction deadline, one reply per interaction, author-locked dialogs, state that survives a restart, and the gates to run.
+
+```bash
+npx skills add discord-ts-dev/discord.ts --skill discord-bot
+```
+
+Symlinks into `.agents/skills/`, or `~/.config/opencode/skills/` with `-g`. Try it without installing anything with `npx skills use discord-ts-dev/discord.ts@discord-bot`. Add `-a opencode` to target one agent, `--all` to take every skill in the repo.
+
+Inside a discord.ts checkout every path it cites resolves. Installed elsewhere, the Discord platform rules still apply and the framework pointers do not.
+
 ## Release
 
 Changesets on `main` open a Version PR. Touch `packages/*`? Run `bunx changeset`.
