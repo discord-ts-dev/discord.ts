@@ -1,11 +1,12 @@
 # CONTEXT-MAP.md — discord.ts
 
-Multi-context repo. Read the `CONTEXT.md` for each context relevant to the topic. System-wide decisions live in `docs/adr/`.
+Multi-context repo. Read this `CONTEXT.md` for repo-wide vocabulary, then the `CONTEXT.md` for each context relevant to the topic. System-wide decisions live in `docs/adr/`.
 
 ## Contexts
 
 | Context     | Lives at                      | Covers                                                                                           |
 | ----------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| `repo`      | `CONTEXT.md`                  | Cross-cutting: packages, changesets, versioning, publish, release                                 |
 | `common`    | `packages/common/CONTEXT.md`  | Foundation: metadata keys, decorators, types, logger                                             |
 | `core`      | `packages/core/CONTEXT.md`    | Runtime: module, discovery, routing, sync, guards, config                                        |
 | `utils`     | `packages/utils/CONTEXT.md`   | Pure helpers: mentions, ids, message guards, amounts, word filter, weighted picks                |

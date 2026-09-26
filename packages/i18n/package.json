@@ -2,9 +2,20 @@
   "name": "@discord.ts/i18n",
   "version": "0.3.1",
   "description": "discord.ts native i18n: namespaced locale catalogs, translate, locale resolve",
+  "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
+  "bugs": {
+    "url": "https://github.com/discord-ts-dev/discord.ts/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/discord-ts-dev/discord.ts.git",
+    "directory": "packages/i18n"
+  },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "type": "module",
   "main": "dist/index.js",

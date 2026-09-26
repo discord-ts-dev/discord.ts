@@ -2,6 +2,11 @@
 
 Date: 2026-09-15
 
+Status: accepted. Amended 2026-09-26 (ADR 0012) — the Consequences bullet
+claimed a new package must be added to the preload map *and* the root
+`tsconfig.json` paths. The Decision above already rules out a `paths` map, and
+the real trigger is being *imported*, not existing. See the corrected bullet.
+
 ## Context
 
 Per-package tests imported `@discord.ts/*` through `node_modules`, which resolved
@@ -18,7 +23,7 @@ not intercept bare specifiers in `bun test`.
 ## Decision
 
 A single test preload, `scripts/test-preload.ts`, registers `bun:test`
-`mock.module` redirects for the six workspace packages to their `src/index.ts`.
+`mock.module` redirects for the seven workspace packages to their `src/index.ts`.
 It is passed by `--preload` in the root `test` script and in every package
 `test` script. The root `test` script runs `bun test` once over
 `packages apps`, so the coverage gate is a single combined report and needs no
@@ -32,8 +37,11 @@ runner; `turbo.json`'s `test` task no longer depends on `^build`.
 ## Consequences
 
 - Coverage counts package sources, never `dist` - the 100% gate is meaningful.
-- Adding `@discord.ts/*` to the preload map and the root `tsconfig.json` paths
-  is required whenever a new workspace package appears.
+- Adding a package to the preload map is required when something *imports* it,
+  not when the package is created. `@discord.ts/cli` has no entry because no
+  other package or test imports it — its own tests import `../src/cli.js`
+  relatively. The root `tsconfig.json` has no `paths` map at all, by the
+  decision above, so there is nothing to add there.
 - Running the root `test` script is the gate; per-package runs exist for speed
   but the aggregate run is what CI enforces.
 

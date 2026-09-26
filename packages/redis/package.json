@@ -2,9 +2,20 @@
   "name": "@discord.ts/redis",
   "version": "0.2.0",
   "description": "discord.ts Redis Store adapter: Redis-backed persistence for systems",
+  "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
+  "bugs": {
+    "url": "https://github.com/discord-ts-dev/discord.ts/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/discord-ts-dev/discord.ts.git",
+    "directory": "packages/redis"
+  },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "type": "module",
   "main": "dist/index.js",

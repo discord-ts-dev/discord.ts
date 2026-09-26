@@ -66,11 +66,25 @@ Inside a discord.ts checkout every path it cites resolves. Installed elsewhere, 
 Changesets on `main` open a Version PR. Touch `packages/*`? Run `bunx changeset`.
 Tags like `@discord.ts/core@0.2.0` are publish output.
 
-Publishing stays off until npm credentials exist: the first publish of a scoped
-package cannot use OIDC (npm answers 404 until the package exists with a
-trusted publisher), so add an npm automation token with
-`gh secret set NPM_TOKEN --body ...` and `gh variable set PUBLISH_ENABLED --body true`.
-Until then merging the Version PR bumps versions without publishing.
+Publishing is gated on the `PUBLISH_ENABLED` repository variable. Unset, a run
+versions and opens the Version PR but publishes nothing — merging it is not yet
+a release.
+
+The first publish of a scoped package cannot use OIDC: a trusted publisher is
+configured per package on npmjs.com, so npm has nothing to match a token
+against until the package exists. Publish the first version of each package by
+hand, add its trusted publisher (with `npm publish` explicitly allowed), then
+open the gate:
+
+```bash
+gh secret set NPM_TOKEN --body ...       # bootstrap only
+gh variable set PUBLISH_ENABLED --body true
+```
+
+`NPM_TOKEN` is a fallback, not the steady state — npm prefers OIDC when it is
+available. Once every trusted publisher is verified, revoke the token and set
+publishing access to require 2FA and disallow tokens. See
+[ADR 0012](docs/adr/0012-gated-publish-with-hand-bootstrap.md).
 
 Remote cache is Vercel-backed and inert until secrets exist: create a token at
 vercel.com (Storage → Remote Cache), then

@@ -12,7 +12,7 @@
     "test:apps": "bun test --preload=./scripts/test-preload.ts apps",
     "format": "turbo run format",
     "format:check": "oxfmt --check apps packages scripts",
-    "scripts:check": "oxlint scripts/github && oxfmt --check scripts/github && for f in scripts/github/*.sh; do bash -n \"$f\"; done",
+    "scripts:check": "oxlint scripts/github && oxfmt --check scripts/github && for f in scripts/github/*.sh; do bash -n \"$f\"; done && bash scripts/github/check-licenses.sh",
     "release": "changeset publish",
     "codemod": "bun scripts/codemods/run.ts",
     "postinstall": "bash scripts/postinstall.sh"
