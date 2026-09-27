@@ -61,6 +61,8 @@ save, so a mistake surfaces only as a failed publish.
 - A package with no `repository.url` can still have a trusted publisher saved
   against it; the publish then fails rather than the configuration. So the
   metadata is a publish prerequisite, not a configuration prerequisite.
+- Publishable manifests must also carry npm-valid internal ranges, not
+  `workspace:*`. Nothing in the repo catches that; see ADR 0013.
 - Trusted publishing needs npm >= 11.5.1 and Node >= 22.14, so the workflow pins
   Node 24. Provenance follows automatically from a public repo and public
   package, which leaves `NPM_CONFIG_PROVENANCE` mattering only for the
