@@ -1,4 +1,4 @@
-import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Button, Command, Context, Injectable, Options } from '@discord-ts-dev/common';
 import {
   ActionRowBuilder,
   ButtonBuilder,

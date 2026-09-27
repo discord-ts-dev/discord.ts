@@ -1,4 +1,4 @@
-import { addScore, defineTask, getBalance, type Store } from '@discord.ts/systems';
+import { addScore, defineTask, getBalance, type Store } from '@discord-ts-dev/systems';
 import { GAME } from './config.js';
 import { credit, XP_BOARD } from './economy.js';
 import { pickAnimal, rollCatch } from './rng.js';

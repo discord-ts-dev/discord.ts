@@ -1,7 +1,7 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { RequireGuild, RequirePermissions } from '@discord.ts/core';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { RequireGuild, RequirePermissions } from '@discord-ts-dev/core';
 import { EmbedBuilder, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { COLORS } from '../game/config.js';
 import { rulesOf, setRules } from '../game/community.js';
 import { store } from '../game/store.js';

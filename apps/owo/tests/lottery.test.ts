@@ -2,7 +2,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { getBalance } from '@discord.ts/systems';
+import { getBalance } from '@discord-ts-dev/systems';
 import { credit } from '../src/game/economy.js';
 import { buyTickets, drawLottery, drawWinner, lotteryState } from '../src/game/lottery.js';
 import { FileStore } from '../src/game/store.js';

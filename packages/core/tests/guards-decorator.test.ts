@@ -5,7 +5,7 @@ import {
   GUARDS_METADATA,
   REQUIRED_BOT_PERMISSIONS_METADATA,
   REQUIRED_PERMISSIONS_METADATA,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import {
   Cooldown,
   RequireBotPermissions,

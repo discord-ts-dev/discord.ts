@@ -34,8 +34,8 @@ export const db = createDb();
 
 ```ts
 // src/app.module.ts
-import { Module } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
+import { Module } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
 import { DB, db } from './db.js';
 import { ConfigCommand } from './commands/config.command.js';
 
@@ -48,7 +48,7 @@ export class AppModule {}
 
 ```ts
 // src/commands/config.command.ts
-import { Command, Context, Inject, Injectable } from '@discord.ts/common';
+import { Command, Context, Inject, Injectable } from '@discord-ts-dev/common';
 import { eq } from 'drizzle-orm';
 import type { ChatInputCommandInteraction } from 'discord.js';
 import { DB, type Db } from '../db.js';

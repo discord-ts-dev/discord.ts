@@ -1,5 +1,5 @@
-import { Command, Context, Injectable } from '@discord.ts/common';
-import { addScore, claimDaily } from '@discord.ts/systems';
+import { Command, Context, Injectable } from '@discord-ts-dev/common';
+import { addScore, claimDaily } from '@discord-ts-dev/systems';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS, GAME } from '../game/config.js';
 import { WEALTH_BOARD, XP_BOARD } from '../game/economy.js';

@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import { describe, test } from 'bun:test';
 import * as ux from '../src/index.js';
 
-describe('@discord.ts/ux', () => {
+describe('@discord-ts-dev/ux', () => {
   test('exports module surface', () => {
     assert.equal(typeof ux, 'object');
   });

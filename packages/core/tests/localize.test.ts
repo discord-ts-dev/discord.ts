@@ -3,7 +3,7 @@ import { describe, test } from 'bun:test';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { initI18n } from '@discord.ts/i18n';
+import { initI18n } from '@discord-ts-dev/i18n';
 import { localizedPair, unknownLocales } from '../src/discovery/discord-localize.js';
 
 function tmp(): string {

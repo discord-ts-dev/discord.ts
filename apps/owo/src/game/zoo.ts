@@ -1,4 +1,4 @@
-import { addScore, rankOf, type Store } from '@discord.ts/systems';
+import { addScore, rankOf, type Store } from '@discord-ts-dev/systems';
 import { ZOO_BOARD } from './economy.js';
 
 const zooKey = (userId: string) => `zoo:${userId}`;

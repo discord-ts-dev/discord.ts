@@ -1,4 +1,4 @@
-import { Context, Injectable, OnEvent } from '@discord.ts/common';
+import { Context, Injectable, OnEvent } from '@discord-ts-dev/common';
 import { Events } from 'discord.js';
 import { rememberUser } from '../game/users.js';
 import { store } from '../game/store.js';

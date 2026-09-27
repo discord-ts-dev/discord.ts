@@ -8,7 +8,7 @@ description: Extra per-guild values over Store, without widening GuildSettings.
 Extra per-guild values — verification role, announcement channel, rules text — use the same key namespace with a suffix:
 
 ```ts
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 
 const guildKey = (guildId: string, name: string) => `guild:${guildId}:${name}`;
 

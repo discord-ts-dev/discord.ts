@@ -1,5 +1,5 @@
 import type { ApplicationCommandType, LocalizationMap } from 'discord.js';
-import type { ContextMenuMeta } from '@discord.ts/common';
+import type { ContextMenuMeta } from '@discord-ts-dev/common';
 
 export interface Handler {
   instance: Record<string, (...args: never[]) => unknown>;

@@ -30,7 +30,7 @@ flags instead of per-guild text config.
   interaction.
 - `@OnEvent(MessageCreate)` still works: raw event listeners are not the
   command surface.
-- Metadata localizations come from `@discord.ts/i18n` catalogs
+- Metadata localizations come from `@discord-ts-dev/i18n` catalogs
   (`commands:<name>...` keys) with explicit `LocalizationMap` fields as
   override. Only Discord locale codes are read; other locale dirs log one
   boot warning.

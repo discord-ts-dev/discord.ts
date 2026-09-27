@@ -9,7 +9,7 @@ description: One config file, env overlay, sync without login.
 
 ```ts
 import { GatewayIntentBits } from 'discord.js';
-import { defineConfig } from '@discord.ts/core';
+import { defineConfig } from '@discord-ts-dev/core';
 
 export default defineConfig({
   token: 'test-token',
@@ -48,7 +48,7 @@ Sync without login for CI:
 
 ```ts
 import 'reflect-metadata';
-import { deployWithModule } from '@discord.ts/core';
+import { deployWithModule } from '@discord-ts-dev/core';
 
 const { count } = await deployWithModule(AppModule);
 console.log(`Deployed ${count} commands.`);

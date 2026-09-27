@@ -1,4 +1,4 @@
-import { Injectable } from '@discord.ts/common';
+import { Injectable } from '@discord-ts-dev/common';
 import { botConfig } from './bot-config.js';
 import { db } from './db.js';
 

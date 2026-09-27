@@ -12,7 +12,7 @@ Guards resolve through the provider registry: it constructs each `@UseGuards()` 
 Per-user rate limit. Hit replies ephemeral with seconds left and blocks.
 
 ```ts
-import { Cooldown } from '@discord.ts/core';
+import { Cooldown } from '@discord-ts-dev/core';
 
 @Command({ name: 'daily', description: 'Claim daily' })
 @Cooldown(60)
@@ -24,7 +24,7 @@ Bounded in-memory map (`MAX_ENTRIES` 5000, FIFO evict on overflow). Key is `user
 ## Permissions
 
 ```ts
-import { RequirePermissions, RequireBotPermissions } from '@discord.ts/core';
+import { RequirePermissions, RequireBotPermissions } from '@discord-ts-dev/core';
 import { PermissionFlagsBits } from 'discord.js';
 
 @RequirePermissions(PermissionFlagsBits.KickMembers)
@@ -43,7 +43,7 @@ Method metadata wins over class metadata via `Reflector.getAllAndOverride()`.
 ## Custom guard
 
 ```ts
-import { UseGuards, type CanActivate } from '@discord.ts/common';
+import { UseGuards, type CanActivate } from '@discord-ts-dev/common';
 
 class OwnerOnly implements CanActivate {
   async canActivate(ctx: unknown) {

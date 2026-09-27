@@ -7,8 +7,8 @@ import {
   PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
   type OptionFieldMeta,
-} from '@discord.ts/common';
-import { resolveLocale } from '@discord.ts/i18n';
+} from '@discord-ts-dev/common';
+import { resolveLocale } from '@discord-ts-dev/i18n';
 import { applyLocalizations, localizedPair } from './discord-localize.js';
 import type { Handler } from './handler.types.js';
 

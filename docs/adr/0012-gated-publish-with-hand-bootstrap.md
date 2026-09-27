@@ -7,10 +7,20 @@ why the first publish of each package cannot be automated.
 
 ## Context
 
-The eight `@discord.ts/*` packages have never been published. `npm view` 404s
-for all of them, the `discord.ts` scope does not exist, and `release.yml` gates
-its publish step on the `PUBLISH_ENABLED` repository variable — unset, so every
-run to date has only opened a Version PR.
+The eight `@discord-ts-dev/*` packages have never been published. `npm view` 404s
+for all of them, and `release.yml` gates its publish step on the
+`PUBLISH_ENABLED` repository variable — unset, so every run to date has only
+opened a Version PR.
+
+The packages were first written as `@discord.ts/*`, matching the project name.
+That scope could not be claimed: npm reports the name unavailable, and since
+organizations cannot be renamed, an org named `discord.ts` was never going to
+exist. The registry will not name the holder — `/-/user/<name>` and
+`/-/org/<name>` return `ResourceNotFound` for every name, including accounts
+that demonstrably exist, so they cannot be used to probe availability. The
+packages were renamed to `@discord-ts-dev/*` before the first publish, which
+also matches the GitHub organization. Nothing had shipped under the old scope,
+so no consumer is affected.
 
 Trusted publishing is the target mechanism, but it cannot bootstrap a scope. A
 trusted publisher is configured per package on npmjs.com, so at t=0 there is no
@@ -19,8 +29,10 @@ save, so a mistake surfaces only as a failed publish.
 
 ## Decision
 
-- The scope is a free npm **org** named `discord.ts`, not a user account: eight
-  packages with independent version lines need more than one maintainer.
+- The scope is a free npm **org** named `discord-ts-dev`, not a user account:
+  eight packages with independent version lines need more than one maintainer.
+  The name follows the GitHub organization rather than the brand, the same way
+  `@nestjs` does.
 - `release.yml` publishes all eight in one `changeset publish`, with provenance,
   in the topological order Changesets already computes. Internal dependency
   ranges settle at versioning time, so `common` always precedes `core`.
@@ -62,6 +74,9 @@ save, so a mistake surfaces only as a failed publish.
 
 ## Rejected
 
+- The `@discord.ts` scope, despite matching the brand: unavailable, and
+  organizations cannot be renamed, so waiting on it is not a plan. Scope and
+  brand are allowed to differ — `@nestjs` for NestJS is the same shape.
 - An npm user account instead of an org: one maintainer, one 2FA method, and no
   way to add a second maintainer without transferring every package.
 - Publishing from a laptop: publishes under a personal identity, skips the

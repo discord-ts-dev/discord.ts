@@ -1,4 +1,4 @@
-import type { SortedEntry, Store, StoreUpdate } from '@discord.ts/systems';
+import type { SortedEntry, Store, StoreUpdate } from '@discord-ts-dev/systems';
 import type { RedisClientLike, RedisClientOptions } from './client.js';
 
 export interface RedisStoreOptions {

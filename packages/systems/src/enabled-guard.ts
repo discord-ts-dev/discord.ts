@@ -5,8 +5,8 @@ import {
   type CommandGroupMeta,
   type CommandMeta,
   type SubcommandMeta,
-} from '@discord.ts/common';
-import { replyEphemeral } from '@discord.ts/ux';
+} from '@discord-ts-dev/common';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { isCommandEnabled } from './guild-settings.js';
 import type { Store } from './store.js';
 

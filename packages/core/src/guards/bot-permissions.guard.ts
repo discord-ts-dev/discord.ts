@@ -1,5 +1,5 @@
-import { REQUIRED_BOT_PERMISSIONS_METADATA, type CanActivate } from '@discord.ts/common';
-import { replyEphemeral } from '@discord.ts/ux';
+import { REQUIRED_BOT_PERMISSIONS_METADATA, type CanActivate } from '@discord-ts-dev/common';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { PermissionsBitField, type PermissionResolvable } from 'discord.js';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 

@@ -8,7 +8,7 @@ description: Stock, taxes, and extra currencies on top of one atomic Store.updat
 This purchase takes the last unit of stock, charges the buyer, and adds the item in one atomic update:
 
 ```ts
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 
 type PurchaseResult =
   | { ok: true; balance: number }

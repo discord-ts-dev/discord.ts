@@ -1,4 +1,4 @@
-import { weightedPick, type Weighted } from '@discord.ts/utils';
+import { weightedPick, type Weighted } from '@discord-ts-dev/utils';
 
 export interface SlotSymbol {
   id: string;

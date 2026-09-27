@@ -1,6 +1,6 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { getBalance } from '@discord.ts/systems';
-import { userIdOf } from '@discord.ts/utils';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { getBalance } from '@discord-ts-dev/systems';
+import { userIdOf } from '@discord-ts-dev/utils';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { store } from '../game/store.js';

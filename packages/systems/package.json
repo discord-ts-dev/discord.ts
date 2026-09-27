@@ -1,5 +1,5 @@
 {
-  "name": "@discord.ts/systems",
+  "name": "@discord-ts-dev/systems",
   "version": "0.4.0",
   "description": "discord.ts bot systems: store, scheduler, daily, quests, leaderboard, shop",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
@@ -34,8 +34,8 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord.ts/common": "workspace:*",
-    "@discord.ts/ux": "workspace:*",
+    "@discord-ts-dev/common": "workspace:*",
+    "@discord-ts-dev/ux": "workspace:*",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

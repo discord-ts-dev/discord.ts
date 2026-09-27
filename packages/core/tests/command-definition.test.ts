@@ -7,7 +7,7 @@ import {
   StringOption,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import {
   buildCommandDefinitions,
   commandLeaves,

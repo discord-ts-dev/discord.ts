@@ -66,7 +66,7 @@ Each of these is deliberate. Reading the reason before changing the line is chea
 - **Pure helpers land in `utils`**, not in `core` and not in app code first (ADR-0003).
 - **The Redis adapter ships; Prisma and Drizzle stay recipes** (ADR-0011).
 - **A `ponytail:` comment marks a deliberate shortcut** with its ceiling named. Read it before "fixing" the line — it is the repo's own do-not-refactor marker.
-- **`validateDiscoveryState` is not exported** from `@discord.ts/core`; it lives in `discovery/discord-validate.ts` and the package has no subpath export. Read it to understand the boot checks; import it from your app and you will not find it.
+- **`validateDiscoveryState` is not exported** from `@discord-ts-dev/core`; it lives in `discovery/discord-validate.ts` and the package has no subpath export. Read it to understand the boot checks; import it from your app and you will not find it.
 
 ## Promotion gates
 

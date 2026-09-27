@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
 
-# ponytail: tags are output (@discord.ts/core@x.y.z), not input.
+# ponytail: tags are output (@discord-ts-dev/core@x.y.z), not input.
 # Changesets opens a Version PR; merge publishes with npm provenance (ref: opencode-office-plugin cd.yml).
 concurrency:
   group: release-${{ github.ref_name }}

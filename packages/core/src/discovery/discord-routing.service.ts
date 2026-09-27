@@ -8,8 +8,8 @@ import {
   type DiscordModuleOptions,
   type OptionFieldMeta,
   type Type,
-} from '@discord.ts/common';
-import { replyEphemeral } from '@discord.ts/ux';
+} from '@discord-ts-dev/common';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { DiscordExecutionContext } from '../context/discord-execution-context.js';
 import type { ProviderRegistry } from '../provider-registry.js';
 import { buildArgs, buildEventArgs } from './discord-args.js';

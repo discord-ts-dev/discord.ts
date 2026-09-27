@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@discord.ts/common';
+import { Injectable, Logger } from '@discord-ts-dev/common';
 import { LavalinkManager, type Player, type Track as LavTrack } from 'lavalink-client';
 import type { Client } from 'discord.js';
 import { applyLiveFilter, describeLiveFilter, resetLiveFilters } from './lavalink-filters.js';

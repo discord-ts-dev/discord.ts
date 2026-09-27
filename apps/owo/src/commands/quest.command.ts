@@ -1,5 +1,10 @@
-import { Context, Injectable, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
-import { progressBar } from '@discord.ts/utils';
+import {
+  Context,
+  Injectable,
+  Subcommand,
+  createCommandGroupDecorator,
+} from '@discord-ts-dev/common';
+import { progressBar } from '@discord-ts-dev/utils';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { credit } from '../game/economy.js';

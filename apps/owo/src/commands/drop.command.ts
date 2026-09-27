@@ -1,5 +1,5 @@
-import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
+import { Button, Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { Cooldown } from '@discord-ts-dev/core';
 import {
   ActionRowBuilder,
   ButtonBuilder,

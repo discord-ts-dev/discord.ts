@@ -8,7 +8,7 @@ import {
   MODAL_METADATA,
   ON_EVENT_METADATA,
   SELECT_METADATA,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import {
   buildCommandDefinitions,
   commandLeaves,

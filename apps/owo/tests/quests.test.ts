@@ -2,7 +2,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { getQuest } from '@discord.ts/systems';
+import { getQuest } from '@discord-ts-dev/systems';
 import {
   advanceQuest,
   claimQuest,

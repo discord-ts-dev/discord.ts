@@ -1,6 +1,6 @@
-import { getBalance } from '@discord.ts/systems';
-import { parseAmount } from '@discord.ts/utils';
-import { replyEphemeral, type ReplyTarget } from '@discord.ts/ux';
+import { getBalance } from '@discord-ts-dev/systems';
+import { parseAmount } from '@discord-ts-dev/utils';
+import { replyEphemeral, type ReplyTarget } from '@discord-ts-dev/ux';
 import { store } from '../game/store.js';
 import { fmt, tt } from '../game/text.js';
 

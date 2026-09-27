@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
+import { Command, Subcommand, createCommandGroupDecorator } from '@discord-ts-dev/common';
 import { EnabledGuard, MemoryStore, setCommandEnabled } from '../src/index.js';
 
 // MessageFlags.Ephemeral without taking a discord.js dependency in systems.

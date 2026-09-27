@@ -17,13 +17,13 @@ export class PingCommand {
 
 ## Packages
 
-- `packages/common` — `@discord.ts/common`: metadata keys, decorators, types, logger
-- `packages/core` — `@discord.ts/core`: module, discovery, routing, sync, guards, config
-- `packages/utils` — `@discord.ts/utils`: pure helpers, mentions, ids, durations
-- `packages/systems` — `@discord.ts/systems`: store, scheduler, daily, quests, leaderboard, shop
-- `packages/redis` — `@discord.ts/redis`: Redis Store adapter and providers for multi-process bots
-- `packages/ux` — `@discord.ts/ux`: confirm dialogs, pagers
-- `packages/cli` — `@discord.ts/cli`: the `discord` runner
+- `packages/common` — `@discord-ts-dev/common`: metadata keys, decorators, types, logger
+- `packages/core` — `@discord-ts-dev/core`: module, discovery, routing, sync, guards, config
+- `packages/utils` — `@discord-ts-dev/utils`: pure helpers, mentions, ids, durations
+- `packages/systems` — `@discord-ts-dev/systems`: store, scheduler, daily, quests, leaderboard, shop
+- `packages/redis` — `@discord-ts-dev/redis`: Redis Store adapter and providers for multi-process bots
+- `packages/ux` — `@discord-ts-dev/ux`: confirm dialogs, pagers
+- `packages/cli` — `@discord-ts-dev/cli`: the `discord` runner
 - `apps/example` — runnable sample bot
 
 ## Quick start
@@ -40,7 +40,7 @@ DISCORD_TOKEN=... bun run dev
 
 - `@Command` / `@Subcommand` + group factory, `@ContextMenu`, `@Button` + selects, `@Modal`, `@Autocomplete`, `@OnEvent` / `@OnceEvent`
 - `@Context()` + `@Options()` DTO with `@StringOption()` etc, required check, `class-validator`, `@UsePipes()`
-- Command and option metadata localizations from `@discord.ts/i18n` catalogs, plus explicit `LocalizationMap` fields
+- Command and option metadata localizations from `@discord-ts-dev/i18n` catalogs, plus explicit `LocalizationMap` fields
 - `@UseGuards()` plus `@Cooldown(seconds)` and `@RequirePermissions(...)`
 - Auto slash sync (global or `development` guilds), `skipRegistration`, `deployWithModule()` for CI
 - `confirm()` and `paginate()` UX helpers, sharding passthrough
@@ -64,7 +64,7 @@ Inside a discord.ts checkout every path it cites resolves. Installed elsewhere, 
 ## Release
 
 Changesets on `main` open a Version PR. Touch `packages/*`? Run `bunx changeset`.
-Tags like `@discord.ts/core@0.2.0` are publish output.
+Tags like `@discord-ts-dev/core@0.2.0` are publish output.
 
 Publishing is gated on the `PUBLISH_ENABLED` repository variable. Unset, a run
 versions and opens the Version PR but publishes nothing — merging it is not yet

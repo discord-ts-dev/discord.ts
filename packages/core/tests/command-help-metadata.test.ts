@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
+import { Command, Subcommand, createCommandGroupDecorator } from '@discord-ts-dev/common';
 import {
   buildCommandDefinitions,
   type CommandDefinition,

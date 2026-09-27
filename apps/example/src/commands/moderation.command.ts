@@ -1,11 +1,11 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
 import {
   Cooldown,
   RequireBotPermissions,
   RequireGuild,
   RequirePermissions,
-} from '@discord.ts/core';
-import { confirm, paginate } from '@discord.ts/ux';
+} from '@discord-ts-dev/core';
+import { confirm, paginate } from '@discord-ts-dev/ux';
 import { EmbedBuilder, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
 import type {
   ClearDto,

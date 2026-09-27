@@ -1,7 +1,7 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { addScore } from '@discord.ts/systems';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { addScore } from '@discord-ts-dev/systems';
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { XP_BOARD } from '../game/economy.js';
 import { animalById, RARITIES } from '../game/roster.js';
 import { store } from '../game/store.js';

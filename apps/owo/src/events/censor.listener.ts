@@ -1,4 +1,4 @@
-import { Context, Injectable, OnEvent } from '@discord.ts/common';
+import { Context, Injectable, OnEvent } from '@discord-ts-dev/common';
 import { GatewayIntentBits, Events, type Message } from 'discord.js';
 import { censoredWords } from '../game/community.js';
 import { store } from '../game/store.js';

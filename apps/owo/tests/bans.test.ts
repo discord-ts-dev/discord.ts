@@ -2,7 +2,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { initI18n } from '@discord.ts/i18n';
+import { initI18n } from '@discord-ts-dev/i18n';
 import { MessageFlags } from 'discord.js';
 import { BannedGuard } from '../src/guards/player.guard.js';
 import { banOf, banUser, bans, unbanUser } from '../src/game/bans.js';

@@ -4,7 +4,7 @@ import {
   Options,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS, GAME } from '../game/config.js';
 import { buyTickets, lotteryState } from '../game/lottery.js';

@@ -1,5 +1,5 @@
 {
-  "name": "@discord.ts/i18n",
+  "name": "@discord-ts-dev/i18n",
   "version": "0.3.1",
   "description": "discord.ts native i18n: namespaced locale catalogs, translate, locale resolve",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
@@ -35,7 +35,7 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord.ts/common": "workspace:*"
+    "@discord-ts-dev/common": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.4.1",

@@ -7,7 +7,7 @@ import {
   type CommandGroupMeta,
   type CommandMeta,
   type SubcommandMeta,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import type { LocalizationMap } from 'discord.js';
 import { explicitPair } from './discord-localize.js';
 import type { Handler, LocalizationPair } from './handler.types.js';

@@ -1,6 +1,6 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { userIdOf } from '@discord.ts/utils';
-import { confirm, deliver, replyEphemeral } from '@discord.ts/ux';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { userIdOf } from '@discord-ts-dev/utils';
+import { confirm, deliver, replyEphemeral } from '@discord-ts-dev/ux';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { accept, decline, divorce, propose, relation } from '../game/relations.js';

@@ -1,13 +1,21 @@
-import { Author, Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
+import {
+  Author,
+  Command,
+  Context,
+  Guild,
+  Inject,
+  Injectable,
+  Options,
+} from '@discord-ts-dev/common';
 import {
   Cooldown,
   RequireBotPermissions,
   RequireGuild,
   RequireVoice,
   SameVoice,
-} from '@discord.ts/core';
-import { t } from '@discord.ts/i18n';
-import { paginate } from '@discord.ts/ux';
+} from '@discord-ts-dev/core';
+import { t } from '@discord-ts-dev/i18n';
+import { paginate } from '@discord-ts-dev/ux';
 import {
   EmbedBuilder,
   PermissionFlagsBits,
@@ -20,7 +28,7 @@ import { PlayDto, RemoveDto, SeekDto, VolumeDto } from './dto/music.dto.js';
 import { GuildPlayer } from './guild-player.js';
 import { PremiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
-import { formatTime } from '@discord.ts/utils';
+import { formatTime } from '@discord-ts-dev/utils';
 import { chunk, parseSeek } from './format.js';
 import { NON_PREMIUM_QUEUE_CAP, trackLine } from './music-helpers.js';
 

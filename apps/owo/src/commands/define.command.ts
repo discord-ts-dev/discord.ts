@@ -1,4 +1,4 @@
-import { Command, Context, Injectable, Options, StringOption } from '@discord.ts/common';
+import { Command, Context, Injectable, Options, StringOption } from '@discord-ts-dev/common';
 import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { parseDefinitions } from '../game/words.js';

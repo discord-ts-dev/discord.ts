@@ -1,6 +1,6 @@
-import { Module } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
-import { STORE } from '@discord.ts/systems';
+import { Module } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
+import { STORE } from '@discord-ts-dev/systems';
 import { store } from './game/store.js';
 import { AdminCommand } from './commands/admin.command.js';
 import { AutohuntCommand } from './commands/autohunt.command.js';

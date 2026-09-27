@@ -1,4 +1,4 @@
-import { defineTask, type Store } from '@discord.ts/systems';
+import { defineTask, type Store } from '@discord-ts-dev/systems';
 import { store as appStore } from './store.js';
 
 export interface Giveaway {

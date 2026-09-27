@@ -25,7 +25,7 @@ async handle(
 One decorator per kind. Metadata lives on the DTO constructor.
 
 ```ts
-import { StringOption, IntegerOption } from '@discord.ts/common';
+import { StringOption, IntegerOption } from '@discord-ts-dev/common';
 import { Min, Max } from 'class-validator';
 
 export class RollDto {
@@ -70,7 +70,7 @@ Each field accepts `name`, `description`, `required`, plus `autocomplete`, `choi
 Required fields plus `class-validator` rules plus `@UsePipes()` run on each call. Fail replies ephemeral and blocks the handler. DTOs with no `class-validator` decorators pass validation untouched.
 
 ```ts
-import { UsePipes } from '@discord.ts/common';
+import { UsePipes } from '@discord-ts-dev/common';
 
 @Command({ name: 'ban', description: 'Ban a member' })
 @UsePipes(/* your ValidationPipe */)

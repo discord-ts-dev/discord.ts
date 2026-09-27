@@ -14,10 +14,10 @@ description: Runnable sample. Copy the wiring, keep the layout.
 
 ```ts
 // src/app.module.ts
-import { Module, type Provider } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
-import { redisProviders } from '@discord.ts/redis';
-import { MemoryStore, STORE } from '@discord.ts/systems';
+import { Module, type Provider } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
+import { redisProviders } from '@discord-ts-dev/redis';
+import { MemoryStore, STORE } from '@discord-ts-dev/systems';
 
 // REDIS_URL switches the systems store to Redis; without it, memory.
 const store: Provider[] = process.env.REDIS_URL
@@ -42,7 +42,7 @@ export class AppModule {}
 ```ts
 // src/main.ts
 import 'reflect-metadata';
-import { bootstrapApp } from '@discord.ts/core';
+import { bootstrapApp } from '@discord-ts-dev/core';
 
 void bootstrapApp(AppModule);
 ```
@@ -50,7 +50,7 @@ void bootstrapApp(AppModule);
 ```ts
 // src/deploy.ts
 import 'reflect-metadata';
-import { deployWithModule } from '@discord.ts/core';
+import { deployWithModule } from '@discord-ts-dev/core';
 
 const { count } = await deployWithModule(AppModule);
 console.log(`Deployed ${count} commands.`);

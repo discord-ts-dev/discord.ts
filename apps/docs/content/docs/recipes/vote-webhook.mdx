@@ -6,8 +6,8 @@ description: Parse a bot-list vote and award it — the HTTP layer stays yours.
 The parse is a pure helper and the award is Store-backed; both ship. The webhook handler itself is app-side because hosting and secrets are deployment decisions.
 
 ```ts
-import { parseVotePayload } from '@discord.ts/utils';
-import { awardVote, type Store } from '@discord.ts/systems';
+import { parseVotePayload } from '@discord-ts-dev/utils';
+import { awardVote, type Store } from '@discord-ts-dev/systems';
 
 export function voteHandler(store: Store, secret: string) {
   return async (req: Request): Promise<Response> => {

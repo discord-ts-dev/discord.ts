@@ -1,10 +1,10 @@
-# @discord.ts/redis
+# @discord-ts-dev/redis
 
 ## 0.2.0
 
 ### Minor Changes
 
-- 8850420: New `@discord.ts/redis` package: `RedisStore` implements the `Store` port on
+- 8850420: New `@discord-ts-dev/redis` package: `RedisStore` implements the `Store` port on
   Bun's native Redis client — including `update()` through WATCH/MULTI/EXEC
   retries, TTL-preserving writes, integer `incrBy`, and sorted sets — plus
   `redisProviders()` to register the store under `STORE` and the raw client
@@ -18,5 +18,5 @@
 - Updated dependencies [1bc0112]
 - Updated dependencies [d7f67e4]
 - Updated dependencies [8850420]
-  - @discord.ts/systems@0.4.0
-  - @discord.ts/common@1.2.0
+  - @discord-ts-dev/systems@0.4.0
+  - @discord-ts-dev/common@1.2.0

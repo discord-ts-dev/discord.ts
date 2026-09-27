@@ -4,7 +4,7 @@ import { afterEach, describe, test } from 'bun:test';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { Module } from '@discord.ts/common';
+import { Module } from '@discord-ts-dev/common';
 import { DiscordModule, resolveDiscordOptions } from '../src/index.js';
 
 const dirs: string[] = [];

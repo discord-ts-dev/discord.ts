@@ -1,4 +1,4 @@
-import { getBalance, type Store } from '@discord.ts/systems';
+import { getBalance, type Store } from '@discord-ts-dev/systems';
 import { credit } from './economy.js';
 
 export const BEE_PRICE = 500;

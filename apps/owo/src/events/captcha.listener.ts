@@ -1,4 +1,4 @@
-import { Context, Injectable, OnEvent } from '@discord.ts/common';
+import { Context, Injectable, OnEvent } from '@discord-ts-dev/common';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, type GuildMember } from 'discord.js';
 import { captchaRoleOf } from '../game/captcha.js';
 import { store } from '../game/store.js';

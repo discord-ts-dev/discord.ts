@@ -1,4 +1,4 @@
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 import { RARITIES, type Rarity } from './roster.js';
 
 export const UPGRADE_MAX_LEVEL = 10;

@@ -1,6 +1,6 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { COLORS } from '../game/config.js';
 import { parseTranslation } from '../game/words.js';
 import { tt } from '../game/text.js';

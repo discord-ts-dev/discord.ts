@@ -1,4 +1,4 @@
-import { StringOption } from '@discord.ts/common';
+import { StringOption } from '@discord-ts-dev/common';
 
 export class HelpDto {
   @StringOption({ name: 'command', description: 'Command name', required: false })

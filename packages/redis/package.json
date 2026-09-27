@@ -1,5 +1,5 @@
 {
-  "name": "@discord.ts/redis",
+  "name": "@discord-ts-dev/redis",
   "version": "0.2.0",
   "description": "discord.ts Redis Store adapter: Redis-backed persistence for systems",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
@@ -34,8 +34,8 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord.ts/common": "workspace:*",
-    "@discord.ts/systems": "workspace:*"
+    "@discord-ts-dev/common": "workspace:*",
+    "@discord-ts-dev/systems": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^7.0.2"

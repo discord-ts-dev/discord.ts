@@ -1,8 +1,8 @@
-import { Inject, UseGuards, type CanActivate } from '@discord.ts/common';
-import type { DiscordExecutionContext } from '@discord.ts/core';
-import { EnabledGuard, STORE, type Store } from '@discord.ts/systems';
+import { Inject, UseGuards, type CanActivate } from '@discord-ts-dev/common';
+import type { DiscordExecutionContext } from '@discord-ts-dev/core';
+import { EnabledGuard, STORE, type Store } from '@discord-ts-dev/systems';
 import { banOf } from '../game/bans.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { store as appStore } from '../game/store.js';
 import { tt } from '../game/text.js';
 import { isPaused } from '../game/warns.js';

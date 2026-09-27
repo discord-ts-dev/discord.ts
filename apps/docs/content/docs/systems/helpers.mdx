@@ -8,8 +8,8 @@ description: Votes, help lists, guild settings. Small Store-backed pieces.
 top.gg webhook bodies carry the voter id in `user`. Parsing is pure (`utils`); awarding is Store-backed.
 
 ```ts
-import { parseVotePayload } from '@discord.ts/utils';
-import { awardVote } from '@discord.ts/systems';
+import { parseVotePayload } from '@discord-ts-dev/utils';
+import { awardVote } from '@discord-ts-dev/systems';
 
 const voter = parseVotePayload(body); // string | null
 if (voter) await awardVote(store, voter, 100); // stamps vote: + adds balance
@@ -22,7 +22,7 @@ No signature check here. Verify webhook secrets at the HTTP layer before calling
 Group and sort `{ name, description, category? }` into sections. `General` sorts last.
 
 ```ts
-import { buildHelp } from '@discord.ts/systems';
+import { buildHelp } from '@discord-ts-dev/systems';
 
 buildHelp([{ name: 'ping', description: 'Pong' }]);
 // [{ category: 'General', commands: [...] }]
@@ -33,7 +33,7 @@ buildHelp([{ name: 'ping', description: 'Pong' }]);
 Per-guild per-command toggles in `guild:` keys.
 
 ```ts
-import { getSettings, setCommandEnabled, isCommandEnabled } from '@discord.ts/systems';
+import { getSettings, setCommandEnabled, isCommandEnabled } from '@discord-ts-dev/systems';
 
 await setCommandEnabled(store, guildId, 'shop', false);
 await isCommandEnabled(store, guildId, 'shop'); // false
@@ -42,7 +42,7 @@ await isCommandEnabled(store, guildId, 'shop'); // false
 Enforce the toggles with `EnabledGuard`:
 
 ```ts
-import { EnabledGuard } from '@discord.ts/systems';
+import { EnabledGuard } from '@discord-ts-dev/systems';
 
 const enabled = new EnabledGuard(store, {
   deny: (ix, name) => `\`/${name}\` is disabled in this server.`,
@@ -62,9 +62,9 @@ registry's `HelpEntry` feed (`{ name, description, category?, descriptionLocaliz
 and systems renders it without importing core.
 
 ```ts
-import { DISCORD_DISCOVERY, Inject } from '@discord.ts/common';
-import type { DiscordDiscoveryService } from '@discord.ts/core';
-import { buildHelpFromRegistry } from '@discord.ts/systems';
+import { DISCORD_DISCOVERY, Inject } from '@discord-ts-dev/common';
+import type { DiscordDiscoveryService } from '@discord-ts-dev/core';
+import { buildHelpFromRegistry } from '@discord-ts-dev/systems';
 
 class HelpCommand {
   constructor(@Inject(DISCORD_DISCOVERY) private readonly discovery: DiscordDiscoveryService) {}
@@ -84,7 +84,7 @@ enable/disable pickers. Discord caps static option choices at 25, so drive the p
 autocomplete instead of `choices`:
 
 ```ts
-import { toggleableNames } from '@discord.ts/systems';
+import { toggleableNames } from '@discord-ts-dev/systems';
 
 @Autocomplete('disable')
 async disableChoices(@Context() ix: AutocompleteInteraction): Promise<void> {

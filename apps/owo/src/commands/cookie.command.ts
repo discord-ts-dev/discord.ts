@@ -1,5 +1,5 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { userIdOf } from '@discord.ts/utils';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { userIdOf } from '@discord-ts-dev/utils';
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { cookieKey } from '../game/social.js';
 import { store } from '../game/store.js';

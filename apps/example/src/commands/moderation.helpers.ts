@@ -1,5 +1,5 @@
-import { userIdOf } from '@discord.ts/utils';
-import { errorEmbed, replyEmbed } from '@discord.ts/ux';
+import { userIdOf } from '@discord-ts-dev/utils';
+import { errorEmbed, replyEmbed } from '@discord-ts-dev/ux';
 import {
   AuditLogEvent,
   EmbedBuilder,

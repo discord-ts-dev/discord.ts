@@ -9,13 +9,13 @@ the real trigger is being *imported*, not existing. See the corrected bullet.
 
 ## Context
 
-Per-package tests imported `@discord.ts/*` through `node_modules`, which resolved
+Per-package tests imported `@discord-ts-dev/*` through `node_modules`, which resolved
 to each package's built `dist`. Three problems followed: `bun test` inside a
 package failed on a clean checkout (no `dist`), coverage reports counted
 dependency `dist` files (i18n showed 11% inside core's report), and tests
 exercised build output rather than the source they were written for.
 
-`tsconfig` `paths` cannot fix this: mapping `@discord.ts/*` to `src` makes
+`tsconfig` `paths` cannot fix this: mapping `@discord-ts-dev/*` to `src` makes
 `tsc` pull foreign sources into a package build and fail with `TS6059` (file
 not under `rootDir`). Runtime bundler plugins (`Bun.plugin` `onResolve`) do
 not intercept bare specifiers in `bun test`.
@@ -38,7 +38,7 @@ runner; `turbo.json`'s `test` task no longer depends on `^build`.
 
 - Coverage counts package sources, never `dist` - the 100% gate is meaningful.
 - Adding a package to the preload map is required when something *imports* it,
-  not when the package is created. `@discord.ts/cli` has no entry because no
+  not when the package is created. `@discord-ts-dev/cli` has no entry because no
   other package or test imports it — its own tests import `../src/cli.js`
   relatively. The root `tsconfig.json` has no `paths` map at all, by the
   decision above, so there is nothing to add there.

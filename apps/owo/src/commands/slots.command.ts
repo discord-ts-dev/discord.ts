@@ -1,5 +1,5 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { Cooldown } from '@discord-ts-dev/core';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { readBet } from './bet.js';
 import { COLORS } from '../game/config.js';

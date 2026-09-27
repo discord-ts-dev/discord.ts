@@ -1,5 +1,5 @@
-import { Command, Context, Injectable, Options, StringOption } from '@discord.ts/common';
-import { userIdOf } from '@discord.ts/utils';
+import { Command, Context, Injectable, Options, StringOption } from '@discord-ts-dev/common';
+import { userIdOf } from '@discord-ts-dev/utils';
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { EMOTES, emoteById } from '../game/emotes.js';
 import { tt } from '../game/text.js';

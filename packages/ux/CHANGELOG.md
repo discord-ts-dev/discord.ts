@@ -1,4 +1,4 @@
-# @discord.ts/ux
+# @discord-ts-dev/ux
 
 ## 1.2.0
 
@@ -26,7 +26,7 @@
 
 ### Major Changes
 
-- e95d73e: Drop `@nestjs/*` for a standalone runtime and move to ESM (`NodeNext`, `type: module`). `Injectable`, `Module`, `SetMetadata`, `UseGuards`, `UsePipes`, `Logger` now come from `@discord.ts/common`; update example imports accordingly
+- e95d73e: Drop `@nestjs/*` for a standalone runtime and move to ESM (`NodeNext`, `type: module`). `Injectable`, `Module`, `SetMetadata`, `UseGuards`, `UsePipes`, `Logger` now come from `@discord-ts-dev/common`; update example imports accordingly
 
 ### Minor Changes
 

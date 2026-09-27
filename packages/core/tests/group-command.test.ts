@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
-import { Module, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
+import { Module, Subcommand, createCommandGroupDecorator } from '@discord-ts-dev/common';
 import { DiscordModule, createRuntime } from '../src/index.js';
 
 const QuestGroup = createCommandGroupDecorator({ name: 'quest', description: 'Quests' });

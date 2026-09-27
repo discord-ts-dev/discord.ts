@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { FileStore, type Store } from '@discord.ts/systems';
+import { FileStore, type Store } from '@discord-ts-dev/systems';
 
 export { FileStore };
 

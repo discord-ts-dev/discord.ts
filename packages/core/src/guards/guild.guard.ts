@@ -1,5 +1,5 @@
-import type { CanActivate } from '@discord.ts/common';
-import { replyEphemeral } from '@discord.ts/ux';
+import type { CanActivate } from '@discord-ts-dev/common';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: mirrors the permission guards but only checks presence of a

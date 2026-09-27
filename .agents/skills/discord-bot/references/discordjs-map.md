@@ -2,7 +2,7 @@
 
 Traps for code arriving with discord.js habits. Read before writing a handler in this repo.
 
-The framework is `@discord.ts/*` on discord.js v14. discord.js types, enums, and builders are still the objects you pass around — only the wiring changed.
+The framework is `@discord-ts-dev/*` on discord.js v14. discord.js types, enums, and builders are still the objects you pass around — only the wiring changed.
 
 | discord.js habit | Here |
 | --- | --- |
@@ -13,8 +13,8 @@ The framework is `@discord.ts/*` on discord.js v14. discord.js types, enums, and
 | prefix commands, `content.startsWith(prefix)` | gone (ADR-0008). One decorator, slash only, raw `ChatInputCommandInteraction` via `@Context()` |
 | `PermissionsBitField` | `PermissionFlagsBits` for flags, `@RequirePermissions(PermissionFlagsBits.X)` for guards |
 | `ephemeral: true` | still typechecks and is `@deprecated` — your build will not catch it. `flags: MessageFlags.Ephemeral` is the current form; `packages/ux/src/reply.ts:62` already uses it |
-| `interaction.reply({ content, ephemeral })` and hand-rolled edit/follow-up branching | `deliver()` from `@discord.ts/ux` picks reply vs edit vs followUp from the target's state, and never throws — see `references/state.md` |
-| a `Collection` filter-and-await prompt | `@discord.ts/ux`: `confirm`, `paginate`, `pickOne`, author lock |
+| `interaction.reply({ content, ephemeral })` and hand-rolled edit/follow-up branching | `deliver()` from `@discord-ts-dev/ux` picks reply vs edit vs followUp from the target's state, and never throws — see `references/state.md` |
+| a `Collection` filter-and-await prompt | `@discord-ts-dev/ux`: `confirm`, `paginate`, `pickOne`, author lock |
 | `catch (e) { console.error(e) }` around a REST call | wrap only the call you expect to fail and reply with the `errorEmbed` style. The framework already catches and logs everything else — see silent failure in `SKILL.md` |
 | `new Client({ intents })` + `login(token)` | `defineConfig()` in `discord.config.ts` + `bootstrapApp(AppModule)`; `deployWithModule(AppModule)` to deploy without logging in |
 | `@discordjs/builders` for command JSON | not needed; the registry derives it from decorators |
@@ -34,7 +34,7 @@ The framework is `@discord.ts/*` on discord.js v14. discord.js types, enums, and
 
 ## Where the truth lives
 
-- **API surface**: the installed typings — `discord.js` and `@discord.ts/*` under `node_modules` (a bun install resolves them through `node_modules/.bun/`). Faster and more current than any guide.
+- **API surface**: the installed typings — `discord.js` and `@discord-ts-dev/*` under `node_modules` (a bun install resolves them through `node_modules/.bun/`). Faster and more current than any guide.
 - **Framework surface**: `apps/docs/content/docs/` — one page per feature.
 - **Why it is like this**: `docs/adr/`. The anti-fix list in `references/ops.md` is the short version.
 - **Vocabulary**: `CONTEXT-MAP.md` → the context's `CONTEXT.md`. Use its words for domain concepts.

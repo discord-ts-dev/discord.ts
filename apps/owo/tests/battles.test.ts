@@ -2,7 +2,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { getBalance } from '@discord.ts/systems';
+import { getBalance } from '@discord-ts-dev/systems';
 import {
   battleIndex,
   BATTLE_TTL_MS,

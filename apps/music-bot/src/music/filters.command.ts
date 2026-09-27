@@ -5,8 +5,8 @@ import {
   Injectable,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
-import { Cooldown, RequireGuild, SameVoice } from '@discord.ts/core';
+} from '@discord-ts-dev/common';
+import { Cooldown, RequireGuild, SameVoice } from '@discord-ts-dev/core';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild } from 'discord.js';
 import { GuildPlayer } from './guild-player.js';
 import { describeLiveFilter } from './lavalink-filters.js';

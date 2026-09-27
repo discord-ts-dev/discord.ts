@@ -12,7 +12,7 @@ import {
   RoleOption,
   StringOption,
   UserOption,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import { applyOptions } from '../src/discovery/discord-args.js';
 
 class DemoDto {

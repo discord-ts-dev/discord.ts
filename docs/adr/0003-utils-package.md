@@ -1,4 +1,4 @@
-# ADR 0003 — `@discord.ts/utils` package for pure helpers
+# ADR 0003 — `@discord-ts-dev/utils` package for pure helpers
 
 Date: 2026-09-14
 

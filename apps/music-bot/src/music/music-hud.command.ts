@@ -7,10 +7,10 @@ import {
   Inject,
   Injectable,
   Options,
-} from '@discord.ts/common';
-import { Cooldown, RequireBotPermissions, RequireGuild, SameVoice } from '@discord.ts/core';
-import { t } from '@discord.ts/i18n';
-import { deliver, paginate, pickOne, replyEphemeral } from '@discord.ts/ux';
+} from '@discord-ts-dev/common';
+import { Cooldown, RequireBotPermissions, RequireGuild, SameVoice } from '@discord-ts-dev/core';
+import { t } from '@discord-ts-dev/i18n';
+import { deliver, paginate, pickOne, replyEphemeral } from '@discord-ts-dev/ux';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -27,7 +27,7 @@ import { GuildPlayer } from './guild-player.js';
 import { LyricService } from './lyric.service.js';
 import { PremiumService } from './premium.service.js';
 import { botConfig } from './bot-config.js';
-import { formatTime, progressBar } from '@discord.ts/utils';
+import { formatTime, progressBar } from '@discord-ts-dev/utils';
 import { NON_PREMIUM_QUEUE_CAP, trackLine } from './music-helpers.js';
 
 @Injectable()

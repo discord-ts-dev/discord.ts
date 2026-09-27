@@ -1,4 +1,4 @@
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 
 const captchaKey = (guildId: string) => `captcha:${guildId}`;
 

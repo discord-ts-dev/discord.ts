@@ -1,12 +1,12 @@
-import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
-import { RequireGuild, RequirePermissions } from '@discord.ts/core';
+import { Button, Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { RequireGuild, RequirePermissions } from '@discord-ts-dev/core';
 import {
   MessageFlags,
   PermissionFlagsBits,
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { captchaRoleOf, setCaptchaRole } from '../game/captcha.js';
 import { store } from '../game/store.js';
 import { tt } from '../game/text.js';

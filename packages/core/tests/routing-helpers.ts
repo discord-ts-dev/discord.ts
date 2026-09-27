@@ -1,5 +1,5 @@
 import { Events } from 'discord.js';
-import type { Provider } from '@discord.ts/common';
+import type { Provider } from '@discord-ts-dev/common';
 import { DiscordRoutingService } from '../src/discovery/discord-routing.service.js';
 import type { DiscordDiscoveryService } from '../src/discovery/discord-discovery.service.js';
 import type { Handler } from '../src/discovery/handler.types.js';

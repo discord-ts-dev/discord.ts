@@ -1,5 +1,5 @@
-import { defineTask, getBalance, type Store } from '@discord.ts/systems';
-import { weightedPick } from '@discord.ts/utils';
+import { defineTask, getBalance, type Store } from '@discord-ts-dev/systems';
+import { weightedPick } from '@discord-ts-dev/utils';
 import { GAME } from './config.js';
 import { credit } from './economy.js';
 import { store as appStore } from './store.js';

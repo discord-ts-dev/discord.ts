@@ -1,7 +1,7 @@
-import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
-import { addScore, getBalance } from '@discord.ts/systems';
-import { progressBar, userIdOf } from '@discord.ts/utils';
+import { Button, Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { Cooldown } from '@discord-ts-dev/core';
+import { addScore, getBalance } from '@discord-ts-dev/systems';
+import { progressBar, userIdOf } from '@discord-ts-dev/utils';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -10,7 +10,7 @@ import {
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { readBet } from './bet.js';
 import {
   applyMove,

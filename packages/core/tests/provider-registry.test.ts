@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { Inject } from '@discord.ts/common';
+import { Inject } from '@discord-ts-dev/common';
 import { ProviderRegistry } from '../src/provider-registry.js';
 
 describe('ProviderRegistry', () => {

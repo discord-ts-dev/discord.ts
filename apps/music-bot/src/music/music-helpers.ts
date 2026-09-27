@@ -1,4 +1,4 @@
-import { formatTime } from '@discord.ts/utils';
+import { formatTime } from '@discord-ts-dev/utils';
 
 export const NON_PREMIUM_QUEUE_CAP = 25;
 

@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import { type DiscordModuleOptions } from '@discord.ts/common';
+import { type DiscordModuleOptions } from '@discord-ts-dev/common';
 
 export class DiscordSyncService {
   constructor(private readonly opts: DiscordModuleOptions) {}

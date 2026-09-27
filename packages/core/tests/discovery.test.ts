@@ -16,8 +16,8 @@ import {
   StringSelect,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
-import { initI18n } from '@discord.ts/i18n';
+} from '@discord-ts-dev/common';
+import { initI18n } from '@discord-ts-dev/i18n';
 import { DiscordDiscoveryService, type DiscordSyncService } from '../src/index.js';
 import type { CommandDefinition, CommandLeaf } from '../src/discovery/command-definition.js';
 

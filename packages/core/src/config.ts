@@ -1,7 +1,7 @@
 // ponytail: path.resolve and existsSync have no Bun equivalent.
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { DiscordLogger, type DiscordModuleOptions } from '@discord.ts/common';
+import { DiscordLogger, type DiscordModuleOptions } from '@discord-ts-dev/common';
 
 // ponytail: file may omit secrets, env fills them. Flat like forRoot opts.
 export type DiscordConfigInput = Partial<DiscordModuleOptions>;

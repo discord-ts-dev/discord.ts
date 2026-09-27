@@ -4,8 +4,8 @@ import { afterEach, describe, test } from 'bun:test';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
-import { initI18n } from '@discord.ts/i18n';
+import { Command, Subcommand, createCommandGroupDecorator } from '@discord-ts-dev/common';
+import { initI18n } from '@discord-ts-dev/i18n';
 import { DiscordDiscoveryService, type DiscordSyncService } from '../src/index.js';
 
 function apply(decorator: MethodDecorator, proto: object, name: string): void {
