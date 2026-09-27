@@ -1,5 +1,22 @@
 # @discord-ts-dev/systems
 
+## 0.4.1
+
+### Patch Changes
+
+- 96e1908: First publish to npm. Add `repository`, `bugs` and `homepage` metadata, and ship
+  `CHANGELOG.md` and `LICENSE` in the tarball. See ADR 0012.
+
+  Internal dependencies move from the `workspace:*` protocol to a caret range.
+  npm does not rewrite `workspace:` on pack or publish, so the protocol reached
+  the registry verbatim and every consumer install failed with
+  `EUNSUPPORTEDPROTOCOL`. Caret ranges are what `updateInternalDependencies`
+  already expects, and they resolve once the dependencies are published.
+
+- Updated dependencies [96e1908]
+  - @discord-ts-dev/common@1.2.1
+  - @discord-ts-dev/ux@1.2.1
+
 ## 0.4.0
 
 ### Minor Changes

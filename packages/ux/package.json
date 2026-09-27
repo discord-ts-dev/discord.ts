@@ -1,6 +1,6 @@
 {
   "name": "@discord-ts-dev/ux",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "discord.ts message UX helpers: confirm dialogs, pagers",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
   "bugs": {

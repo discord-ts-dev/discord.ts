@@ -1,6 +1,6 @@
 {
   "name": "@discord-ts-dev/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "discord.ts command runner: dev, shard, deploy, start",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
   "bugs": {
