@@ -1,6 +1,6 @@
 {
   "name": "@discord-ts-dev/i18n",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "discord.ts native i18n: namespaced locale catalogs, translate, locale resolve",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
   "bugs": {
@@ -35,7 +35,7 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord-ts-dev/common": "^1.2.0"
+    "@discord-ts-dev/common": "^1.2.1"
   },
   "devDependencies": {
     "@types/node": "^26.4.1",

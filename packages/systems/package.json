@@ -1,6 +1,6 @@
 {
   "name": "@discord-ts-dev/systems",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "discord.ts bot systems: store, scheduler, daily, quests, leaderboard, shop",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
   "bugs": {
@@ -34,8 +34,8 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord-ts-dev/common": "^1.2.0",
-    "@discord-ts-dev/ux": "^1.2.0",
+    "@discord-ts-dev/common": "^1.2.1",
+    "@discord-ts-dev/ux": "^1.2.1",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
