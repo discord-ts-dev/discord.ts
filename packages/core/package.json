@@ -35,10 +35,10 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord-ts-dev/common": "workspace:*",
-    "@discord-ts-dev/i18n": "workspace:*",
-    "@discord-ts-dev/utils": "workspace:*",
-    "@discord-ts-dev/ux": "workspace:*",
+    "@discord-ts-dev/common": "^1.2.0",
+    "@discord-ts-dev/i18n": "^0.3.1",
+    "@discord-ts-dev/utils": "^0.4.0",
+    "@discord-ts-dev/ux": "^1.2.0",
     "class-validator": "^0.15.1",
     "discord.js": "^14.0.0",
     "reflect-metadata": "^0.2.2"
