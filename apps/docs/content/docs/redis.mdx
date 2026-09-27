@@ -3,18 +3,18 @@ title: Redis
 description: The official Store adapter for multi-process bots, on Bun's native Redis client.
 ---
 
-`@discord.ts/redis`. `RedisStore` implements the [Store](/docs/systems/store) port over Redis, so balances, quests, leaderboards and guild settings survive restarts and are shared across processes or shards.
+`@discord-ts-dev/redis`. `RedisStore` implements the [Store](/docs/systems/store) port over Redis, so balances, quests, leaderboards and guild settings survive restarts and are shared across processes or shards.
 
 ```bash
-bun add @discord.ts/redis
+bun add @discord-ts-dev/redis
 ```
 
 Register the store and the raw client through the provider registry:
 
 ```ts
-import { Module } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
-import { redisProviders } from '@discord.ts/redis';
+import { Module } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
+import { redisProviders } from '@discord-ts-dev/redis';
 
 @Module({
   imports: [DiscordModule.forRootAsync()],
@@ -26,9 +26,9 @@ export class AppModule {}
 Every systems helper takes the store, and commands resolve it with `@Inject()`:
 
 ```ts
-import { Command, Context, Inject, Injectable } from '@discord.ts/common';
-import { type RedisClientLike, REDIS } from '@discord.ts/redis';
-import { STORE, getBalance, type Store } from '@discord.ts/systems';
+import { Command, Context, Inject, Injectable } from '@discord-ts-dev/common';
+import { type RedisClientLike, REDIS } from '@discord-ts-dev/redis';
+import { STORE, getBalance, type Store } from '@discord-ts-dev/systems';
 import type { ChatInputCommandInteraction } from 'discord.js';
 
 @Injectable()
@@ -58,7 +58,7 @@ export class WalletCommand {
 ## Options
 
 ```ts
-import { RedisStore } from '@discord.ts/redis';
+import { RedisStore } from '@discord-ts-dev/redis';
 
 const store = new RedisStore(process.env.REDIS_URL);
 const configured = new RedisStore({

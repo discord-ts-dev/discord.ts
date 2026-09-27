@@ -1,4 +1,9 @@
-import { Context, Injectable, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
+import {
+  Context,
+  Injectable,
+  Subcommand,
+  createCommandGroupDecorator,
+} from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 
 const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily quests' });

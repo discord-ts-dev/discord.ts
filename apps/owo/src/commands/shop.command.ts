@@ -4,8 +4,8 @@ import {
   Options,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
-import { getBalance, inventory, useItem } from '@discord.ts/systems';
+} from '@discord-ts-dev/common';
+import { getBalance, inventory, useItem } from '@discord-ts-dev/systems';
 import { EmbedBuilder, MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { purchase } from './purchase.js';
 import { COLORS, SHOP_ITEMS } from '../game/config.js';

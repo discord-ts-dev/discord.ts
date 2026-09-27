@@ -5,12 +5,27 @@ description: Boot a bot in five minutes. Install, declare, sync, run.
 
 ## 1. Install
 
+Requires Bun `>=1.4.2`.
+
 ```bash
-bun install
-bun run build
+bun add @discord-ts-dev/core @discord-ts-dev/common @discord-ts-dev/cli discord.js reflect-metadata
 ```
 
-Requires Bun `>=1.4.2`. The repo uses `bun` workspaces.
+`@discord-ts-dev/core` pulls in `@discord-ts-dev/i18n`, `@discord-ts-dev/utils` and
+`@discord-ts-dev/ux`. Add `@discord-ts-dev/systems` for store-backed features and
+`@discord-ts-dev/redis` for the Redis store.
+
+`@discord-ts-dev/cli` provides the `discord` binary. Point your scripts at it:
+
+```json
+{
+  "scripts": {
+    "dev": "discord dev",
+    "deploy": "discord deploy",
+    "start": "discord start"
+  }
+}
+```
 
 ## 2. Configure
 
@@ -18,7 +33,7 @@ Create `discord.config.ts` at the app root. Secrets come from env.
 
 ```ts
 import { GatewayIntentBits } from 'discord.js';
-import { defineConfig } from '@discord.ts/core';
+import { defineConfig } from '@discord-ts-dev/core';
 
 export default defineConfig({
   token: 'test-token',
@@ -32,7 +47,7 @@ Env wins over file: `DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`, `S
 ## 3. Declare
 
 ```ts
-import { Injectable, Command, Context } from '@discord.ts/common';
+import { Injectable, Command, Context } from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 
 @Injectable()
@@ -47,8 +62,8 @@ export class PingCommand {
 Register the provider in your module:
 
 ```ts
-import { Module } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
+import { Module } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
 
 @Module({
   imports: [DiscordModule.forRootAsync()],
@@ -59,15 +74,18 @@ export class AppModule {}
 
 ## 4. Sync
 
-Sync without login. Use it in CI.
+Sync without login. Use it in CI. `discord deploy` runs `src/deploy.ts`, so the
+snippet above belongs in that file.
 
 ```bash
 bun run deploy
 ```
 
 ```ts
+// src/deploy.ts
 import 'reflect-metadata';
-import { deployWithModule } from '@discord.ts/core';
+import { deployWithModule } from '@discord-ts-dev/core';
+import { AppModule } from './app.module';
 
 const { count } = await deployWithModule(AppModule);
 console.log(`Deployed ${count} commands.`);
@@ -75,15 +93,22 @@ console.log(`Deployed ${count} commands.`);
 
 ## 5. Run
 
+`discord dev` runs `src/main.ts`, so the snippet below belongs in that file.
+
 ```ts
 import 'reflect-metadata';
-import { bootstrapApp } from '@discord.ts/core';
+import { bootstrapApp } from '@discord-ts-dev/core';
+import { AppModule } from './app.module';
 
 void bootstrapApp(AppModule);
 ```
 
 ```bash
-bun run dev      # TS source via bun
-bun run deploy   # sync only
-bun run start    # dist via node, after build
+bun run dev      # src/main.ts via bun
+bun run deploy   # src/deploy.ts, sync only
+bun run start    # dist/main.js, after build
 ```
+
+Each script is a `@discord-ts-dev/cli` command from step 1. `dev` runs TypeScript
+source directly, so it needs no build step; `start` runs build output, so build
+first.

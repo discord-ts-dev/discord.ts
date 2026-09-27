@@ -1,4 +1,9 @@
-import { INJECT_METADATA, type Provider, type Type, type ValueProvider } from '@discord.ts/common';
+import {
+  INJECT_METADATA,
+  type Provider,
+  type Type,
+  type ValueProvider,
+} from '@discord-ts-dev/common';
 
 type Registration = { kind: 'class'; ctor: Type<object> } | { kind: 'value'; value: unknown };
 

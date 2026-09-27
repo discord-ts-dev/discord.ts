@@ -1,5 +1,5 @@
 import { Max, Min } from 'class-validator';
-import { BooleanOption, IntegerOption, StringOption } from '@discord.ts/common';
+import { BooleanOption, IntegerOption, StringOption } from '@discord-ts-dev/common';
 
 export class PlayDto {
   @StringOption({ name: 'query', description: 'Song name, URL, or ISRC', required: true })

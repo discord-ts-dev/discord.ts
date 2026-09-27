@@ -1,5 +1,5 @@
-import { Module } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
+import { Module } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
 import { AdminCommand } from './music/admin.command.js';
 import { FiltersCommand } from './music/filters.command.js';
 import { InfoCommand } from './music/info.command.js';

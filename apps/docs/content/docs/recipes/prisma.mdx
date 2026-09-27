@@ -60,8 +60,8 @@ export const prisma = new PrismaClient({
 
 ```ts
 // src/app.module.ts
-import { Module, type Provider } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
+import { Module, type Provider } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
 import { PRISMA, prisma } from './db.js';
 import { ConfigCommand } from './commands/config.command.js';
 
@@ -78,7 +78,7 @@ export class AppModule {}
 
 ```ts
 // src/commands/config.command.ts
-import { Command, Context, Inject, Injectable } from '@discord.ts/common';
+import { Command, Context, Inject, Injectable } from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 import { PRISMA, type Prisma } from '../db.js';
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'bun:test';
-import { Command, DISCORD_DISCOVERY, Inject, Module } from '@discord.ts/common';
+import { Command, DISCORD_DISCOVERY, Inject, Module } from '@discord-ts-dev/common';
 import { DiscordModule, createRuntime } from '../src/index.js';
 
 describe('Boot scan', () => {

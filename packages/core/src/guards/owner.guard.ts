@@ -1,5 +1,5 @@
-import { DISCORD_OWNERS, Inject, type CanActivate } from '@discord.ts/common';
-import { replyEphemeral } from '@discord.ts/ux';
+import { DISCORD_OWNERS, Inject, type CanActivate } from '@discord-ts-dev/common';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import type { DiscordExecutionContext } from '../context/discord-execution-context.js';
 
 // ponytail: fail-closed allowlist. Empty owners denies everyone, so the

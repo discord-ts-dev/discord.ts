@@ -42,7 +42,7 @@ body:
     attributes:
       label: Versions
       value: |
-        - `@discord.ts/*`:
+        - `@discord-ts-dev/*`:
         - `discord.js`:
         - bun / node:
     validations:

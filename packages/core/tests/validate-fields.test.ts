@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import { OPTION_FIELD_METADATA } from '@discord.ts/common';
+import { OPTION_FIELD_METADATA } from '@discord-ts-dev/common';
 import { type CommandDefinition, type CommandLeaf } from '../src/discovery/command-definition.js';
 import { validateDiscoveryState, type DiscoveryState } from '../src/discovery/discord-validate.js';
 

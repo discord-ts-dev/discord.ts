@@ -8,7 +8,7 @@ description: Slash commands, subcommands, groups, and context menus.
 Declare a `/name` handler. Method-level only. The class stays plain `@Injectable()`.
 
 ```ts
-import { Injectable, Command, Context } from '@discord.ts/common';
+import { Injectable, Command, Context } from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 
 @Injectable()
@@ -47,7 +47,7 @@ logs one boot warning. Help rendering from the registry lives in
 
 Metadata localizations come from two sources, merged per locale. Explicit maps win.
 
-Catalog keys live in the `commands` namespace of `@discord.ts/i18n`:
+Catalog keys live in the `commands` namespace of `@discord-ts-dev/i18n`:
 
 | Key                                                                        | Use                         |
 | -------------------------------------------------------------------------- | --------------------------- |
@@ -66,7 +66,7 @@ recognize are skipped with one boot warning. Option and choice names can also ca
 Children of a command or group. Make a group with the factory, then add `@Subcommand()` methods.
 
 ```ts
-import { createCommandGroupDecorator, Subcommand, Context } from '@discord.ts/common';
+import { createCommandGroupDecorator, Subcommand, Context } from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 
 const Quest = createCommandGroupDecorator({ name: 'quest', description: 'Daily quests' });

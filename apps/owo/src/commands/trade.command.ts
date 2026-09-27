@@ -1,5 +1,5 @@
-import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
-import { userIdOf } from '@discord.ts/utils';
+import { Button, Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { userIdOf } from '@discord-ts-dev/utils';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -8,7 +8,7 @@ import {
   type ButtonInteraction,
   type ChatInputCommandInteraction,
 } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { COLORS, SHOP_ITEMS } from '../game/config.js';
 import { weaponById } from '../game/battle.js';
 import {

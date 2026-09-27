@@ -1,4 +1,4 @@
-import { StringOption } from '@discord.ts/common';
+import { StringOption } from '@discord-ts-dev/common';
 
 export class MemeOneDto {
   @StringOption({ name: 'text', description: 'Caption text', required: true })

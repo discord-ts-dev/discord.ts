@@ -1,4 +1,4 @@
-import { Injectable } from '@discord.ts/common';
+import { Injectable } from '@discord-ts-dev/common';
 import { db } from './db.js';
 import type { Track } from './track.js';
 

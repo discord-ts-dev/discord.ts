@@ -4,7 +4,7 @@ import {
   RoleOption,
   StringOption,
   UserOption,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import { Max, Min } from 'class-validator';
 import type { Role, User } from 'discord.js';
 import { WEAPONS } from '../../game/battle.js';

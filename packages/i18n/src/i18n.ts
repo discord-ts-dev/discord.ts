@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import type { I18nOptions } from '@discord.ts/common';
+import type { I18nOptions } from '@discord-ts-dev/common';
 
 type Table = Record<string, unknown>;
 

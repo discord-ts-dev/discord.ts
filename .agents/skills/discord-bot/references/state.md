@@ -12,7 +12,7 @@ An interaction moves through states, and each state allows one kind of answer:
 | deferred | `editReply` |
 | replied | `followUp` |
 
-`deliver(target, payload, opts)` from `@discord.ts/ux` picks the right one from the target's state: `editReply` when already acknowledged, `followUp` when a private reply is wanted afterwards, `reply` when still free (`packages/ux/src/reply.ts:61-73`).
+`deliver(target, payload, opts)` from `@discord-ts-dev/ux` picks the right one from the target's state: `editReply` when already acknowledged, `followUp` when a private reply is wanted afterwards, `reply` when still free (`packages/ux/src/reply.ts:61-73`).
 
 **`deliver()` never throws — it returns `null`** (`reply.ts:54-76`; the catch at `:74-76` swallows everything, including failures it does not log). A `null` return is a failed send, not a quiet success. If the send matters, check it.
 
@@ -24,7 +24,7 @@ Errors go through the single failure style, `errorEmbed()`, and ephemeral. Valid
 
 A collector without a timeout is a leak. Always bound one, and pass `allowedUserId` on every dialog that acts on another user or on shared state: **without it, anyone can click anyone's button.** The lock is opt-in, not default — `normalizeCollectorOptions` leaves it undefined unless you pass it (`packages/ux/src/collector-options.ts:14`), and the check is conditional at `confirm.ts:54` and `paginate.ts:57`. A rejected click gets an ephemeral "Not yours" and the collector stays open, so the lock is free.
 
-`confirm` and `paginate` do handle the rest: 15s and 60s default timeouts, generated `customId`s, and clearing the components on resolve. Reach for them before hand-rolling a `createMessageComponentCollector` loop. `pickOne` is a picker; `weightedPick` in `@discord.ts/utils` is a weighted draw — not the same function.
+`confirm` and `paginate` do handle the rest: 15s and 60s default timeouts, generated `customId`s, and clearing the components on resolve. Reach for them before hand-rolling a `createMessageComponentCollector` loop. `pickOne` is a picker; `weightedPick` in `@discord-ts-dev/utils` is a weighted draw — not the same function.
 
 **A declined `confirm` has already answered the interaction.** It edits the message to "Cancelled." with the buttons removed (`confirm.ts:60`), so the handler returns without replying — `if (!ok) return;`. Replying again is a double-reply. A *timeout* resolves `false` silently, leaving live buttons that nothing handles, so a dialog the user needed to act on is worth a `followUp` on the timeout path.
 
@@ -40,7 +40,7 @@ State that must survive a restart goes through the Store port. The contract, in 
 - `incrBy` is integer and truncates toward zero. TTL survives writes. A key holds either a string or a sorted set, never both. `{ mirrorBoard }` keeps exactly one sorted-set board equal to a balance inside a single update.
 - Cross-adapter rules the tests rely on: sorted-set ties order by member, so `top()` and `rankOf()` agree.
 
-The Redis adapter ships (`@discord.ts/redis`, Bun's native client, `SET … KEEPTTL`). Prisma and Drizzle are documented recipes, not a port — a bot that needs them owns the wiring (ADR-0011).
+The Redis adapter ships (`@discord-ts-dev/redis`, Bun's native client, `SET … KEEPTTL`). Prisma and Drizzle are documented recipes, not a port — a bot that needs them owns the wiring (ADR-0011).
 
 ## Proving it
 

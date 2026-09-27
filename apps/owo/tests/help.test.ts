@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { initI18n } from '@discord.ts/i18n';
+import { initI18n } from '@discord-ts-dev/i18n';
 import { HelpCommand } from '../src/commands/help.command.js';
 
 initI18n({ defaultLocale: 'en', languages: ['en'] }, join(import.meta.dir, '..'));

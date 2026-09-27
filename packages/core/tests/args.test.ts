@@ -12,7 +12,7 @@ import {
   PARAM_GUILD_METADATA,
   PARAM_LOCALE_METADATA,
   PARAM_OPTIONS_METADATA,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import {
   buildArgs,
   buildDto,

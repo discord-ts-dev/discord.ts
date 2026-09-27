@@ -1,4 +1,4 @@
-import { Injectable } from '@discord.ts/common';
+import { Injectable } from '@discord-ts-dev/common';
 
 export interface LyricsResult {
   title: string;

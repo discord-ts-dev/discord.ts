@@ -9,7 +9,7 @@ import {
   UserOption,
   RoleOption,
   StringOption,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import { ChannelType } from 'discord.js';
 
 export class QueryDto {

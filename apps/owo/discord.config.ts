@@ -1,4 +1,4 @@
-import { defineConfig } from '@discord.ts/core';
+import { defineConfig } from '@discord-ts-dev/core';
 import { GatewayIntentBits } from 'discord.js';
 
 export default defineConfig({

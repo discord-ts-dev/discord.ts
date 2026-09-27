@@ -1,7 +1,7 @@
-import { Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild, RequireOwner, RequirePermissions } from '@discord.ts/core';
-import { availableLocales, t } from '@discord.ts/i18n';
-import { confirm, deliver } from '@discord.ts/ux';
+import { Command, Context, Guild, Inject, Injectable, Options } from '@discord-ts-dev/common';
+import { Cooldown, RequireGuild, RequireOwner, RequirePermissions } from '@discord-ts-dev/core';
+import { availableLocales, t } from '@discord-ts-dev/i18n';
+import { confirm, deliver } from '@discord-ts-dev/ux';
 // ponytail: node:vm has no Bun equivalent; Bun runs the module natively.
 import { runInNewContext } from 'node:vm';
 import {

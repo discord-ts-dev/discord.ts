@@ -1,7 +1,7 @@
-import { Module, type Provider } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
-import { redisProviders } from '@discord.ts/redis';
-import { MemoryStore, STORE } from '@discord.ts/systems';
+import { Module, type Provider } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
+import { redisProviders } from '@discord-ts-dev/redis';
+import { MemoryStore, STORE } from '@discord-ts-dev/systems';
 import { PingCommand } from './commands/ping.command.js';
 import { QuestCommand } from './commands/quest.command.js';
 import { RollCommand } from './commands/roll.command.js';

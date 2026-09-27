@@ -4,8 +4,8 @@ import {
   Options,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
-import { RequireGuild, RequirePermissions } from '@discord.ts/core';
+} from '@discord-ts-dev/common';
+import { RequireGuild, RequirePermissions } from '@discord-ts-dev/core';
 import { PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
 import { censorWord, censoredWords, uncensorWord } from '../game/community.js';
 import { store } from '../game/store.js';

@@ -1,4 +1,4 @@
-import { Command, Context, Injectable } from '@discord.ts/common';
+import { Command, Context, Injectable } from '@discord-ts-dev/common';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { tt } from '../game/text.js';

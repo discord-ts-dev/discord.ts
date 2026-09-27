@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
-import * as common from '@discord.ts/common';
-import * as core from '@discord.ts/core';
-import * as i18n from '@discord.ts/i18n';
-import * as redis from '@discord.ts/redis';
-import * as systems from '@discord.ts/systems';
-import * as utils from '@discord.ts/utils';
-import * as ux from '@discord.ts/ux';
+import * as common from '@discord-ts-dev/common';
+import * as core from '@discord-ts-dev/core';
+import * as i18n from '@discord-ts-dev/i18n';
+import * as redis from '@discord-ts-dev/redis';
+import * as systems from '@discord-ts-dev/systems';
+import * as utils from '@discord-ts-dev/utils';
+import * as ux from '@discord-ts-dev/ux';
 
 const surfaces = {
   common: [common, ['Command', 'DiscordLogger', 'DISCORD_DISCOVERY']],

@@ -3,10 +3,10 @@ title: Store
 description: Thin async port plus in-memory adapter. No ORM.
 ---
 
-`Store` is the port. `MemoryStore` is the dev/test adapter, `FileStore` is the zero-dep single-process file adapter, and `@discord.ts/redis` ships `RedisStore` for multi-process deployments — see [Redis](/docs/redis).
+`Store` is the port. `MemoryStore` is the dev/test adapter, `FileStore` is the zero-dep single-process file adapter, and `@discord-ts-dev/redis` ships `RedisStore` for multi-process deployments — see [Redis](/docs/redis).
 
 ```ts
-import { FileStore, MemoryStore, type Store } from '@discord.ts/systems';
+import { FileStore, MemoryStore, type Store } from '@discord-ts-dev/systems';
 
 const store: Store = new MemoryStore();
 await store.set('bal:123', '100');
@@ -40,7 +40,7 @@ The port carries no schema and no versioning: adapters keep opaque strings and s
 Systems already use it, and the balance-taking functions can mirror a board in the same write:
 
 ```ts
-import { addBalance, buy, claimDaily } from '@discord.ts/systems';
+import { addBalance, buy, claimDaily } from '@discord-ts-dev/systems';
 
 await addBalance(store, userId, 100, { mirrorBoard: 'wealth' });
 await buy(store, userId, { id: 'lootbox', price: 200 }, 1, { mirrorBoard: 'wealth' });

@@ -1,5 +1,5 @@
-import { Context, Injectable, Logger, OnceEvent } from '@discord.ts/common';
-import { TaskRunner } from '@discord.ts/systems';
+import { Context, Injectable, Logger, OnceEvent } from '@discord-ts-dev/common';
+import { TaskRunner } from '@discord-ts-dev/systems';
 import { Events, type Client, type TextChannel } from 'discord.js';
 import { autohuntTask } from '../game/autohunt.js';
 import { battleRefundTask } from '../game/battles.js';

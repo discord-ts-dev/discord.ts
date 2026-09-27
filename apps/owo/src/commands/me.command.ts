@@ -1,5 +1,5 @@
-import { Command, Context, Injectable } from '@discord.ts/common';
-import { getBalance, rankOf } from '@discord.ts/systems';
+import { Command, Context, Injectable } from '@discord-ts-dev/common';
+import { getBalance, rankOf } from '@discord-ts-dev/systems';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { WEALTH_BOARD, XP_BOARD, ZOO_BOARD } from '../game/economy.js';

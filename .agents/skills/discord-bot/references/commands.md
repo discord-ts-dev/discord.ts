@@ -27,7 +27,7 @@ Limits that shape the DTO: 25 options, required before optional, name 1–32, de
 
 ## Guards
 
-Built-in decorators from `@discord.ts/core`: `@RequireGuild()`, `@RequireOwner()`, `@RequirePermissions(...)`, `@RequireBotPermissions(...)`, `@RequireVoice()`, `@SameVoice()`, `@Cooldown(seconds)`. Each replies ephemeral and blocks the handler.
+Built-in decorators from `@discord-ts-dev/core`: `@RequireGuild()`, `@RequireOwner()`, `@RequirePermissions(...)`, `@RequireBotPermissions(...)`, `@RequireVoice()`, `@SameVoice()`, `@Cooldown(seconds)`. Each replies ephemeral and blocks the handler.
 
 A custom guard is a `CanActivate` class — `{ canActivate(context) }` returning a boolean or a promise of one — applied with `@UseGuards()`. Guards resolve through the provider registry on first use, so a guard class can take constructor arguments through `@Inject()`. A preconfigured **instance** is used as-is, which is how a guard carries per-call arguments.
 

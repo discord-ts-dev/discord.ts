@@ -1,4 +1,4 @@
-# @discord.ts/common
+# @discord-ts-dev/common
 
 ## 1.2.0
 
@@ -10,7 +10,7 @@
   constructs each provider once, resolves dependencies in declaration order, and
   fails on duplicates, missing tokens, and cycles. Guards named in
   `@UseGuards()` resolve through the same registry, so app guards inject
-  providers instead of defaulting to module singletons. `@discord.ts/systems`
+  providers instead of defaulting to module singletons. `@discord-ts-dev/systems`
   exports the `STORE` token for apps plugging their Store adapter (ADR 0004).
   Modules stay flat: only the root module's providers are read.
 - 1bc0112: Registry-driven help and toggleable commands. `@Command()` and group metadata carry `category` and
@@ -32,14 +32,14 @@
 
 ### Major Changes
 
-- e95d73e: Drop `@nestjs/*` for a standalone runtime and move to ESM (`NodeNext`, `type: module`). `Injectable`, `Module`, `SetMetadata`, `UseGuards`, `UsePipes`, `Logger` now come from `@discord.ts/common`; update example imports accordingly
+- e95d73e: Drop `@nestjs/*` for a standalone runtime and move to ESM (`NodeNext`, `type: module`). `Injectable`, `Module`, `SetMetadata`, `UseGuards`, `UsePipes`, `Logger` now come from `@discord-ts-dev/common`; update example imports accordingly
 
 ### Minor Changes
 
 - d23bb48: Add `CommandContext`: one wrapper over the slash and prefix surfaces. `@Context()` injects it when the param type is `CommandContext`; the raw `ChatInputCommandInteraction | Message` union still injects untouched. One `reply` routes to followUp when the interaction was already answered; `ephemeral` is dropped on prefix instead of failing. `confirm()`, `paginate()`, and `pickOne()` accept the wrapper.
 - d23bb48: Add native @Guild() and @Author() param decorators: guild resolves to the interaction/message guild (null in DMs), author to message.author or interaction.user, on slash, prefix, component, modal, and event surfaces
 - f52c392: Resolve moderation framework gaps: new utils package (mention/id parsing, snowflake check, message guard), prefix DTO mention coerce plus trailing-text join, RequireBotPermissions guard, Message-capable confirm/paginate, errorEmbed
-- d23bb48: Add native i18n in the dedicated `@discord.ts/i18n` package: enable with `i18n` in discord.config.ts, catalogs in `src/locales/<lang>/<namespace>.json`, lookup via `t()`, per-call locale via `@Locale()`
+- d23bb48: Add native i18n in the dedicated `@discord-ts-dev/i18n` package: enable with `i18n` in discord.config.ts, catalogs in `src/locales/<lang>/<namespace>.json`, lookup via `t()`, per-call locale via `@Locale()`
 - d23bb48: Add RequireOwner (owners config), RequireVoice/SameVoice guards, pickOne select picker, and formatTime/progressBar utils
 - 67f87b6: Add unified Command decorator, group JSON, option extras, and boot validator
 

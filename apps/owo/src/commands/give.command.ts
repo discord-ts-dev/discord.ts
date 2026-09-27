@@ -1,6 +1,6 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { RequireGuild, RequirePermissions } from '@discord.ts/core';
-import { userIdOf } from '@discord.ts/utils';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { RequireGuild, RequirePermissions } from '@discord-ts-dev/core';
+import { userIdOf } from '@discord-ts-dev/utils';
 import { MessageFlags, PermissionFlagsBits, type ChatInputCommandInteraction } from 'discord.js';
 import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';

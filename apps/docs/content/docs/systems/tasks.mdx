@@ -4,7 +4,7 @@ description: Interval and daily jobs. No queue, no cron parser.
 ---
 
 ```ts
-import { defineTask, TaskRunner } from '@discord.ts/systems';
+import { defineTask, TaskRunner } from '@discord-ts-dev/systems';
 
 const runner = new TaskRunner([
   defineTask({ name: 'tick', everyMs: 60_000, run: () => console.log('tick') }),
@@ -31,7 +31,7 @@ Helpers: `msUntilDaily(now, at)` for ms to next run, `dayIndex(now, timeZone)` f
 `run` takes no parameters. A task body reaches the `Store` the way the rest of the app does — close over the module store or resolve it from the container at boot — and stays a thin wrapper around a `Store`-parameterized function so it is testable:
 
 ```ts
-import { defineTask } from '@discord.ts/systems';
+import { defineTask } from '@discord-ts-dev/systems';
 import { store } from './store.js';
 
 const sweep = defineTask({

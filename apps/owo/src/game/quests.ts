@@ -6,7 +6,7 @@ import {
   rerollQuest,
   type QuestState,
   type Store,
-} from '@discord.ts/systems';
+} from '@discord-ts-dev/systems';
 
 export interface QuestDef {
   goal: number;

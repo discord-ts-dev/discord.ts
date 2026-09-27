@@ -1,7 +1,7 @@
-import { Button, Command, Context, Injectable, Options } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
-import { getBalance } from '@discord.ts/systems';
-import { authorLock } from '@discord.ts/ux';
+import { Button, Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { Cooldown } from '@discord-ts-dev/core';
+import { getBalance } from '@discord-ts-dev/systems';
+import { authorLock } from '@discord-ts-dev/ux';
 import {
   ActionRowBuilder,
   ButtonBuilder,

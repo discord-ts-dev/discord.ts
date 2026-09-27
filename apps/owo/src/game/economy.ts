@@ -1,4 +1,4 @@
-import { addBalance, type Store } from '@discord.ts/systems';
+import { addBalance, type Store } from '@discord-ts-dev/systems';
 import { RARITIES, ROSTER } from './roster.js';
 
 export const XP_BOARD = 'xp';

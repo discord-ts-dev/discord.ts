@@ -1,4 +1,4 @@
-import { defineTask, type Store } from '@discord.ts/systems';
+import { defineTask, type Store } from '@discord-ts-dev/systems';
 import { credit } from './economy.js';
 import { store as appStore } from './store.js';
 

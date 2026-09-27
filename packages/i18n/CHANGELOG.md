@@ -1,4 +1,4 @@
-# @discord.ts/i18n
+# @discord-ts-dev/i18n
 
 ## 0.3.1
 
@@ -6,7 +6,7 @@
 
 - Updated dependencies [d7f67e4]
 - Updated dependencies [1bc0112]
-  - @discord.ts/common@1.2.0
+  - @discord-ts-dev/common@1.2.0
 
 ## 0.3.0
 
@@ -17,13 +17,13 @@
 ### Patch Changes
 
 - Updated dependencies [6dc5e6c]
-  - @discord.ts/common@1.1.0
+  - @discord-ts-dev/common@1.1.0
 
 ## 0.2.0
 
 ### Minor Changes
 
-- d23bb48: Add native i18n in the dedicated `@discord.ts/i18n` package: enable with `i18n` in discord.config.ts, catalogs in `src/locales/<lang>/<namespace>.json`, lookup via `t()`, per-call locale via `@Locale()`
+- d23bb48: Add native i18n in the dedicated `@discord-ts-dev/i18n` package: enable with `i18n` in discord.config.ts, catalogs in `src/locales/<lang>/<namespace>.json`, lookup via `t()`, per-call locale via `@Locale()`
 
 ### Patch Changes
 
@@ -38,4 +38,4 @@
 - Updated dependencies [76feef4]
 - Updated dependencies [9f0dea9]
 - Updated dependencies [67f87b6]
-  - @discord.ts/common@1.0.0
+  - @discord-ts-dev/common@1.0.0

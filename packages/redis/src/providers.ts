@@ -1,5 +1,5 @@
-import type { Provider } from '@discord.ts/common';
-import { STORE } from '@discord.ts/systems';
+import type { Provider } from '@discord-ts-dev/common';
+import { STORE } from '@discord-ts-dev/systems';
 import { RedisStore, type RedisStoreOptions } from './store.js';
 
 /** Token apps inject to address the raw Redis client. */

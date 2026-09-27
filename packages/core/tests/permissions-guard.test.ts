@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
 import { MessageFlags } from 'discord.js';
-import { REQUIRED_PERMISSIONS_METADATA } from '@discord.ts/common';
+import { REQUIRED_PERMISSIONS_METADATA } from '@discord-ts-dev/common';
 import { DiscordExecutionContext } from '../src/context/discord-execution-context.js';
 import { PermissionsGuard } from '../src/guards/permissions.guard.js';
 

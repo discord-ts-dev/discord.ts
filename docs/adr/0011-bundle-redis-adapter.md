@@ -20,7 +20,7 @@ method-for-method.
 
 ## Decision
 
-- The framework ships `@discord.ts/redis`: `RedisStore` implements the full
+- The framework ships `@discord-ts-dev/redis`: `RedisStore` implements the full
   `Store` port on Bun's native client, including `update()` through
   WATCH/MULTI/EXEC retries and TTL-preserving writes (`SET … KEEPTTL`).
 - `incrBy` is integer, truncate toward zero (Redis `INCRBY` semantics) in

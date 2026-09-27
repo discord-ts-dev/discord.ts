@@ -1,4 +1,4 @@
-// ponytail: seek parsing plus chunking. Durations and bars live in @discord.ts/utils.
+// ponytail: seek parsing plus chunking. Durations and bars live in @discord-ts-dev/utils.
 export function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));

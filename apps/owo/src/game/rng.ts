@@ -1,4 +1,4 @@
-import { weightedPick, type Weighted } from '@discord.ts/utils';
+import { weightedPick, type Weighted } from '@discord-ts-dev/utils';
 import { RARITIES, RARITY_ORDER, ROSTER, type Animal, type Rarity } from './roster.js';
 
 export type Rand = () => number;

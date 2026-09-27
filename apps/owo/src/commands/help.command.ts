@@ -5,9 +5,9 @@ import {
   Inject,
   Injectable,
   Locale,
-} from '@discord.ts/common';
-import type { DiscordDiscoveryService } from '@discord.ts/core';
-import { buildHelpFromRegistry } from '@discord.ts/systems';
+} from '@discord-ts-dev/common';
+import type { DiscordDiscoveryService } from '@discord-ts-dev/core';
+import { buildHelpFromRegistry } from '@discord-ts-dev/systems';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { tt } from '../game/text.js';

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@discord.ts/common';
+import { Inject, Injectable } from '@discord-ts-dev/common';
 import type { Client } from 'discord.js';
 import { LavalinkTransport } from './lavalink-transport.js';
 import type { Track } from './track.js';

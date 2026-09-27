@@ -1,6 +1,6 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { getBalance, rankOf } from '@discord.ts/systems';
-import { progressBar, userIdOf } from '@discord.ts/utils';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { getBalance, rankOf } from '@discord-ts-dev/systems';
+import { progressBar, userIdOf } from '@discord-ts-dev/utils';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { XP_BOARD } from '../game/economy.js';

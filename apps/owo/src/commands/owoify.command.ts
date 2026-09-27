@@ -1,4 +1,4 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 import { owoify } from '../game/social.js';
 import { PlayerGuarded } from '../guards/player.guard.js';

@@ -1,4 +1,4 @@
-import { Context, Inject, Injectable, Logger, OnEvent } from '@discord.ts/common';
+import { Context, Inject, Injectable, Logger, OnEvent } from '@discord-ts-dev/common';
 import { Events, type Client } from 'discord.js';
 import { GuildPlayer } from '../music/guild-player.js';
 import { PlaylistService } from '../music/playlist.service.js';

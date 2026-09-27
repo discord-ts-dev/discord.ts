@@ -1,4 +1,4 @@
-import { buy, inventory, useItem, type Store } from '@discord.ts/systems';
+import { buy, inventory, useItem, type Store } from '@discord-ts-dev/systems';
 
 export interface TradeOffer {
   id: string;

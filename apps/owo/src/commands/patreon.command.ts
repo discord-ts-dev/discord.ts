@@ -1,8 +1,8 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { RequireOwner } from '@discord.ts/core';
-import { userIdOf } from '@discord.ts/utils';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { RequireOwner } from '@discord-ts-dev/core';
+import { userIdOf } from '@discord-ts-dev/utils';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { COLORS } from '../game/config.js';
 import {
   isPremiumTier,

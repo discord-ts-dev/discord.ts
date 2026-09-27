@@ -1,10 +1,21 @@
 {
-  "name": "@discord.ts/ux",
+  "name": "@discord-ts-dev/ux",
   "version": "1.2.0",
   "description": "discord.ts message UX helpers: confirm dialogs, pagers",
+  "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
+  "bugs": {
+    "url": "https://github.com/discord-ts-dev/discord.ts/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/discord-ts-dev/discord.ts.git",
+    "directory": "packages/ux"
+  },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "type": "module",
   "main": "dist/index.js",

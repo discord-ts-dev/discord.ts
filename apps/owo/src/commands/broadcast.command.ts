@@ -1,12 +1,12 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
-import { RequireGuild, RequireOwner, RequirePermissions } from '@discord.ts/core';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
+import { RequireGuild, RequireOwner, RequirePermissions } from '@discord-ts-dev/core';
 import {
   MessageFlags,
   PermissionFlagsBits,
   type ChatInputCommandInteraction,
   type TextChannel,
 } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { announceChannelOf, announceGuilds, setAnnounceChannel } from '../game/community.js';
 import { credit } from '../game/economy.js';
 import { store } from '../game/store.js';

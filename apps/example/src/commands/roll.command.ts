@@ -1,4 +1,4 @@
-import { Command, Context, Injectable, Options } from '@discord.ts/common';
+import { Command, Context, Injectable, Options } from '@discord-ts-dev/common';
 import type { ChatInputCommandInteraction } from 'discord.js';
 import { RollDto } from './dto/roll.dto.js';
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import type { ValueProvider } from '@discord.ts/common';
-import { STORE } from '@discord.ts/systems';
+import type { ValueProvider } from '@discord-ts-dev/common';
+import { STORE } from '@discord-ts-dev/systems';
 import { REDIS, RedisStore, redisProviders } from '../src/index.js';
 import { FakeRedisClient } from './helpers/fake-client.js';
 

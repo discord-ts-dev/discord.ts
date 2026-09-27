@@ -1,13 +1,24 @@
 {
-  "name": "@discord.ts/cli",
+  "name": "@discord-ts-dev/cli",
   "version": "1.0.0",
   "description": "discord.ts command runner: dev, shard, deploy, start",
+  "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
+  "bugs": {
+    "url": "https://github.com/discord-ts-dev/discord.ts/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/discord-ts-dev/discord.ts.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "discord": "dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "type": "module",
   "main": "dist/cli.js",

@@ -2,11 +2,11 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { initI18n } from '@discord.ts/i18n';
+import { initI18n } from '@discord-ts-dev/i18n';
 import { MessageFlags } from 'discord.js';
-import { Command, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
-import { DiscordExecutionContext } from '@discord.ts/core';
-import { EnabledGuard, setCommandEnabled } from '@discord.ts/systems';
+import { Command, Subcommand, createCommandGroupDecorator } from '@discord-ts-dev/common';
+import { DiscordExecutionContext } from '@discord-ts-dev/core';
+import { EnabledGuard, setCommandEnabled } from '@discord-ts-dev/systems';
 import { FileStore } from '../src/game/store.js';
 import { SettingsCommand } from '../src/commands/settings.command.js';
 

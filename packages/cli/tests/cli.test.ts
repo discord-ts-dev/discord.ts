@@ -30,7 +30,7 @@ function harness(overrides: Partial<CliDeps> = {}) {
   return { deps, out, err, exits, spawns };
 }
 
-describe('@discord.ts/cli', () => {
+describe('@discord-ts-dev/cli', () => {
   test('usage lists every command', () => {
     const text = usage();
     assert.match(text, /Usage: discord <command>/);

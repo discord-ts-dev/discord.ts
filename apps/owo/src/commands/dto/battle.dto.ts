@@ -1,5 +1,5 @@
 import { WEAPONS } from '../../game/battle.js';
-import { StringOption, UserOption } from '@discord.ts/common';
+import { StringOption, UserOption } from '@discord-ts-dev/common';
 import type { User } from 'discord.js';
 
 export class BattleDto {

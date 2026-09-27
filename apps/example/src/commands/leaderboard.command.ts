@@ -1,5 +1,5 @@
-import { Command, Context, Inject, Injectable } from '@discord.ts/common';
-import { STORE, addScore, top, type Store } from '@discord.ts/systems';
+import { Command, Context, Inject, Injectable } from '@discord-ts-dev/common';
+import { STORE, addScore, top, type Store } from '@discord-ts-dev/systems';
 import type { ChatInputCommandInteraction } from 'discord.js';
 
 @Injectable()

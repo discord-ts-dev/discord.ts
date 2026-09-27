@@ -3,14 +3,14 @@ title: UX
 description: Confirm dialogs, embed pagers, one error style.
 ---
 
-`@discord.ts/ux`. Works on any repliable interaction: command, button, or select.
+`@discord-ts-dev/ux`. Works on any repliable interaction: command, button, or select.
 
 ## Confirm
 
 Yes / No dialog. Text or embed payload. Resolves `true` on accept, `false` on cancel or timeout.
 
 ```ts
-import { confirm } from '@discord.ts/ux';
+import { confirm } from '@discord-ts-dev/ux';
 
 const ok = await confirm(interaction, 'Ban this member?', 15_000);
 if (ok) await interaction.followUp('banned');
@@ -32,7 +32,7 @@ Non-authors are nudged with `Not yours to confirm.` and ignored; the collector k
 Prev / Next embed pager. One page replies direct. Resolves when it times out.
 
 ```ts
-import { paginate } from '@discord.ts/ux';
+import { paginate } from '@discord-ts-dev/ux';
 
 await paginate(interaction, [page1, page2, page3], 60_000);
 
@@ -53,7 +53,7 @@ Non-authors are nudged with `Not yours to page.` and ignored.
 Guard factory for component handlers. Restricts a flow to one initiating user; non-authors get an ephemeral nudge and the handler is skipped.
 
 ```ts
-import { authorLock } from '@discord.ts/ux';
+import { authorLock } from '@discord-ts-dev/ux';
 
 // Usable via `@UseGuards(authorLock(...))` once core accepts configured
 // guard instances (#46). Until then, call it directly:
@@ -72,7 +72,7 @@ When not to lock: leave open flows open — `drop` claims, `captcha`/`giveaway` 
 One red style everywhere. Success embeds stay per-feature.
 
 ```ts
-import { errorEmbed } from '@discord.ts/ux';
+import { errorEmbed } from '@discord-ts-dev/ux';
 
 await interaction.reply({ embeds: [errorEmbed('Missing target.')] });
 ```
@@ -85,7 +85,7 @@ reply is wanted after acknowledgement. It never throws, so a failed delivery
 cannot shadow the block it explains.
 
 ```ts
-import { deliver, replyEmbed, replyEphemeral } from '@discord.ts/ux';
+import { deliver, replyEmbed, replyEphemeral } from '@discord-ts-dev/ux';
 
 // Guards and refusals: ephemeral, and never lost after a defer or confirm.
 await replyEphemeral(interaction, 'Use this command in a server.');

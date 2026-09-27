@@ -1,4 +1,4 @@
-# @discord.ts/systems
+# @discord-ts-dev/systems
 
 ## 0.4.0
 
@@ -17,7 +17,7 @@
   constructs each provider once, resolves dependencies in declaration order, and
   fails on duplicates, missing tokens, and cycles. Guards named in
   `@UseGuards()` resolve through the same registry, so app guards inject
-  providers instead of defaulting to module singletons. `@discord.ts/systems`
+  providers instead of defaulting to module singletons. `@discord-ts-dev/systems`
   exports the `STORE` token for apps plugging their Store adapter (ADR 0004).
   Modules stay flat: only the root module's providers are read.
 - 1bc0112: Registry-driven help and toggleable commands. `@Command()` and group metadata carry `category` and
@@ -48,8 +48,8 @@
 - Updated dependencies [d7f67e4]
 - Updated dependencies [d7f67e4]
 - Updated dependencies [1bc0112]
-  - @discord.ts/ux@1.2.0
-  - @discord.ts/common@1.2.0
+  - @discord-ts-dev/ux@1.2.0
+  - @discord-ts-dev/common@1.2.0
 
 ## 0.3.0
 
@@ -62,7 +62,7 @@
 ### Minor Changes
 
 - 08475ce: New systems package (zero deps): Store port plus MemoryStore, TaskRunner scheduler, daily streaks, quests with reroll, leaderboards, shop and inventory, guild settings, word filter, vote rewards, help builder, prefix sub-routes, amount parser
-- e6ea827: Move pure helpers to `@discord.ts/utils`: `parseAmount()`, `containsBlocked()` / `maskBlocked()`, and `parseVotePayload()`. They need no `Store`, so `systems` is left with the Store-backed halves - `awardVote()` stays there.
+- e6ea827: Move pure helpers to `@discord-ts-dev/utils`: `parseAmount()`, `containsBlocked()` / `maskBlocked()`, and `parseVotePayload()`. They need no `Store`, so `systems` is left with the Store-backed halves - `awardVote()` stays there.
 
 ### Patch Changes
 

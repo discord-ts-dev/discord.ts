@@ -10,7 +10,7 @@ All functions take a `Store`. All money lives in `bal:`.
 Once per window claim with streak bonus and grace days.
 
 ```ts
-import { claimDaily } from '@discord.ts/systems';
+import { claimDaily } from '@discord-ts-dev/systems';
 
 const r = await claimDaily(store, userId, { amount: 100, streakBonus: 25, streakGraceDays: 1 });
 if (r.claimed) console.log(`+${r.amount} streak ${r.streak}`);
@@ -37,7 +37,7 @@ A payout that depends on the _next_ streak needs its own flow (your keys, `addBa
 ## Balance and shop
 
 ```ts
-import { getBalance, addBalance, buy, inventory, useItem } from '@discord.ts/systems';
+import { getBalance, addBalance, buy, inventory, useItem } from '@discord-ts-dev/systems';
 
 await addBalance(store, userId, 500);
 const r = await buy(store, userId, { id: 'sword', price: 300 }, 1);
@@ -57,7 +57,7 @@ import {
   rerollQuest,
   completeQuest,
   getQuest,
-} from '@discord.ts/systems';
+} from '@discord-ts-dev/systems';
 
 await assignQuest(store, userId, ['chat-10', 'react-5'], { goal: 10 });
 await addProgress(store, userId, 3);
@@ -70,7 +70,7 @@ State: `{ id, progress, goal, done, day, rerolled }`. Expired days read as `null
 ## Leaderboard
 
 ```ts
-import { addScore, top, rankOf } from '@discord.ts/systems';
+import { addScore, top, rankOf } from '@discord-ts-dev/systems';
 
 await addScore(store, 'xp', userId, 10);
 await top(store, 'xp', 10); // desc SortedEntry[]
@@ -86,7 +86,7 @@ Systems functions are leaf primitives: they return results, and side effects (XP
 Ids stay strings by design — the `Store` is value-shaped (ADR 0004). Brand them app-side and wrap at the boundary:
 
 ```ts
-import { inventory } from '@discord.ts/systems';
+import { inventory } from '@discord-ts-dev/systems';
 
 type ItemId = 'lootbox' | 'title-star' | `weapon-${string}`;
 
@@ -100,7 +100,7 @@ Keep that cast in one wrapper module so command code never re-derives it.
 Parse `100`, `1,000`, `2k`, `1.5m`, `all` / `max` (= balance). Floored to ints. Pure, so it lives in `utils`.
 
 ```ts
-import { parseAmount } from '@discord.ts/utils';
+import { parseAmount } from '@discord-ts-dev/utils';
 
 parseAmount('2k', 5000); // { ok: true, value: 2000 }
 ```

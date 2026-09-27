@@ -1,5 +1,5 @@
-import { Command, Context, Injectable } from '@discord.ts/common';
-import { paginate } from '@discord.ts/ux';
+import { Command, Context, Injectable } from '@discord-ts-dev/common';
+import { paginate } from '@discord-ts-dev/ux';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { COLORS } from '../game/config.js';
 import { RARITIES, ROSTER, type Rarity } from '../game/roster.js';

@@ -1,10 +1,21 @@
 {
-  "name": "@discord.ts/systems",
+  "name": "@discord-ts-dev/systems",
   "version": "0.4.0",
   "description": "discord.ts bot systems: store, scheduler, daily, quests, leaderboard, shop",
+  "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
+  "bugs": {
+    "url": "https://github.com/discord-ts-dev/discord.ts/issues"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/discord-ts-dev/discord.ts.git",
+    "directory": "packages/systems"
+  },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "type": "module",
   "main": "dist/index.js",
@@ -23,8 +34,8 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "@discord.ts/common": "workspace:*",
-    "@discord.ts/ux": "workspace:*",
+    "@discord-ts-dev/common": "workspace:*",
+    "@discord-ts-dev/ux": "workspace:*",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

@@ -6,8 +6,8 @@ description: Group providers. Boot with forRoot or forRootAsync.
 A `Module` groups providers. The root module wires `DiscordModule` once.
 
 ```ts
-import { Module } from '@discord.ts/common';
-import { DiscordModule } from '@discord.ts/core';
+import { Module } from '@discord-ts-dev/common';
+import { DiscordModule } from '@discord-ts-dev/core';
 
 @Module({
   imports: [DiscordModule.forRootAsync()],
@@ -46,8 +46,8 @@ DiscordModule.forRootAsync({
 A provider is a class the registry constructs once per App, or a `{ provide, useValue }` pair for ports and config. Constructor parameters receive dependencies via `@Inject()`:
 
 ```ts
-import { Inject, Module } from '@discord.ts/common';
-import { STORE } from '@discord.ts/systems';
+import { Inject, Module } from '@discord-ts-dev/common';
+import { STORE } from '@discord-ts-dev/systems';
 
 @Module({
   imports: [DiscordModule.forRootAsync()],

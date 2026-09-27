@@ -6,9 +6,13 @@ import {
   Inject,
   Injectable,
   Options,
-} from '@discord.ts/common';
-import { RequireGuild, RequirePermissions, type DiscordDiscoveryService } from '@discord.ts/core';
-import { setCommandEnabled, toggleableNames } from '@discord.ts/systems';
+} from '@discord-ts-dev/common';
+import {
+  RequireGuild,
+  RequirePermissions,
+  type DiscordDiscoveryService,
+} from '@discord-ts-dev/core';
+import { setCommandEnabled, toggleableNames } from '@discord-ts-dev/systems';
 import {
   MessageFlags,
   PermissionFlagsBits,

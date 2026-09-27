@@ -1,4 +1,4 @@
-import { Context, Injectable, Logger, OnEvent } from '@discord.ts/common';
+import { Context, Injectable, Logger, OnEvent } from '@discord-ts-dev/common';
 import { Events, type Client } from 'discord.js';
 
 @Injectable()

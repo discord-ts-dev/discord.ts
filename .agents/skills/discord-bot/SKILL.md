@@ -1,6 +1,6 @@
 ---
 name: discord-bot
-description: "Build and change Discord bots on `@discord.ts/*` and its discord.js v14 base. Use when adding or fixing a slash command, context menu, component, or event listener; when a command typechecks but silently does nothing; for intents, gateway permissions, or role hierarchy; for command registration and deploy propagation; for interaction deadlines, rate limits, ephemeral replies, or unwanted pings; for guild state that must survive a restart; for sharding or deploying a bot; or when porting discord.js code to `@discord.ts/*`."
+description: "Build and change Discord bots on `@discord-ts-dev/*` and its discord.js v14 base. Use when adding or fixing a slash command, context menu, component, or event listener; when a command typechecks but silently does nothing; for intents, gateway permissions, or role hierarchy; for command registration and deploy propagation; for interaction deadlines, rate limits, ephemeral replies, or unwanted pings; for guild state that must survive a restart; for sharding or deploying a bot; or when porting discord.js code to `@discord-ts-dev/*`."
 compatibility: opencode
 ---
 

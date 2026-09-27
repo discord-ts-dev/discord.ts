@@ -3,10 +3,10 @@ title: Word filter and censor flows
 description: Boundary matching vs substring filtering — pick deliberately.
 ---
 
-`@discord.ts/utils` ships word-boundary, case-insensitive matching:
+`@discord-ts-dev/utils` ships word-boundary, case-insensitive matching:
 
 ```ts
-import { containsBlocked, maskBlocked } from '@discord.ts/utils';
+import { containsBlocked, maskBlocked } from '@discord-ts-dev/utils';
 
 containsBlocked('hello spam', ['spam']); // true
 containsBlocked('spammer', ['spam']); // false — whole word only

@@ -1,4 +1,4 @@
-import type { Type } from '@discord.ts/common';
+import type { Type } from '@discord-ts-dev/common';
 import { createRuntime } from './discord.module.js';
 
 // ponytail: sync without login. Used by deploy script + CI.

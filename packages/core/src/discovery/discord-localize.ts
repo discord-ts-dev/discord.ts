@@ -1,5 +1,5 @@
 import type { Locale, LocalizationMap } from 'discord.js';
-import { availableLocales, lookup } from '@discord.ts/i18n';
+import { availableLocales, lookup } from '@discord-ts-dev/i18n';
 import type { LocalizationPair } from './handler.types.js';
 
 // ponytail: Discord's accepted locale codes, kept in sync by hand.

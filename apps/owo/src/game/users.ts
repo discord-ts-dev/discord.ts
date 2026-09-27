@@ -1,4 +1,4 @@
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 
 const USERS_KEY = 'users';
 // ponytail: bounded index, FIFO evict. One write per new user, not per

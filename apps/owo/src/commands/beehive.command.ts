@@ -1,6 +1,11 @@
-import { Context, Injectable, Subcommand, createCommandGroupDecorator } from '@discord.ts/common';
+import {
+  Context,
+  Injectable,
+  Subcommand,
+  createCommandGroupDecorator,
+} from '@discord-ts-dev/common';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import {
   accruedHoney,
   BEE_PRICE,

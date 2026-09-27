@@ -6,7 +6,7 @@ description: Track known users for broadcasts — and know its ceiling.
 Commands that message everyone (`broadcast`, `msgusers`, `giveall`) need an index of users the bot has seen. The small-scale pattern is one capped JSON array under a single key, written on every interaction:
 
 ```ts
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 
 const KEY = 'users';
 const CAP = 10_000;

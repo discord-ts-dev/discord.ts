@@ -1,5 +1,5 @@
 import { ShardingManager } from 'discord.js';
-import { DiscordLogger, type Type } from '@discord.ts/common';
+import { DiscordLogger, type Type } from '@discord-ts-dev/common';
 import { loadShardingOptions } from './config.js';
 import { createRuntime } from './discord.module.js';
 

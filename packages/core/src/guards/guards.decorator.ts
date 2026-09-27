@@ -5,7 +5,7 @@ import {
   SetMetadata,
   UseGuards,
   applyDecorators,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import type { PermissionResolvable } from 'discord.js';
 import { BotPermissionsGuard } from './bot-permissions.guard.js';
 import { CooldownGuard } from './cooldown.guard.js';

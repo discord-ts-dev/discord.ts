@@ -8,7 +8,7 @@ import {
   type DiscordModuleOptions,
   type Provider,
   type Type,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import { loadDiscordConfig } from './config.js';
 import { ProviderRegistry } from './provider-registry.js';
 import { DiscordDiscoveryService } from './discovery/discord-discovery.service.js';
@@ -20,7 +20,7 @@ import { GuildGuard } from './guards/guild.guard.js';
 import { OwnerGuard } from './guards/owner.guard.js';
 import { PermissionsGuard } from './guards/permissions.guard.js';
 import { SameVoiceGuard, VoiceGuard } from './guards/voice.guard.js';
-import { initI18n } from '@discord.ts/i18n';
+import { initI18n } from '@discord-ts-dev/i18n';
 
 export interface DiscordModuleAsyncOpts {
   cwd?: string;

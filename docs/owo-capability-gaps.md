@@ -39,7 +39,7 @@ Modules.
    `confirm`/`paginate` take `{ allowedUserId }`; `authorLock` guards component handlers. owo adopts it on marriage/reset confirms, dex/zoo pagers, and blackjack buttons; drop/captcha/giveaway stay open, battle/trade stay multi-party app-side.
 5. **`FileStore` → `systems`** — shipped ([#48](https://github.com/discord-ts-dev/discord.ts/issues/48), [#54](https://github.com/discord-ts-dev/discord.ts/pull/54)).
    The single-process reference adapter; runs the shared Store conformance suite.
-   The production adapter shipped separately as `@discord.ts/redis` ([#52](https://github.com/discord-ts-dev/discord.ts/issues/52), ADR 0011).
+   The production adapter shipped separately as `@discord-ts-dev/redis` ([#52](https://github.com/discord-ts-dev/discord.ts/issues/52), ADR 0011).
 
 ## Systems dynamism review (2026-09-18)
 
@@ -49,7 +49,7 @@ apply ADR 0009 — capabilities, not a configurable game engine. Consumers
 counted in-repo: `apps/owo` is the only app on daily / shop / quests / boards;
 `apps/music-bot` and `apps/example` use none of them, and no app calls
 `awardVote` or `Store.update` yet. (Afterwards, ADR 0011 added
-`@discord.ts/redis`, and `apps/example` demos a leaderboard over it.)
+`@discord-ts-dev/redis`, and `apps/example` demos a leaderboard over it.)
 
 - **Hooks in helpers — reject.** `claimDaily` / `buy` take no callbacks
   (`packages/systems/src/daily.ts:21`, `shop.ts:45`), and side effects run
@@ -131,7 +131,7 @@ canvas, trade/giveaway/marriage rules, relations and luck, economy policy
 ## Original P0–P2 list, resolved
 
 - **P0** — Store port: shipped (ADR 0004). Task runner: shipped (ADR 0005).
-  Production Store adapter: shipped (`@discord.ts/redis`, ADR 0011).
+  Production Store adapter: shipped (`@discord-ts-dev/redis`, ADR 0011).
 - **P1** — daily/streak, `topN`/`rankOf`, amount parser: shipped.
   `weightedPick`: shipped (#44). Help from registry: shipped (#45). Guild enable guard: #46.
   Author-only guard: #47.

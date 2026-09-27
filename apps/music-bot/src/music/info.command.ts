@@ -7,11 +7,11 @@ import {
   Inject,
   Injectable,
   Options,
-} from '@discord.ts/common';
-import { Cooldown, RequireGuild, type DiscordDiscoveryService } from '@discord.ts/core';
-import { t } from '@discord.ts/i18n';
-import { buildHelpFromRegistry } from '@discord.ts/systems';
-import { deliver } from '@discord.ts/ux';
+} from '@discord-ts-dev/common';
+import { Cooldown, RequireGuild, type DiscordDiscoveryService } from '@discord-ts-dev/core';
+import { t } from '@discord-ts-dev/i18n';
+import { buildHelpFromRegistry } from '@discord-ts-dev/systems';
+import { deliver } from '@discord-ts-dev/ux';
 import {
   EmbedBuilder,
   type ChatInputCommandInteraction,

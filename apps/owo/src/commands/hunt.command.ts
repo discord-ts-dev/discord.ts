@@ -1,6 +1,6 @@
-import { Command, Context, Injectable } from '@discord.ts/common';
-import { Cooldown } from '@discord.ts/core';
-import { addScore } from '@discord.ts/systems';
+import { Command, Context, Injectable } from '@discord-ts-dev/common';
+import { Cooldown } from '@discord-ts-dev/core';
+import { addScore } from '@discord-ts-dev/systems';
 import { EmbedBuilder, type ChatInputCommandInteraction } from 'discord.js';
 import { GAME } from '../game/config.js';
 import { XP_BOARD } from '../game/economy.js';

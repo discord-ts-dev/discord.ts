@@ -16,13 +16,13 @@
     "format": "oxfmt --write ."
   },
   "dependencies": {
-    "@discord.ts/cli": "workspace:*",
-    "@discord.ts/common": "workspace:*",
-    "@discord.ts/core": "workspace:*",
-    "@discord.ts/redis": "workspace:*",
-    "@discord.ts/systems": "workspace:*",
-    "@discord.ts/utils": "workspace:*",
-    "@discord.ts/ux": "workspace:*",
+    "@discord-ts-dev/cli": "workspace:*",
+    "@discord-ts-dev/common": "workspace:*",
+    "@discord-ts-dev/core": "workspace:*",
+    "@discord-ts-dev/redis": "workspace:*",
+    "@discord-ts-dev/systems": "workspace:*",
+    "@discord-ts-dev/utils": "workspace:*",
+    "@discord-ts-dev/ux": "workspace:*",
     "class-validator": "^0.15.1",
     "discord.js": "^14.0.0",
     "reflect-metadata": "^0.2.2"

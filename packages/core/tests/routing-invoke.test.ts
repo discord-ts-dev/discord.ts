@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { describe, test } from 'bun:test';
 import { MessageFlags } from 'discord.js';
 import { IsInt } from 'class-validator';
-import { PARAM_OPTIONS_METADATA, StringOption, UseGuards, UsePipes } from '@discord.ts/common';
+import { PARAM_OPTIONS_METADATA, StringOption, UseGuards, UsePipes } from '@discord-ts-dev/common';
 import type { Handler } from '../src/discovery/handler.types.js';
 import { handlerFor, onMethod, setup, type Harness } from './routing-helpers.js';
 

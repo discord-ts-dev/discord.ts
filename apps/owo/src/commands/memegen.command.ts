@@ -4,9 +4,9 @@ import {
   Options,
   Subcommand,
   createCommandGroupDecorator,
-} from '@discord.ts/common';
+} from '@discord-ts-dev/common';
 import { AttachmentBuilder, type ChatInputCommandInteraction } from 'discord.js';
-import { replyEphemeral } from '@discord.ts/ux';
+import { replyEphemeral } from '@discord-ts-dev/ux';
 import { renderMeme } from '../game/meme.js';
 import { tt } from '../game/text.js';
 import { PlayerGuarded } from '../guards/player.guard.js';

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import type { CommandFlags } from '@discord.ts/common';
+import type { CommandFlags } from '@discord-ts-dev/common';
 import { applyOptions } from './discord-args.js';
 import { applyLocalizations, localizedPair } from './discord-localize.js';
 import type { CommandDefinition, CommandLeaf } from './command-definition.js';

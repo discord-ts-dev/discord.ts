@@ -6,7 +6,7 @@
 // holds either a string or a sorted set, never both. MemoryStore keeps the two
 // namespaces separate; systems use distinct prefixes and never mix.
 import { describe, expect, test } from 'bun:test';
-import type { Store } from '@discord.ts/systems';
+import type { Store } from '@discord-ts-dev/systems';
 
 let namespaceSeq = 0;
 

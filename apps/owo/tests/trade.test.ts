@@ -2,7 +2,7 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { inventory } from '@discord.ts/systems';
+import { inventory } from '@discord-ts-dev/systems';
 import { acceptTrade, getTrade, proposeTrade } from '../src/game/trade.js';
 import { FileStore } from '../src/game/store.js';
 

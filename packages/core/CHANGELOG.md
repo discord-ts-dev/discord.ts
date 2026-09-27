@@ -1,4 +1,4 @@
-# @discord.ts/core
+# @discord-ts-dev/core
 
 ## 1.2.0
 
@@ -19,7 +19,7 @@
   constructs each provider once, resolves dependencies in declaration order, and
   fails on duplicates, missing tokens, and cycles. Guards named in
   `@UseGuards()` resolve through the same registry, so app guards inject
-  providers instead of defaulting to module singletons. `@discord.ts/systems`
+  providers instead of defaulting to module singletons. `@discord-ts-dev/systems`
   exports the `STORE` token for apps plugging their Store adapter (ADR 0004).
   Modules stay flat: only the root module's providers are read.
 - 1bc0112: Registry-driven help and toggleable commands. `@Command()` and group metadata carry `category` and
@@ -46,10 +46,10 @@
 - Updated dependencies [d7f67e4]
 - Updated dependencies [1bc0112]
 - Updated dependencies [1f11e97]
-  - @discord.ts/ux@1.2.0
-  - @discord.ts/common@1.2.0
-  - @discord.ts/utils@0.4.0
-  - @discord.ts/i18n@0.3.1
+  - @discord-ts-dev/ux@1.2.0
+  - @discord-ts-dev/common@1.2.0
+  - @discord-ts-dev/utils@0.4.0
+  - @discord-ts-dev/i18n@0.3.1
 
 ## 1.1.0
 
@@ -64,23 +64,23 @@
   error path now share it instead of carrying six copies of the same reply block.
 - Updated dependencies [39094f4]
 - Updated dependencies [6dc5e6c]
-  - @discord.ts/ux@1.1.0
-  - @discord.ts/common@1.1.0
-  - @discord.ts/i18n@0.3.0
-  - @discord.ts/utils@0.3.0
+  - @discord-ts-dev/ux@1.1.0
+  - @discord-ts-dev/common@1.1.0
+  - @discord-ts-dev/i18n@0.3.0
+  - @discord-ts-dev/utils@0.3.0
 
 ## 1.0.0
 
 ### Major Changes
 
-- e95d73e: Drop `@nestjs/*` for a standalone runtime and move to ESM (`NodeNext`, `type: module`). `Injectable`, `Module`, `SetMetadata`, `UseGuards`, `UsePipes`, `Logger` now come from `@discord.ts/common`; update example imports accordingly
+- e95d73e: Drop `@nestjs/*` for a standalone runtime and move to ESM (`NodeNext`, `type: module`). `Injectable`, `Module`, `SetMetadata`, `UseGuards`, `UsePipes`, `Logger` now come from `@discord-ts-dev/common`; update example imports accordingly
 
 ### Minor Changes
 
 - d23bb48: Add `CommandContext`: one wrapper over the slash and prefix surfaces. `@Context()` injects it when the param type is `CommandContext`; the raw `ChatInputCommandInteraction | Message` union still injects untouched. One `reply` routes to followUp when the interaction was already answered; `ephemeral` is dropped on prefix instead of failing. `confirm()`, `paginate()`, and `pickOne()` accept the wrapper.
 - d23bb48: Add native @Guild() and @Author() param decorators: guild resolves to the interaction/message guild (null in DMs), author to message.author or interaction.user, on slash, prefix, component, modal, and event surfaces
 - f52c392: Resolve moderation framework gaps: new utils package (mention/id parsing, snowflake check, message guard), prefix DTO mention coerce plus trailing-text join, RequireBotPermissions guard, Message-capable confirm/paginate, errorEmbed
-- d23bb48: Add native i18n in the dedicated `@discord.ts/i18n` package: enable with `i18n` in discord.config.ts, catalogs in `src/locales/<lang>/<namespace>.json`, lookup via `t()`, per-call locale via `@Locale()`
+- d23bb48: Add native i18n in the dedicated `@discord-ts-dev/i18n` package: enable with `i18n` in discord.config.ts, catalogs in `src/locales/<lang>/<namespace>.json`, lookup via `t()`, per-call locale via `@Locale()`
 - d23bb48: Add RequireOwner (owners config), RequireVoice/SameVoice guards, pickOne select picker, and formatTime/progressBar utils
 - d23bb48: Add built-in RequireGuild guard: blocks DM use with an ephemeral reply, works on methods and classes, composes with Cooldown and permission guards
 - b3d03b2: Store SlashCommand under the unified command key. Discovery runs one branch; `@Command({ slash: true })` + `@Subcommand()` now nests on slash like it already did on prefix. Raw `SLASH_COMMAND_METADATA` still discovers (fallback, removed next major).
@@ -106,6 +106,6 @@
 - Updated dependencies [9f0dea9]
 - Updated dependencies [67f87b6]
 - Updated dependencies [e6ea827]
-  - @discord.ts/common@1.0.0
-  - @discord.ts/utils@0.2.0
-  - @discord.ts/i18n@0.2.0
+  - @discord-ts-dev/common@1.0.0
+  - @discord-ts-dev/utils@0.2.0
+  - @discord-ts-dev/i18n@0.2.0

@@ -1,4 +1,4 @@
-import { IntegerOption, StringOption, UserOption } from '@discord.ts/common';
+import { IntegerOption, StringOption, UserOption } from '@discord-ts-dev/common';
 import { Max, Min } from 'class-validator';
 import type { User } from 'discord.js';
 

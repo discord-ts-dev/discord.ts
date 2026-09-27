@@ -1,6 +1,14 @@
-import { Author, Command, Context, Guild, Inject, Injectable, Options } from '@discord.ts/common';
-import { Cooldown, RequireGuild } from '@discord.ts/core';
-import { t } from '@discord.ts/i18n';
+import {
+  Author,
+  Command,
+  Context,
+  Guild,
+  Inject,
+  Injectable,
+  Options,
+} from '@discord-ts-dev/common';
+import { Cooldown, RequireGuild } from '@discord-ts-dev/core';
+import { t } from '@discord-ts-dev/i18n';
 import type { ChatInputCommandInteraction, Guild as DiscordGuild, User } from 'discord.js';
 import { PlaylistAddDto, PlaylistNameDto, PlaylistStealDto } from './dto/music.dto.js';
 import { PlaylistService } from './playlist.service.js';

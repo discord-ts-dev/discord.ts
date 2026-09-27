@@ -1,4 +1,4 @@
-import { OPTION_FIELD_METADATA, type OptionFieldMeta } from '@discord.ts/common';
+import { OPTION_FIELD_METADATA, type OptionFieldMeta } from '@discord-ts-dev/common';
 import { commandLeaves, type CommandDefinition, type CommandLeaf } from './command-definition.js';
 import type {
   AutocompleteEntry,

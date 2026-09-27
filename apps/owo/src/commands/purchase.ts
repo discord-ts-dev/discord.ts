@@ -1,4 +1,4 @@
-import { buy } from '@discord.ts/systems';
+import { buy } from '@discord-ts-dev/systems';
 import { WEALTH_BOARD } from '../game/economy.js';
 import { premiumTierOf, shopPrice } from '../game/premium.js';
 import { store } from '../game/store.js';
