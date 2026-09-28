@@ -13,7 +13,9 @@
     },
     "lint": {},
     "format": {},
-    "test": {},
+    "test": {
+      "dependsOn": ["build", "^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
