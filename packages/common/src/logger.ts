@@ -1,6 +1,23 @@
-import { Signale } from 'signale';
+import { createRequire } from 'node:module';
+import type signale from 'signale';
+import type { Signale as SignaleInstance, SignaleOptions } from 'signale';
 
-// ponytail: signale scope = Nest context, styleText stays at call sites.
+// ponytail: signale is CommonJS and exports via
+// `module.exports = Object.assign(new Signale(), { Signale })`. That assignment is
+// computed, so Node's cjs-module-lexer cannot see a named export and
+// `import { Signale } from 'signale'` throws
+// "does not provide an export named 'Signale'" under Node ESM. Bun tolerates it,
+// which is why the bug only reached published consumers. createRequire always
+// works. See docs/adr/0014-signale-cjs-named-import.md.
+// `types` is keyed by the DefaultMethods union, so the two custom badges have to
+// be declared through SignaleOptions' generic rather than smuggled in as a wider
+// object. SignaleOptions carries the generic; the constructor's own type erases
+// it, so the ctor is written by hand instead of read off the d.ts.
+type BaseTypes = signale.DefaultMethods | 'route' | 'ready';
+const { Signale } = createRequire(import.meta.url)('signale') as {
+  Signale: new (options?: SignaleOptions<BaseTypes>) => SignaleInstance<BaseTypes>;
+};
+
 const base = new Signale({
   scope: 'discord.ts',
   types: {
@@ -9,7 +26,7 @@ const base = new Signale({
   },
 });
 
-type BaseLogger = Pick<Signale, 'info' | 'success' | 'warn' | 'error' | 'debug' | 'log'> & {
+type BaseLogger = Pick<SignaleInstance, 'info' | 'success' | 'warn' | 'error' | 'debug' | 'log'> & {
   route(message?: unknown, ...args: unknown[]): void;
   ready(message?: unknown, ...args: unknown[]): void;
 };
