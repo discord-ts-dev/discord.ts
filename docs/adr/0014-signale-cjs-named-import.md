@@ -58,6 +58,12 @@ no conditional.
 - The test asserts importability, not behaviour. A `dist/`-dependent assertion
   would pass in a clean checkout and be silently skipped in a package-scoped
   run, which is a test that lies about what it checked.
+- Because it reads `dist/`, the suite has to produce `dist/` first. The root
+  `test` script runs `bun test` directly over `packages/`, bypassing turbo, so
+  it builds the packages itself; turbo's `test` task gained `build` for the
+  package-scoped path. A full cold build of the eight packages is under a
+  second, so this is cheaper than the alternative of a test that skips itself
+  and stops catching the bug.
 - Any future CommonJS dependency with a computed `module.exports` needs the same
   treatment. The check that catches it is `import`-ing the built package from
   Node, not a unit test — Bun will not reproduce it.

@@ -8,7 +8,7 @@
     "typecheck": "turbo run typecheck && tsc -p tsconfig.json",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "bun test --coverage --preload=./scripts/test-preload.ts packages tests/surface.test.ts && bun run test:apps",
+    "test": "turbo run build --filter='./packages/*' && bun test --coverage --preload=./scripts/test-preload.ts packages tests/surface.test.ts && bun run test:apps",
     "test:apps": "bun test --preload=./scripts/test-preload.ts apps",
     "format": "turbo run format",
     "format:check": "oxfmt --check apps packages scripts",
