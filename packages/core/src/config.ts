@@ -1,6 +1,7 @@
 // ponytail: path.resolve and existsSync have no Bun equivalent.
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { DiscordLogger, type DiscordModuleOptions } from '@discord-ts-dev/common';
 
 // ponytail: file may omit secrets, env fills them. Flat like forRoot opts.
@@ -55,7 +56,10 @@ function withoutUndefined<T extends object>(obj: T): Partial<T> {
 }
 
 async function importFile(file: string): Promise<DiscordConfigInput> {
-  const url = Bun.pathToFileURL(file).href;
+  // pathToFileURL rather than Bun.pathToFileURL: the file is already absolute
+  // (path.resolve above), and a Windows path is not a valid specifier.
+  // See docs/adr/0014-signale-cjs-named-import.md for the same class of bug.
+  const url = pathToFileURL(file).href;
   const mod = (await import(url)) as { default?: DiscordConfigInput } & DiscordConfigInput;
   return (mod.default ?? mod) as DiscordConfigInput;
 }

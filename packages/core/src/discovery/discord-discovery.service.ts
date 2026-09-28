@@ -1,3 +1,4 @@
+import { styleText, type InspectColor } from 'node:util';
 import { Client, ContextMenuCommandBuilder } from 'discord.js';
 import {
   AUTOCOMPLETE_METADATA,
@@ -29,9 +30,12 @@ import type {
   SelectEntry,
 } from './handler.types.js';
 
-// ponytail: Bun.color instead of node:util styleText, one reset code.
-const paint = (name: string, text: string): string =>
-  `${Bun.color(name, 'ansi') ?? ''}${text}\x1b[0m`;
+// ponytail: node:util styleText rather than Bun.color — one call, one escape
+// sequence, and it runs on Node as well as Bun. The signature keeps `string` so
+// call sites read naturally; styleText's union is asserted at the boundary
+// because every call site passes a literal ANSI colour name.
+// See docs/adr/0014-signale-cjs-named-import.md for the same class of bug.
+const paint = (color: string, text: string): string => styleText(color as InspectColor, text);
 
 // Standalone scan: instances -> methods -> metadata. No Nest dep.
 // Slash metadata becomes CommandDefinitions (command-definition.ts); this

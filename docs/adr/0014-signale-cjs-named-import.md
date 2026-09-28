@@ -47,17 +47,42 @@ erases the generic, so it cannot be reused directly.
 Bun runs this unchanged. `createRequire` is standard in both runtimes and needs
 no conditional.
 
+## Scope: the same bug class, three instances
+
+While verifying the fix on a Node consumer, `core` turned out to use two Bun
+globals that fail the same way:
+
+| Location | Bun global | Replaced with |
+|---|---|---|
+| `common/src/logger.ts` | named import of a CJS `module.exports` | `createRequire` |
+| `core/src/config.ts` | `Bun.pathToFileURL` | `node:url`'s `pathToFileURL` |
+| `core/src/discovery/discord-discovery.service.ts` | `Bun.color` | `node:util`'s `styleText` |
+
+Both are Bun-only globals with a direct `node:` equivalent, and both sit in the
+boot path: the first when a config is loaded, the second when commands are
+discovered. So `import('@discord-ts-dev/core')` succeeded under Node and the
+process still died moments later at `ReferenceError: Bun is not defined`. A test
+that only imports would have passed.
+
+`redis` is deliberately excluded: it wraps `Bun.RedisClient`, a Bun API rather
+than a portable one. That package is Bun-only by design.
+
+The rule this yields: a package meant to run on Node must not reference a Bun
+global in a reachable path, and "reachable" has to be proven by executing it,
+not by reading it.
+
 ## Consequences
 
 - The generic on `BaseLogger` becomes `SignaleInstance<BaseTypes>` rather than
   bare `Signale`. Same members, narrower `types` keying.
-- `packages/common/tests/node-esm.test.ts` spawns a real `node` and imports the
-  built package from a throwaway ESM file. It fails on the pre-fix `logger.ts`
-  and passes after. It skips when `node` is absent, so a Bun-only machine keeps
-  a green build.
-- The test asserts importability, not behaviour. A `dist/`-dependent assertion
-  would pass in a clean checkout and be silently skipped in a package-scoped
-  run, which is a test that lies about what it checked.
+- `packages/common/tests/node-esm.test.ts` and `packages/core/tests/node-esm.test.ts`
+  spawn a real `node`. `core`'s test goes past importing: it writes a throwaway
+  `discord.config.ts` and calls `loadDiscordConfig`, because that is the call
+  that previously threw. Both skip when `node` is absent.
+- Verified failing on the pre-fix code and passing after, in both directions.
+- Any future CommonJS dependency with a computed `module.exports`, and any future
+  Bun global, needs the same treatment. `bun test` cannot reproduce either; only
+  a Node process can.
 - Because it reads `dist/`, the suite has to produce `dist/` first. The root
   `test` script runs `bun test` directly over `packages/`, bypassing turbo, so
   it builds the packages itself; turbo's `test` task gained `build` for the
