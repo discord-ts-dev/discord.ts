@@ -8,6 +8,15 @@
 import { describe, expect, test } from 'bun:test';
 import type { Store } from '@discord-ts-dev/systems';
 
+// TTL tests assert against real wall-clock expiry, so anything that has to read
+// a key back before it expires is a race against the runner's scheduling
+// jitter. These windows are sized to clear that jitter; keep them well clear of
+// the suite's own step times, or a loaded CI box fails a correct adapter.
+// Where a test can prove the same contract from the post-expiry state instead,
+// it does, because a slow machine only helps that direction.
+const TTL = 500;
+const PAST_TTL = TTL * 2;
+
 let namespaceSeq = 0;
 
 export function storeConformance(label: string, create: () => Store): void {
@@ -35,9 +44,9 @@ export function storeConformance(label: string, create: () => Store): void {
     test('ttl expires lazily, without a sweep timer', async () => {
       const store = create();
       const k = key('ttl');
-      await store.set(k, 'v', 30);
+      await store.set(k, 'v', TTL);
       expect(await store.get(k)).toBe('v');
-      await Bun.sleep(60);
+      await Bun.sleep(PAST_TTL);
       expect(await store.get(k)).toBeNull();
     });
 
@@ -70,9 +79,12 @@ export function storeConformance(label: string, create: () => Store): void {
     test('incrBy keeps the key ttl', async () => {
       const store = create();
       const k = key('count-ttl');
-      await store.set(k, '1', 30);
+      // incrBy has to land inside the window: late, it reads the expired key as
+      // absent, starts from zero and rewrites the key with no ttl, which would
+      // turn the expiry assertion below into a false failure.
+      await store.set(k, '1', TTL);
       expect(await store.incrBy(k, 2)).toBe(3);
-      await Bun.sleep(60);
+      await Bun.sleep(PAST_TTL);
       expect(await store.get(k)).toBeNull();
     });
 
@@ -138,11 +150,11 @@ export function storeConformance(label: string, create: () => Store): void {
       expect(await store.zincrBy(k, -2, 'u')).toBe(3);
     });
 
-    test('update reads current values, applies writes and keeps ttls', async () => {
+    test('update reads current values and applies writes', async () => {
       const store = create();
       const keep = key('update-keep');
       const fresh = key('update-fresh');
-      await store.set(keep, '1', 30);
+      await store.set(keep, '1');
       const out = await store.update([keep, fresh], (current) => {
         expect(current).toEqual({ [keep]: '1', [fresh]: null });
         return { result: 'ok', writes: { [keep]: '2', [fresh]: 'x' } };
@@ -150,8 +162,18 @@ export function storeConformance(label: string, create: () => Store): void {
       expect(out).toBe('ok');
       expect(await store.get(keep)).toBe('2');
       expect(await store.get(fresh)).toBe('x');
-      await Bun.sleep(60);
-      expect(await store.get(keep)).toBeNull();
+    });
+
+    test('update keeps the key ttl', async () => {
+      const store = create();
+      const k = key('update-ttl');
+      // The write inherits the key's expiry, so the value is gone once the
+      // window passes. Reading it back as '2' first would race the window, and
+      // a write that lands after expiry would revive the key with no ttl.
+      await store.set(k, '1', TTL);
+      await store.update([k], () => ({ result: undefined, writes: { [k]: '2' } }));
+      await Bun.sleep(PAST_TTL);
+      expect(await store.get(k)).toBeNull();
     });
 
     test('update deletes keys written as null', async () => {
