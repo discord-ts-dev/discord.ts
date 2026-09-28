@@ -1,4 +1,8 @@
 import { describe, test } from 'bun:test';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import {
   COMMANDS,
@@ -131,14 +135,19 @@ describe('@discord-ts-dev/cli', () => {
     const origOut = Bun.stdout.write.bind(Bun.stdout);
     const origErr = Bun.stderr.write.bind(Bun.stderr);
     const seen: string[] = [];
-    Bun.stdout.write = ((chunk: string) => {
+    // processDeps writes through process.stdout/stderr now, but the test runs
+    // under Bun where Bun.stdout wraps them. Patching Bun's writer is what makes
+    // the interception visible; patch both so the test holds under either.
+    const capture = (chunk: unknown) => {
       seen.push(String(chunk));
       return 0;
-    }) as never;
-    Bun.stderr.write = ((chunk: string) => {
-      seen.push(String(chunk));
-      return 0;
-    }) as never;
+    };
+    const origProcessOut = process.stdout.write;
+    const origProcessErr = process.stderr.write;
+    Bun.stdout.write = capture as never;
+    Bun.stderr.write = capture as never;
+    process.stdout.write = capture as never;
+    process.stderr.write = capture as never;
     try {
       assert.equal(deps.cwd, process.cwd());
       assert.equal(await deps.exists('/definitely/missing'), false);
@@ -152,8 +161,72 @@ describe('@discord-ts-dev/cli', () => {
     } finally {
       Bun.stdout.write = origOut;
       Bun.stderr.write = origErr;
+      process.stdout.write = origProcessOut;
+      process.stderr.write = origProcessErr;
       process.exitCode = prevExitCode ?? 0;
     }
     assert.deepEqual(seen, ['a', 'b']);
+  });
+});
+
+// The runner used six Bun globals, so `discord dev` and `discord deploy` could
+// not run on Node. The tests above all run under Bun and cannot see that.
+// These spawn a real node. See docs/adr/0014-signale-cjs-named-import.md.
+const node = (() => {
+  try {
+    execFileSync('node', ['--version'], { stdio: 'ignore' });
+    return 'node';
+  } catch {
+    return null;
+  }
+})();
+
+const cliPath = join(import.meta.dirname, '..', 'dist', 'cli.js');
+
+describe.skipIf(!node)('cli under Node', () => {
+  test('prints usage with no arguments, and exits 1', () => {
+    // No command is a usage error, so the exit code is 1 by design. spawnSync
+    // rather than execFileSync because the latter throws on a non-zero exit.
+    const r = spawnSync(node as string, [cliPath], { encoding: 'utf8', timeout: 30_000 });
+    assert.equal(r.status, 1);
+    assert.match(r.stdout, /Usage: discord <command>/);
+    for (const name of Object.keys(COMMANDS)) assert.ok(r.stdout.includes(name), name);
+  });
+
+  test('exits 1 on an unknown command', () => {
+    assert.throws(() =>
+      execFileSync(node as string, [cliPath, 'nope'], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+        timeout: 30_000,
+      }),
+    );
+  });
+
+  // Reaching a spawn proves the runner works, not just the early-return paths.
+  test('spawns the entry file with the current runtime', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'dts-cli-'));
+    const app = join(dir, 'dist');
+    mkdirSync(app, { recursive: true });
+    const entry = join(app, 'main.js');
+    const marker = join(dir, 'marker.txt');
+    writeFileSync(
+      entry,
+      [
+        `import { writeFileSync } from 'node:fs';`,
+        `writeFileSync(${JSON.stringify(marker)}, process.argv[0]);`,
+      ].join('\n'),
+    );
+    try {
+      execFileSync(node as string, [cliPath, 'start'], {
+        encoding: 'utf8',
+        cwd: dir,
+        timeout: 30_000,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      assert.match(readFileSync(marker, 'utf8'), /node/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

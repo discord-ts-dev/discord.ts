@@ -57,12 +57,20 @@ globals that fail the same way:
 | `common/src/logger.ts` | named import of a CJS `module.exports` | `createRequire` |
 | `core/src/config.ts` | `Bun.pathToFileURL` | `node:url`'s `pathToFileURL` |
 | `core/src/discovery/discord-discovery.service.ts` | `Bun.color` | `node:util`'s `styleText` |
+| `cli/src/cli.ts` | `Bun.fileURLToPath`, `Bun.file`, `Bun.spawnSync`, `Bun.stdout`, `Bun.stderr`, `Bun.argv` | `node:url`, `node:fs`, `node:child_process`, `process` streams |
 
 Both are Bun-only globals with a direct `node:` equivalent, and both sit in the
 boot path: the first when a config is loaded, the second when commands are
 discovered. So `import('@discord-ts-dev/core')` succeeded under Node and the
 process still died moments later at `ReferenceError: Bun is not defined`. A test
 that only imports would have passed.
+
+`cli` needed more than a global swap. It carried a `#!/usr/bin/env bun` shebang,
+so the `discord` bin could not be launched by Node even with portable internals,
+and `Bun.spawnSync` takes one argv array where `child_process.spawnSync` takes
+`(file, args, options)`. Both are runtime differences rather than globals, and
+they are the reason a mechanical search for `Bun.` would have been the wrong
+check.
 
 `redis` is deliberately excluded: it wraps `Bun.RedisClient`, a Bun API rather
 than a portable one. That package is Bun-only by design.

@@ -1,7 +1,13 @@
-#!/usr/bin/env bun
-// ponytail: path.resolve and realpathSync have no Bun equivalent; both are
-// Bun-native implementations of the node modules.
+#!/usr/bin/env node
+// ponytail: realpathSync, spawnSync, stdout/stderr and argv all come from
+// node: builtins, so this runner works on Node as well as Bun. The previous
+// version used the Bun globals directly, which meant `discord dev` and
+// `discord deploy` could not run on Node at all.
+// See docs/adr/0014-signale-cjs-named-import.md for the same class of bug.
 import { realpathSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import * as path from 'node:path';
 
 export interface CliCommand {
@@ -12,8 +18,7 @@ export interface CliCommand {
   needsBuild?: boolean;
 }
 
-// ponytail: no arg-parser dep, five commands fit in one table. Bun runs both
-// TS source and build output, so no runtime switch.
+// ponytail: no arg-parser dep, five commands fit in one table.
 export const COMMANDS: Record<string, CliCommand> = {
   dev: { file: 'src/main.ts', args: [], help: 'boot bot from TS source' },
   'dev:shard': { file: 'src/main.ts', args: ['--shards'], help: 'boot shards from TS source' },
@@ -31,6 +36,7 @@ export const COMMANDS: Record<string, CliCommand> = {
 export interface CliDeps {
   cwd: string;
   exists: (file: string) => Promise<boolean>;
+  /** Returns the child's exit code, or null when it was killed by a signal. */
   spawn: (argv: string[]) => { exitCode: number | null };
   out: (text: string) => void;
   err: (text: string) => void;
@@ -78,7 +84,7 @@ export async function main(argv: string[], deps: CliDeps = processDeps()): Promi
 export function isEntry(entry: string | undefined, moduleUrl: string): boolean {
   if (entry === undefined) return false;
   try {
-    return realpathSync(entry) === realpathSync(Bun.fileURLToPath(moduleUrl));
+    return realpathSync(entry) === realpathSync(fileURLToPath(moduleUrl));
   } catch {
     return false;
   }
@@ -95,14 +101,27 @@ export async function mainIfEntry(
 export function processDeps(): CliDeps {
   return {
     cwd: process.cwd(),
-    exists: (file) => Bun.file(file).exists(),
-    spawn: (argv) => Bun.spawnSync(argv, { stdio: ['inherit', 'inherit', 'inherit'] }),
-    out: (text) => void Bun.stdout.write(text),
-    err: (text) => void Bun.stderr.write(text),
+    // fs/promises rather than fs sync: the original used an async existence
+    // check, and keeping it async means the injected tests do not change shape.
+    exists: async (file) => existsSync(file),
+    // Bun's spawnSync takes one array; Node's takes (file, args, options).
+    // Splitting it here is what makes the runner portable.
+    //
+    // Narrowed to { exitCode } because that is all main() reads, and the raw
+    // SpawnSyncReturns carries buffer-generic overloads that no single value
+    // satisfies. The stdio tuple is spelled out rather than 'inherit' because
+    // the typed overloads are selected by the tuple, not the string.
+    spawn: (argv) => ({
+      exitCode: spawnSync(argv[0] as string, argv.slice(1), {
+        stdio: ['ignore', 'inherit', 'inherit'],
+      }).status,
+    }),
+    out: (text) => void process.stdout.write(text),
+    err: (text) => void process.stderr.write(text),
     exit: (code) => {
       process.exitCode = code;
     },
   };
 }
 
-await mainIfEntry(Bun.argv, import.meta.url);
+await mainIfEntry(process.argv, import.meta.url);
