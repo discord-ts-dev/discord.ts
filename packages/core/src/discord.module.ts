@@ -61,6 +61,39 @@ function moduleMeta(target: object): { imports?: unknown[]; providers?: Provider
   };
 }
 
+/** A module class carries MODULE_METADATA; a `forRoot` def is a config carrier, not a module. */
+function isModuleClass(value: unknown): value is Type<unknown> {
+  return typeof value === 'function' && Reflect.hasMetadata(MODULE_METADATA, value as object);
+}
+
+/**
+ * Providers reachable from `appModule`, depth-first through `imports`, each
+ * module's own providers after the ones it imports.
+ *
+ * Before this, `imports` was read only to find the DiscordModule def, so a
+ * module listed there contributed nothing and a nested provider failed at boot
+ * with `missing provider for token X` — after `tsc`, the build and every other
+ * test had already passed. Import order puts a module before the module that
+ * uses it, so a consumer is constructed after what it injects.
+ *
+ * A module visited twice is collected once, which is also what makes an import
+ * cycle terminate instead of recursing.
+ */
+export function collectModuleProviders(appModule: Type<unknown>): Provider[] {
+  const out: Provider[] = [];
+  const seen = new Set<unknown>();
+  const visit = (mod: Type<unknown>): void => {
+    if (seen.has(mod)) return;
+    seen.add(mod);
+    for (const imported of moduleMeta(mod).imports ?? []) {
+      if (isModuleClass(imported)) visit(imported);
+    }
+    out.push(...(moduleMeta(mod).providers ?? []));
+  };
+  visit(appModule);
+  return out;
+}
+
 function findDiscordDef(imports: unknown[] = []): SyncDef | AsyncDef | undefined {
   return imports.find(
     (i) => !!i && typeof i === 'object' && (i as { module?: unknown }).module === DiscordModule,
@@ -73,7 +106,7 @@ export async function resolveDiscordOptions(
 ): Promise<{ options: DiscordModuleOptions; providers: Provider[] }> {
   const meta = moduleMeta(appModule);
   const def = findDiscordDef(meta.imports);
-  const providers = meta.providers ?? [];
+  const providers = collectModuleProviders(appModule);
   if (def?.kind === 'sync') return { options: def.options, providers };
   const asyncOpts = def?.kind === 'async' ? def.opts : {};
   const file = await loadDiscordConfig({
@@ -93,6 +126,12 @@ export interface DiscordRuntime {
   discovery: DiscordDiscoveryService;
   routing: DiscordRoutingService;
   instances: object[];
+  /**
+   * Run provider `onModuleDestroy` then `onApplicationShutdown`, reverse
+   * construction order, with the client still connected. The caller stops the
+   * client afterwards, so a shutdown hook can still reach Discord.
+   */
+  shutdown(): Promise<void>;
 }
 
 function buildClient(opts: DiscordModuleOptions): Client {
@@ -128,8 +167,18 @@ export async function createRuntime(
     ...providers,
   ]);
   const instances = registry.list();
+  await registry.onModuleInit();
   discovery.init(instances);
   const routing = new DiscordRoutingService(client, options, discovery, registry);
   routing.subscribe();
-  return { options, client, sync, discovery, routing, instances };
+  await registry.onApplicationBootstrap();
+  return {
+    options,
+    client,
+    sync,
+    discovery,
+    routing,
+    instances,
+    shutdown: () => registry.shutdown(),
+  };
 }

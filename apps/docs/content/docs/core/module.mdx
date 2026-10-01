@@ -60,16 +60,63 @@ export class MusicCommand {
 }
 ```
 
-The registry resolves every `@Inject()` token before constructing the class, in declaration order, and fails at boot on duplicate providers, missing tokens, or dependency cycles. Guards named in `@UseGuards()` resolve through the same registry on first use, so a guard can inject providers too. Modules are flat: only the root module's `providers` are read.
+The registry resolves every `@Inject()` token before constructing the class, and fails at boot on duplicate providers, missing tokens, or dependency cycles. Guards named in `@UseGuards()` resolve through the same registry on first use, so a guard can inject providers too.
 
 Built-in tokens are always available: `DISCORD_CLIENT`, `DISCORD_MODULE_OPTIONS`, `DISCORD_OWNERS`, and `DISCORD_DISCOVERY` (the `DiscordDiscoveryService`, for `helpEntries()` and other registry reads).
+
+## Imported modules
+
+`imports` is read for its providers, not just to find the DiscordModule def. An imported module contributes its own `providers` to the app, walked depth-first, so a module listed in `imports` behaves as if you had spread its providers into the root:
+
+```ts
+@Module({ providers: [PrismaService] })
+export class PrismaModule {}
+
+@Module({
+  imports: [DiscordModule.forRootAsync(), PrismaModule],
+  providers: [StopCommand],
+})
+export class AppModule {}
+```
+
+An imported module is visited once, so a diamond or a cycle terminates instead of recursing, and a module listed twice does not register its providers twice. Two modules declaring the _same_ provider is a genuine duplicate and still fails at boot.
+
+There is no `exports` and no per-module container: every provider in the graph is one flat, single-instance registry, which is what a single-process bot wants. If you need to hide a provider, do not import the module that declares it.
+
+## Lifecycle hooks
+
+A provider opts into teardown or setup by naming a method. No decorator, no base class, and no import needed — an existing class can gain one:
+
+```ts
+export class PrismaService extends PrismaClient {
+  async onModuleInit() {
+    await this.$connect();
+  }
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
+}
+```
+
+| Hook                     | When                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| `onModuleInit`           | After every provider is constructed, in construction order.                    |
+| `onApplicationBootstrap` | After discovery has scanned and routing has subscribed, in construction order. |
+| `onModuleDestroy`        | On SIGINT/SIGTERM, reverse construction order, client still connected.         |
+| `onApplicationShutdown`  | After `onModuleDestroy`, same reverse order. Last thing to run.                |
+
+`createRuntime` runs `onModuleInit`, then discovery and routing, then `onApplicationBootstrap`, so a bootstrap hook may assume the bot shape exists. `bootstrapApp` and `deployWithModule` both run the shutdown half, so a provider that acquires something in `onModuleInit` releases it on the way out. Bootstrap runs in both paths, so hooks must be deploy-safe.
+
+A hook that throws does not strand the rest: every other hook still runs, and the failures are reported together. A failing shutdown hook is logged and the client is still stopped — a provider bug must not leave a websocket open.
+
+Prefer `onModuleInit` over acquiring in the constructor. A bad `DATABASE_URL` should not stop the process from booting when a command can be answered without the database.
 
 ## DI helpers
 
 | Helper                            | Use                                                                |
 | --------------------------------- | ------------------------------------------------------------------ |
 | `@Injectable()`                   | Marker for the language service; optional.                         |
-| `@Module({ imports, providers })` | Group providers.                                                   |
+| `@Module({ imports, providers })` | Group providers. `imports` providers are collected.                |
 | `@Inject(token)`                  | Resolve a constructor parameter from a provider token.             |
 | `SetMetadata(key, value)`         | Attach metadata to method or class.                                |
 | `applyDecorators(...decs)`        | Compose decorators into one.                                       |
