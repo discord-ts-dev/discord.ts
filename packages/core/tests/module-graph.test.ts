@@ -4,6 +4,7 @@ import { describe, expect, test } from 'bun:test';
 import {
   Inject,
   Module,
+  type OnApplicationBootstrap,
   type OnApplicationShutdown,
   type OnModuleDestroy,
   type OnModuleInit,
@@ -241,5 +242,49 @@ describe('lifecycle hooks', () => {
     await registry.onModuleInit();
     await registry.shutdown();
     assert.deepEqual(log, ['ctor']);
+  });
+
+  test('onApplicationBootstrap runs in construction order, after init', async () => {
+    const log: string[] = [];
+    class Dep implements OnModuleInit, OnApplicationBootstrap {
+      onModuleInit(): void {
+        log.push('init:dep');
+      }
+      onApplicationBootstrap(): void {
+        log.push('bootstrap:dep');
+      }
+    }
+    class User implements OnModuleInit, OnApplicationBootstrap {
+      constructor(@Inject(Dep) readonly dep: Dep) {}
+      onModuleInit(): void {
+        log.push('init:user');
+      }
+      onApplicationBootstrap(): void {
+        log.push('bootstrap:user');
+      }
+    }
+    const registry = new ProviderRegistry([User, Dep]);
+    await registry.onModuleInit();
+    await registry.onApplicationBootstrap();
+    assert.deepEqual(log, ['init:dep', 'init:user', 'bootstrap:dep', 'bootstrap:user']);
+  });
+
+  test('onApplicationBootstrap aggregates failures without stranding the rest', async () => {
+    const log: string[] = [];
+    class Boom {
+      onApplicationBootstrap(): void {
+        throw new Error('nope');
+      }
+    }
+    class Fine {
+      onApplicationBootstrap(): void {
+        log.push('fine ran');
+      }
+    }
+    const registry = new ProviderRegistry([Boom, Fine]);
+    await expect(registry.onApplicationBootstrap()).rejects.toThrow(
+      'onApplicationBootstrap failed on Boom: nope',
+    );
+    assert.deepEqual(log, ['fine ran']);
   });
 });

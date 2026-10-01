@@ -98,13 +98,14 @@ export class PrismaService extends PrismaClient {
 }
 ```
 
-| Hook                    | When                                                                   |
-| ----------------------- | ---------------------------------------------------------------------- |
-| `onModuleInit`          | After every provider is constructed, in construction order.            |
-| `onModuleDestroy`       | On SIGINT/SIGTERM, reverse construction order, client still connected. |
-| `onApplicationShutdown` | After `onModuleDestroy`, same reverse order. Last thing to run.        |
+| Hook                     | When                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| `onModuleInit`           | After every provider is constructed, in construction order.                    |
+| `onApplicationBootstrap` | After discovery has scanned and routing has subscribed, in construction order. |
+| `onModuleDestroy`        | On SIGINT/SIGTERM, reverse construction order, client still connected.         |
+| `onApplicationShutdown`  | After `onModuleDestroy`, same reverse order. Last thing to run.                |
 
-`bootstrapApp` and `deployWithModule` both run the shutdown half, so a provider that acquires something in `onModuleInit` releases it on the way out.
+`createRuntime` runs `onModuleInit`, then discovery and routing, then `onApplicationBootstrap`, so a bootstrap hook may assume the bot shape exists. `bootstrapApp` and `deployWithModule` both run the shutdown half, so a provider that acquires something in `onModuleInit` releases it on the way out. Bootstrap runs in both paths, so hooks must be deploy-safe.
 
 A hook that throws does not strand the rest: every other hook still runs, and the failures are reported together. A failing shutdown hook is logged and the client is still stopped — a provider bug must not leave a websocket open.
 

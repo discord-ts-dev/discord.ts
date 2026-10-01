@@ -114,6 +114,13 @@ export interface CanActivate {
  * database the constructor is wrong anyway, because a bad `DATABASE_URL` should
  * not stop the process from booting.
  *
+ * `onApplicationBootstrap` runs after discovery has scanned providers and
+ * routing has subscribed, still in construction order, so a provider may assume
+ * the bot shape exists. Use it for work that needs commands and routing to be
+ * up — scheduling jobs, hydrating caches — rather than just live dependencies.
+ * It runs in `createRuntime`, so `deployWithModule` runs it too: hooks must be
+ * deploy-safe.
+ *
  * Shutdown runs in reverse construction order, so dependents die before the
  * things they depend on. `onModuleDestroy` is for releasing a provider's own
  * resources; `onApplicationShutdown` is the last thing that runs, with the
@@ -122,6 +129,10 @@ export interface CanActivate {
  */
 export interface OnModuleInit {
   onModuleInit(): void | Promise<void>;
+}
+
+export interface OnApplicationBootstrap {
+  onApplicationBootstrap(): void | Promise<void>;
 }
 
 export interface OnModuleDestroy {
@@ -136,6 +147,13 @@ export interface OnApplicationShutdown {
 const hasHook = (instance: object, name: string): boolean =>
   typeof (instance as Record<string, unknown>)[name] === 'function';
 
+/** Every lifecycle hook name, in firing order. */
+export type LifecycleHookName =
+  | 'onModuleInit'
+  | 'onApplicationBootstrap'
+  | 'onModuleDestroy'
+  | 'onApplicationShutdown';
+
 /**
  * Run one lifecycle hook across instances. Failures are collected rather than
  * thrown on the first one, so one broken provider cannot silently strand the
@@ -143,7 +161,7 @@ const hasHook = (instance: object, name: string): boolean =>
  */
 export async function runLifecycle(
   instances: readonly object[],
-  name: 'onModuleInit' | 'onModuleDestroy' | 'onApplicationShutdown',
+  name: LifecycleHookName,
 ): Promise<Error[]> {
   const errors: Error[] = [];
   for (const instance of instances) {

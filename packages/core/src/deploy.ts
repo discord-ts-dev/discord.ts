@@ -13,8 +13,9 @@ export async function deployWithModule(
     await sync.sync(body);
     return { count: body.length };
   } finally {
-    // `createRuntime` ran `onModuleInit`, so it has to run the other half too —
-    // otherwise a provider that connected here is never released.
+    // `createRuntime` ran `onModuleInit` and `onApplicationBootstrap`, so it has
+    // to run the other half too — otherwise a provider that connected here is
+    // never released.
     await shutdown().catch((err: Error) => {
       process.stderr.write(`[deploy] ${err.message}\n`);
     });

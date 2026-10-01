@@ -64,6 +64,16 @@ ADR 0009 requires two independent consumers.
    users to hand-wire `$disconnect()` and to hydrate from `ClientReady` because there was no
    hook. Two independent sites, and the second is the framework contradicting itself.
 
+## Amendment 2026-10-02 — `onApplicationBootstrap`
+
+`createRuntime` now runs `onApplicationBootstrap` after discovery has scanned
+and routing has subscribed, in construction order, before returning the runtime.
+It throws aggregated like `onModuleInit` and aborts boot before return. It runs
+in both boot and `deployWithModule` paths with no skip flag, so hooks must be
+deploy-safe. Duck-typed, no decorator, no base class — the same contract as the
+trio. `beforeApplicationShutdown` / signal-arg shutdown / `enableShutdownHooks`
+are still absent by agreement.
+
 ## Consequences
 
 - A nested module works as written, and the failure it replaces surfaced at boot after every

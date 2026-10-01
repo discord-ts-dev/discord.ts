@@ -89,4 +89,48 @@ describe('Boot scan', () => {
       await runtime.discovery.stop();
     }
   });
+
+  test('createRuntime runs onApplicationBootstrap after routing is subscribed', async () => {
+    const log: string[] = [];
+    class Scheduler {
+      onModuleInit(): void {
+        log.push('init');
+      }
+      onApplicationBootstrap(): void {
+        log.push('bootstrap');
+      }
+    }
+    class BootstrapApp {}
+    Module({
+      imports: [
+        DiscordModule.forRoot({ token: 'test-token', clientId: 'test-client', intents: [] }),
+      ],
+      providers: [Scheduler],
+    })(BootstrapApp);
+
+    const runtime = await createRuntime(BootstrapApp);
+    try {
+      assert.deepStrictEqual(log, ['init', 'bootstrap']);
+      assert.ok(runtime.routing);
+    } finally {
+      await runtime.discovery.stop();
+    }
+  });
+
+  test('createRuntime aborts when onApplicationBootstrap fails', async () => {
+    class Boom {
+      onApplicationBootstrap(): void {
+        throw new Error('hook boom');
+      }
+    }
+    class BoomApp {}
+    Module({
+      imports: [
+        DiscordModule.forRoot({ token: 'test-token', clientId: 'test-client', intents: [] }),
+      ],
+      providers: [Boom],
+    })(BoomApp);
+
+    await assert.rejects(createRuntime(BoomApp), /hook boom/);
+  });
 });

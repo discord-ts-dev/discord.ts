@@ -171,6 +171,7 @@ export async function createRuntime(
   discovery.init(instances);
   const routing = new DiscordRoutingService(client, options, discovery, registry);
   routing.subscribe();
+  await registry.onApplicationBootstrap();
   return {
     options,
     client,

@@ -1,6 +1,7 @@
 import {
   INJECT_METADATA,
   runLifecycle,
+  type LifecycleHookName,
   type Provider,
   type Type,
   type ValueProvider,
@@ -107,6 +108,17 @@ export class ProviderRegistry {
   }
 
   /**
+   * Run `onApplicationBootstrap` across every constructed provider, in
+   * construction order, and throw if any failed. Called by `createRuntime`
+   * after discovery has scanned and routing has subscribed, so a provider may
+   * assume the bot shape exists rather than just live dependencies.
+   */
+  async onApplicationBootstrap(): Promise<void> {
+    const errors = await this.runHooks('onApplicationBootstrap', this.scannable);
+    if (errors.length) throw lifecycleError('onApplicationBootstrap', errors);
+  }
+
+  /**
    * Teardown, in reverse construction order so dependents go before their
    * dependencies: `onModuleDestroy` first, then `onApplicationShutdown` with the
    * Discord client still up. Runs every hook even after one fails, then throws
@@ -130,10 +142,7 @@ export class ProviderRegistry {
     return this.lifecycleRan;
   }
 
-  private async runHooks(
-    name: 'onModuleInit' | 'onModuleDestroy' | 'onApplicationShutdown',
-    instances: readonly object[],
-  ): Promise<Error[]> {
+  private async runHooks(name: LifecycleHookName, instances: readonly object[]): Promise<Error[]> {
     return runLifecycle(instances, name);
   }
 
