@@ -7,12 +7,17 @@ export async function deployWithModule(
   appModule: Type<unknown>,
   create: typeof createRuntime = createRuntime,
 ): Promise<{ count: number }> {
-  const { discovery, sync } = await create(appModule, { skipValidation: false });
+  const { discovery, sync, shutdown } = await create(appModule, { skipValidation: false });
   try {
     const body = discovery.buildJson();
     await sync.sync(body);
     return { count: body.length };
   } finally {
+    // `createRuntime` ran `onModuleInit`, so it has to run the other half too —
+    // otherwise a provider that connected here is never released.
+    await shutdown().catch((err: Error) => {
+      process.stderr.write(`[deploy] ${err.message}\n`);
+    });
     await discovery.stop();
   }
 }

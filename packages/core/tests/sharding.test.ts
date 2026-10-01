@@ -33,6 +33,10 @@ const fakeCreate = (async () => ({
     start: async () => void runtimeCalls.push('start'),
     stop: async () => void runtimeCalls.push('stop'),
   },
+  // Provider teardown runs before the client is stopped, so a shutdown hook can
+  // still reach Discord. Covered by the SIGTERM test below; without this the
+  // failure would be latent, because no existing test fires a signal.
+  shutdown: async () => void runtimeCalls.push('shutdown'),
 })) as unknown as typeof createRuntime;
 
 const { bootstrapApp, createShardManager, runShards } = await import('../src/sharding.js');
@@ -86,6 +90,10 @@ describe('bootstrapApp', () => {
     assert.equal(process.listenerCount('SIGINT'), before + 1);
     process.emit('SIGINT' as never);
     await new Promise((resolve) => setTimeout(resolve, 0));
-    assert.ok(runtimeCalls.includes('stop'));
+    // Exact order, not `includes`. The teardown catch is deliberately broad so a
+    // provider hook cannot strand the websocket — and that breadth also swallows a
+    // missing `shutdown` while still calling `stop`. Asserting only that `stop`
+    // ran would have hidden exactly that.
+    assert.deepEqual(runtimeCalls, ['start', 'shutdown', 'stop']);
   });
 });

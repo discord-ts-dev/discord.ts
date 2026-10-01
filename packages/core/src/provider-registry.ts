@@ -1,5 +1,6 @@
 import {
   INJECT_METADATA,
+  runLifecycle,
   type Provider,
   type Type,
   type ValueProvider,
@@ -26,6 +27,19 @@ function nameOf(token: unknown): string {
 }
 
 /**
+ * Collect the hook failures into one throw. The causes go in the message, not
+ * only in `.errors`, because the caller is a signal handler that logs
+ * `err.message` and nothing else — a bare count would leave the operator with
+ * no idea which provider broke.
+ */
+function lifecycleError(phase: string, errors: Error[]): AggregateError {
+  return new AggregateError(
+    errors,
+    `${phase}: ${errors.length} lifecycle hook(s) failed — ${errors.map((e) => e.message).join('; ')}`,
+  );
+}
+
+/**
  * Constructs every provider once, in declaration order, resolving each
  * constructor's `@Inject()` tokens first. Guards missing from the provider
  * list are constructed on first use. Unknown tokens, duplicate providers, and
@@ -36,6 +50,8 @@ export class ProviderRegistry {
   private readonly instances = new Map<unknown, object>();
   private readonly scannable: object[] = [];
   private readonly resolving = new Set<unknown>();
+  private lifecycleRan = false;
+  private shutdownRan = false;
 
   constructor(providers: Provider[]) {
     for (const provider of providers) {
@@ -74,6 +90,51 @@ export class ProviderRegistry {
   resolveOrCreate<T extends object>(ctor: Type<T>): T {
     if (!this.registrations.has(ctor)) this.registrations.set(ctor, { kind: 'class', ctor });
     return this.resolve(ctor) as T;
+  }
+
+  /**
+   * Run `onModuleInit` across every constructed provider, in construction
+   * order, and throw if any failed. Called by `createRuntime` once the graph is
+   * built, so a provider that needs a database connects after its dependencies
+   * exist rather than in its constructor.
+   *
+   * Idempotent: a provider added after the first call still gets its hook.
+   */
+  async onModuleInit(): Promise<void> {
+    const errors = await this.runHooks('onModuleInit', this.scannable);
+    if (errors.length) throw lifecycleError('onModuleInit', errors);
+    this.lifecycleRan = true;
+  }
+
+  /**
+   * Teardown, in reverse construction order so dependents go before their
+   * dependencies: `onModuleDestroy` first, then `onApplicationShutdown` with the
+   * Discord client still up. Runs every hook even after one fails, then throws
+   * the collected errors together.
+   *
+   * Idempotent, and safe to call when `onModuleInit` never ran.
+   */
+  async shutdown(): Promise<void> {
+    if (this.shutdownRan) return;
+    this.shutdownRan = true;
+    const reverse = [...this.scannable].reverse();
+    const errors = [
+      ...(await this.runHooks('onModuleDestroy', reverse)),
+      ...(await this.runHooks('onApplicationShutdown', reverse)),
+    ];
+    if (errors.length) throw lifecycleError('shutdown', errors);
+  }
+
+  /** True once `onModuleInit` has run — for tests and for skipping work at boot. */
+  get initialized(): boolean {
+    return this.lifecycleRan;
+  }
+
+  private async runHooks(
+    name: 'onModuleInit' | 'onModuleDestroy' | 'onApplicationShutdown',
+    instances: readonly object[],
+  ): Promise<Error[]> {
+    return runLifecycle(instances, name);
   }
 
   private construct(ctor: Type<object>): object {

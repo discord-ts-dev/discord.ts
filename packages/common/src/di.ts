@@ -103,6 +103,66 @@ export interface CanActivate {
   canActivate(context: unknown): boolean | Promise<boolean>;
 }
 
+/**
+ * Lifecycle hooks. A provider opts in by naming one of these methods; there is
+ * no decorator and no base class to extend, so an existing class can gain one
+ * without changing anything else about it.
+ *
+ * `onModuleInit` runs after every provider is constructed, in construction
+ * order, so a provider may assume its own dependencies are already live. Use it
+ * to acquire something the constructor must not do — an advisory notes: for a
+ * database the constructor is wrong anyway, because a bad `DATABASE_URL` should
+ * not stop the process from booting.
+ *
+ * Shutdown runs in reverse construction order, so dependents die before the
+ * things they depend on. `onModuleDestroy` is for releasing a provider's own
+ * resources; `onApplicationShutdown` is the last thing that runs, with the
+ * Discord client still connected, for anything that needs to talk to Discord
+ * one final time.
+ */
+export interface OnModuleInit {
+  onModuleInit(): void | Promise<void>;
+}
+
+export interface OnModuleDestroy {
+  onModuleDestroy(): void | Promise<void>;
+}
+
+export interface OnApplicationShutdown {
+  onApplicationShutdown(): void | Promise<void>;
+}
+
+/** Duck-typed so a provider needs no import to participate. */
+const hasHook = (instance: object, name: string): boolean =>
+  typeof (instance as Record<string, unknown>)[name] === 'function';
+
+/**
+ * Run one lifecycle hook across instances. Failures are collected rather than
+ * thrown on the first one, so one broken provider cannot silently strand the
+ * rest of teardown — the caller gets every error at once.
+ */
+export async function runLifecycle(
+  instances: readonly object[],
+  name: 'onModuleInit' | 'onModuleDestroy' | 'onApplicationShutdown',
+): Promise<Error[]> {
+  const errors: Error[] = [];
+  for (const instance of instances) {
+    if (!hasHook(instance, name)) continue;
+    try {
+      // Sequential on purpose. The order hooks run in is the contract: a
+      // dependency's `onModuleInit` has to land before its consumer's, and
+      // teardown reverses it. `Promise.all` would be faster and wrong, so the
+      // lint rule is disabled rather than obeyed.
+      // oxlint-disable-next-line no-await-in-loop
+      await (instance as unknown as Record<string, () => unknown>)[name]();
+    } catch (err) {
+      const where = instance.constructor?.name ?? 'anonymous provider';
+      errors.push(new Error(`${name} failed on ${where}: ${(err as Error).message}`));
+    }
+  }
+  return errors;
+}
+
 export class Reflector {
   constructor() {}
   get<T>(key: string, target: object): T | undefined {
