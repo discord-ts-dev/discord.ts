@@ -40,9 +40,18 @@ export async function bootstrapApp(
     new DiscordLogger('Sharding').success('Shards spawned.');
     return;
   }
-  const { discovery } = await (opts.create ?? createRuntime)(appModule);
-  const shutdown = () => void discovery.stop();
-  process.once('SIGINT', shutdown);
-  process.once('SIGTERM', shutdown);
+  const { discovery, shutdown } = await (opts.create ?? createRuntime)(appModule);
+  // Providers first, client second: a shutdown hook may still want to talk to
+  // Discord, and a hook that throws must not strand the websocket open.
+  const stop = async (): Promise<void> => {
+    try {
+      await shutdown();
+    } catch (err) {
+      new DiscordLogger('Lifecycle').error((err as Error).message);
+    }
+    await discovery.stop();
+  };
+  process.once('SIGINT', () => void stop());
+  process.once('SIGTERM', () => void stop());
   await discovery.start();
 }
