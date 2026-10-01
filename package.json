@@ -18,7 +18,7 @@
     "postinstall": "bash scripts/postinstall.sh"
   },
   "devDependencies": {
-    "@changesets/cli": "^3.0.2",
+    "@changesets/cli": "^3.0.3",
     "@discord-ts-dev/common": "workspace:*",
     "@discord-ts-dev/core": "workspace:*",
     "@discord-ts-dev/i18n": "workspace:*",
@@ -27,10 +27,10 @@
     "@discord-ts-dev/utils": "workspace:*",
     "@discord-ts-dev/ux": "workspace:*",
     "@types/bun": "^1.4.2",
-    "@types/node": "^26.4.1",
-    "oxfmt": "^0.68.0",
-    "oxlint": "^1.83.0",
-    "turbo": "^2.5.4",
+    "@types/node": "^26.6.2",
+    "oxfmt": "^0.69.0",
+    "oxlint": "^1.84.0",
+    "turbo": "^2.11.2",
     "typescript": "^7.0.2"
   },
   "engines": {
