@@ -4,8 +4,7 @@
 // version used the Bun globals directly, which meant `discord dev` and
 // `discord deploy` could not run on Node at all.
 // See docs/adr/0014-signale-cjs-named-import.md for the same class of bug.
-import { realpathSync } from 'node:fs';
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import * as path from 'node:path';

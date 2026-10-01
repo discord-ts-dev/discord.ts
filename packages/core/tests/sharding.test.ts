@@ -34,7 +34,7 @@ const fakeCreate = (async () => ({
     stop: async () => void runtimeCalls.push('stop'),
   },
   // Provider teardown runs before the client is stopped, so a shutdown hook can
-  // still reach Discord. Covered by the SIGTERM test below; without this the
+  // still reach Discord. Covered by the signal tests below; without this the
   // failure would be latent, because no existing test fires a signal.
   shutdown: async () => void runtimeCalls.push('shutdown'),
 })) as unknown as typeof createRuntime;
@@ -95,5 +95,36 @@ describe('bootstrapApp', () => {
     // missing `shutdown` while still calling `stop`. Asserting only that `stop`
     // ran would have hidden exactly that.
     assert.deepEqual(runtimeCalls, ['start', 'shutdown', 'stop']);
+  });
+
+  test('SIGTERM also runs provider shutdown before stopping discovery', async () => {
+    process.removeAllListeners('SIGINT');
+    process.removeAllListeners('SIGTERM');
+    runtimeCalls.length = 0;
+    await bootstrapApp(class App {}, { argv: ['node', 'main.js'], create: fakeCreate });
+    assert.deepEqual(runtimeCalls, ['start']);
+    process.emit('SIGTERM' as never);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.deepEqual(runtimeCalls, ['start', 'shutdown', 'stop']);
+  });
+
+  test('a throwing provider shutdown still stops discovery', async () => {
+    process.removeAllListeners('SIGINT');
+    process.removeAllListeners('SIGTERM');
+    runtimeCalls.length = 0;
+    const failingCreate = (async () => ({
+      discovery: {
+        start: async () => void runtimeCalls.push('start'),
+        stop: async () => void runtimeCalls.push('stop'),
+      },
+      shutdown: async () => {
+        throw new Error('hook boom');
+      },
+    })) as unknown as typeof createRuntime;
+    await bootstrapApp(class App {}, { argv: ['node', 'main.js'], create: failingCreate });
+    process.emit('SIGINT' as never);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    // The catch logs and still stops: a provider bug must not strand the websocket.
+    assert.deepEqual(runtimeCalls, ['start', 'stop']);
   });
 });

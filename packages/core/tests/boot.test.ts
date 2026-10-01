@@ -62,4 +62,31 @@ describe('Boot scan', () => {
       await discovery.stop();
     }
   });
+
+  test('runtime.shutdown runs provider teardown', async () => {
+    const log: string[] = [];
+    class Hooked {
+      onModuleDestroy(): void {
+        log.push('destroy');
+      }
+      onApplicationShutdown(): void {
+        log.push('shutdown');
+      }
+    }
+    class ShutdownApp {}
+    Module({
+      imports: [
+        DiscordModule.forRoot({ token: 'test-token', clientId: 'test-client', intents: [] }),
+      ],
+      providers: [Hooked],
+    })(ShutdownApp);
+
+    const runtime = await createRuntime(ShutdownApp);
+    try {
+      await runtime.shutdown();
+      assert.deepStrictEqual(log, ['destroy', 'shutdown']);
+    } finally {
+      await runtime.discovery.stop();
+    }
+  });
 });
