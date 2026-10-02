@@ -27,6 +27,11 @@ jobs:
           results_file: results.sarif
           results_format: sarif
           publish_results: true
+          # GITHUB_TOKEN không đọc được classic branch protection rules, khiến
+          # Branch-Protection trả -1 (inconclusive). Fine-grained PAT với
+          # `Administration: Read-only` là đủ. Fallback về github.token để
+          # workflow không hỏng khi secret chưa được tạo.
+          repo_token: ${{ secrets.SCORECARD_TOKEN || github.token }}
       - uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
         with:
           sarif_file: results.sarif
