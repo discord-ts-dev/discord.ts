@@ -74,7 +74,30 @@ deploy-safe. Duck-typed, no decorator, no base class — the same contract as th
 trio. `beforeApplicationShutdown` / signal-arg shutdown / `enableShutdownHooks`
 are still absent by agreement.
 
+## `exports` and `useFactory`: searched for a second consumer, not found
+
+ADR 0009's rule of two needs two consumers before either ships. I looked, on 2026-10-02, and
+neither has one.
+
+**`exports`.** Both apps that register providers declare a single flat module — `owo` has ~45
+in one `providers` array, `music-bot` the same shape — so neither has a boundary to hide a
+provider behind. The one consumer is The Aris Bot's `PrismaModule`, and it wants one provider
+visible, which is what the default already gives. The register's own convention agrees: every
+entry in *Considered, deferred* reopens on "a second app needs it".
+
+**`useFactory`.** The closest candidate is a provider built from config that `forRootAsync`
+loads asynchronously, because `useValue` is evaluated at decoration time — before config
+exists. `owo` hits this today and works around it by reading `process.env` at module scope,
+which is the smell. But the hook shipped in this ADR already solves it: build it in
+`onModuleInit` instead. So the one candidate consumer is already served, and adding
+`useFactory` would be a second way to do a solved thing.
+
+Both are recorded in `docs/owo-capability-gaps.md` under *Considered, deferred*, with the
+trigger that reopens each. That is where ADR 0009 puts a one-consumer candidate — a documented
+recipe, not a promotion.
+
 ## Consequences
+
 
 - A nested module works as written, and the failure it replaces surfaced at boot after every
   other gate had passed.
