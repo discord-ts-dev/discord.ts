@@ -1,5 +1,8 @@
 name: Scorecard
 on:
+  # Manual re-run: lets you verify Branch-Protection right after setting
+  # SCORECARD_TOKEN, instead of waiting for the weekly cron.
+  workflow_dispatch:
   branch_protection_rule:
   schedule:
     - cron: '30 1 * * 0'
