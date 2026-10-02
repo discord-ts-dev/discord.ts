@@ -1,6 +1,6 @@
 {
   "name": "@discord-ts-dev/systems",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "discord.ts bot systems: store, scheduler, daily, quests, leaderboard, shop",
   "homepage": "https://github.com/discord-ts-dev/discord.ts#readme",
   "bugs": {
