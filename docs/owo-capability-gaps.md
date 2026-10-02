@@ -9,23 +9,23 @@ Modules.
 
 ## Shipped
 
-| Capability                                                          | Where   |
-| ------------------------------------------------------------------- | ------- |
-| Store port + `MemoryStore` (ADR 0004)                               | systems |
-| Task runner: `defineTask` / interval / daily (ADR 0005)             | systems |
-| Daily claim + streaks                                               | systems |
-| Leaderboards: `addScore` / `top` / `rankOf`                         | systems |
-| Quests: assign / progress / reroll / complete                       | systems |
-| Shop + inventory: `buy` / `useItem` / `addBalance`                  | systems |
-| Guild settings: enable flags (`isCommandEnabled`)                   | systems |
-| EnabledGuard + configured guard instances (`@UseGuards(instance)`)  | core, systems |
-| Vote reward: `awardVote`                                            | systems |
-| Help grouping: `buildHelp`                                          | systems |
-| Registry-driven help: `category`/`toggleable`, `helpEntries()`       | common, core, systems |
-| Confirm / pager / picker / error embed / `replyEphemeral`           | ux      |
-| Author lock: `allowedUserId` on confirm/paginate, `authorLock` guard | ux      |
-| Mentions, snowflake, amount parser, word filter, vote payload parse, weighted pick | utils   |
-| Native i18n: catalogs, `t`, locale resolution                       | i18n    |
+| Capability                                                                         | Where                 |
+| ---------------------------------------------------------------------------------- | --------------------- |
+| Store port + `MemoryStore` (ADR 0004)                                              | systems               |
+| Task runner: `defineTask` / interval / daily (ADR 0005)                            | systems               |
+| Daily claim + streaks                                                              | systems               |
+| Leaderboards: `addScore` / `top` / `rankOf`                                        | systems               |
+| Quests: assign / progress / reroll / complete                                      | systems               |
+| Shop + inventory: `buy` / `useItem` / `addBalance`                                 | systems               |
+| Guild settings: enable flags (`isCommandEnabled`)                                  | systems               |
+| EnabledGuard + configured guard instances (`@UseGuards(instance)`)                 | core, systems         |
+| Vote reward: `awardVote`                                                           | systems               |
+| Help grouping: `buildHelp`                                                         | systems               |
+| Registry-driven help: `category`/`toggleable`, `helpEntries()`                     | common, core, systems |
+| Confirm / pager / picker / error embed / `replyEphemeral`                          | ux                    |
+| Author lock: `allowedUserId` on confirm/paginate, `authorLock` guard               | ux                    |
+| Mentions, snowflake, amount parser, word filter, vote payload parse, weighted pick | utils                 |
+| Native i18n: catalogs, `t`, locale resolution                                      | i18n                  |
 
 ## Queued promotions (ranked by dedupe)
 
@@ -108,18 +108,20 @@ actual contract.
 
 ## Considered, deferred (single consumer)
 
-| Candidate                                         | Why deferred                                                        | Reopens when                                                      |
-| ------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `math` expression evaluator                       | One consumer (`/math`); niche                                       | A second app needs it                                             |
-| Unique-sample draw (`pickWinners`)                | One consumer (giveaways)                                            | A second app needs it                                             |
-| Uniform pick (`arr[Math.floor(rand()*len)]`)      | One expression today; `weightedPick` would lengthen it               | A second app needs a shared random-source surface                  |
-| Premium tiers                                     | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans) | A third app, or a shared design                                   |
-| `GuildSettings` widening / arbitrary guild keys   | Recipe instead                                                      | A second app needs it                                             |
-| Helper hooks (`onClaim`, `onPurchase`)            | Wrap at the call site; side effects run after the atomic write      | Two apps need the same post-write effect co-located with a helper |
-| Generic item / currency / quest types             | Value-shaped Store (ADR 0004); typed wrappers are the recipe        | A second app brands ids and a shared wrapper shape converges      |
-| Task `run` Store injection                        | owo closes over its Store; `run` stays parameter-free               | A second app needs Store-parameterized tasks                      |
-| Store schema / migration helpers                  | No schema by design; version fields and lazy upgrade is a recipe    | A second adapter needs versioned values, or the port grows a scan |
-| `tt` / `fmt`, `readBet`, `purchase`, `replyError` | Thin conveniences over shipped primitives                           | Never as capabilities                                             |
+| Candidate                                         | Why deferred                                                                                          | Reopens when                                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `math` expression evaluator                       | One consumer (`/math`); niche                                                                         | A second app needs it                                                                 |
+| Unique-sample draw (`pickWinners`)                | One consumer (giveaways)                                                                              | A second app needs it                                                                 |
+| Uniform pick (`arr[Math.floor(rand()*len)]`)      | One expression today; `weightedPick` would lengthen it                                                | A second app needs a shared random-source surface                                     |
+| Premium tiers                                     | Two incompatible shapes (Paw store tiers vs music-bot Prisma plans)                                   | A third app, or a shared design                                                       |
+| `GuildSettings` widening / arbitrary guild keys   | Recipe instead                                                                                        | A second app needs it                                                                 |
+| Helper hooks (`onClaim`, `onPurchase`)            | Wrap at the call site; side effects run after the atomic write                                        | Two apps need the same post-write effect co-located with a helper                     |
+| Generic item / currency / quest types             | Value-shaped Store (ADR 0004); typed wrappers are the recipe                                          | A second app brands ids and a shared wrapper shape converges                          |
+| Task `run` Store injection                        | owo closes over its Store; `run` stays parameter-free                                                 | A second app needs Store-parameterized tasks                                          |
+| Store schema / migration helpers                  | No schema by design; version fields and lazy upgrade is a recipe                                      | A second adapter needs versioned values, or the port grows a scan                     |
+| `tt` / `fmt`, `readBet`, `purchase`, `replyError` | Thin conveniences over shipped primitives                                                             | Never as capabilities                                                                 |
+| `@Module({ exports })` + per-module container     | One consumer (The Aris Bot's `PrismaModule`); the registry is deliberately one flat set of singletons | A second app has providers it must not expose, or two modules collide on one token    |
+| `useFactory` / `useClass` provider forms          | One candidate consumer, and `onModuleInit` (shipped 2026-10-01) already serves it                     | Two apps need a provider built from async config and a constructor hook is not enough |
 
 ## Ruled out (app-side by decision)
 
