@@ -9,7 +9,7 @@ Ubiquitous language. Glossary only. No implementation.
   and `zincrBy` are single-key atomic increments. A key holds one type,
   string or sorted set, never both. Tolerates **any** key and **any** member:
   a name colliding with a property of `Object.prototype` is an ordinary one,
-  never a reason to reject a write (ADR 0016). Whether a name is *meaningful*
+  never a reason to reject a write (ADR 0016). Whether a name is _meaningful_
   is a system's call, made where the rules are known. Implemented by
   `MemoryStore`, the single-process file reference adapter `FileStore`, and
   the Redis adapter `RedisStore` in `@discord-ts-dev/redis`; further adapters

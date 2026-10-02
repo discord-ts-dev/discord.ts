@@ -35,7 +35,7 @@ Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state
 
 The port takes **any** key and **any** member. `__proto__`, `constructor`, and `prototype` are ordinary names that store and read back like any other, on every adapter. A key is normally framework-chosen — the schemes above — but a member is yours, and an item id arrives from a component button, so this is the case that actually comes up.
 
-That guarantee is what makes an adapter safe to point at untrusted names: a name that collides with a property of `Object.prototype` can never re-parent the store's internal maps or a value shape you keep. It is a port promise, not a filter — nothing rejects a name for you. Whether a name is *meaningful* is a system's call, made where the rules are known (see the [custom purchase recipe](/docs/recipes/custom-purchase) for an app-owned inventory map).
+That guarantee is what makes an adapter safe to point at untrusted names: a name that collides with a property of `Object.prototype` can never re-parent the store's internal maps or a value shape you keep. It is a port promise, not a filter — nothing rejects a name for you. Whether a name is _meaningful_ is a system's call, made where the rules are known (see the [custom purchase recipe](/docs/recipes/custom-purchase) for an app-owned inventory map).
 
 The port carries no schema and no versioning: adapters keep opaque strings and sorted sets. Systems values have no version field, and app values are yours to evolve — see the [store value migrations recipe](/docs/recipes/store-migrations).
 
