@@ -1,9 +1,11 @@
 name: CodeQL
+# No branch filter on push or pull_request: Scorecard's SAST check scores the
+# share of commits a SAST tool ran against, so a branch filter leaves every
+# commit merged from a topic branch unanalysed until the weekly schedule
+# catches up. Analysing all branches is what takes SAST to 10.
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
   schedule:
     - cron: '0 0 * * 1'
 

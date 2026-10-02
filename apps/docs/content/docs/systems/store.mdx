@@ -31,6 +31,12 @@ const persisted: Store = new FileStore('data/bot.json');
 
 Key scheme is fixed per system: `bal:` balances, `daily:` claims, `quest:` state, `lb:` boards, `inv:` inventories, `guild:` settings, `vote:` stamps. A key holds one type, string or sorted set, never both. Daily payouts land in `bal:` so they are spendable in the shop. App-defined guild values extend the settings prefix as `guild:<id>:<name>` — see the [guild config recipe](/docs/recipes/guild-config).
 
+## Any key, any member
+
+The port takes **any** key and **any** member. `__proto__`, `constructor`, and `prototype` are ordinary names that store and read back like any other, on every adapter. A key is normally framework-chosen — the schemes above — but a member is yours, and an item id arrives from a component button, so this is the case that actually comes up.
+
+That guarantee is what makes an adapter safe to point at untrusted names: a name that collides with a property of `Object.prototype` can never re-parent the store's internal maps or a value shape you keep. It is a port promise, not a filter — nothing rejects a name for you. Whether a name is _meaningful_ is a system's call, made where the rules are known (see the [custom purchase recipe](/docs/recipes/custom-purchase) for an app-owned inventory map).
+
 The port carries no schema and no versioning: adapters keep opaque strings and sorted sets. Systems values have no version field, and app values are yours to evolve — see the [store value migrations recipe](/docs/recipes/store-migrations).
 
 ## Atomic operations
@@ -48,6 +54,8 @@ await claimDaily(store, userId, { amount: 100, mirrorBoard: 'wealth' });
 ```
 
 ## FileStore limits
+
+Any key and any member survive a restart: `FileStore` holds them in prototype-free maps, so a name that collides with an `Object.prototype` property is persisted as data rather than dropped.
 
 `FileStore` keeps state in memory with lazy TTL (expired keys die on read)
 and syncs the whole JSON file (`file.tmp` + rename) on every write. Limits:

@@ -3,6 +3,11 @@ import type { ValueProvider } from '@discord-ts-dev/common';
 import { STORE } from '@discord-ts-dev/systems';
 import { REDIS, RedisStore, redisProviders } from '../src/index.js';
 import { FakeRedisClient } from './helpers/fake-client.js';
+import { storeConformance } from '../../../tests/store-conformance.js';
+
+// The shared port contract, against a fake client. RedisStore-specific behavior
+// (WATCH/MULTI retries, serialization, client ownership) is tested below.
+storeConformance('RedisStore', () => new RedisStore({ client: new FakeRedisClient() }));
 
 describe('RedisStore construction', () => {
   test('accepts a url and builds its own client', () => {

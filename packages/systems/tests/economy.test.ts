@@ -151,6 +151,34 @@ describe('shop', () => {
     expect(await useItem(s, 'u', 'lootbox', -1)).toBe(false);
     expect(await inventory(s, 'u')).toEqual({ lootbox: 1 });
   });
+
+  // An item id reaches `buy`/`useItem` from a component button, so it is the
+  // one name in a systems value shape that a caller outside the framework
+  // picks. `Object.entries` rather than `toEqual`, because `{'__proto__': 1}`
+  // in an expected literal would set a prototype instead of a key.
+  test('an adversarial item id is an ordinary item', async () => {
+    const s = new MemoryStore();
+    await addBalance(s, 'u', 500);
+    const r = await buy(s, 'u', { id: '__proto__', price: 200 }, 2);
+    expect(r).toEqual({ ok: true, balance: 100, qty: 2 });
+    expect(Object.entries(await inventory(s, 'u'))).toEqual([['__proto__', 2]]);
+    expect(await useItem(s, 'u', '__proto__', 2)).toBe(true);
+    expect(Object.entries(await inventory(s, 'u'))).toEqual([]);
+    expect(await useItem(s, 'u', '__proto__', 1)).toBe(false);
+  });
+
+  // `inventory()` hands app code an ordinary object, so the prototype-free map
+  // systems parse internally never escapes as a missing-`hasOwnProperty` record.
+  test('inventory returns an ordinary object', async () => {
+    const s = new MemoryStore();
+    await addBalance(s, 'u', 500);
+    await buy(s, 'u', { id: 'lootbox', price: 200 }, 1);
+    const inv = await inventory(s, 'u');
+    expect(Object.getPrototypeOf(inv)).toBe(Object.prototype);
+    expect(typeof inv.hasOwnProperty).toBe('function');
+    expect(inv.hasOwnProperty('lootbox')).toBe(true);
+    expect(JSON.stringify(inv)).toBe('{"lootbox":1}');
+  });
 });
 
 describe('vote', () => {

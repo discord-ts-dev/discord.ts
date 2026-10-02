@@ -2,6 +2,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
+import { adopt, bag } from './prototype-free.js';
+
 /** Token apps register their Store adapter under (ADR 0004). */
 export const STORE = 'discord:store';
 
@@ -94,7 +96,7 @@ export class MemoryStore implements Store {
     keys: string[],
     fn: (current: Record<string, string | null>) => StoreUpdate<T>,
   ): Promise<T> {
-    const current: Record<string, string | null> = {};
+    const current: Record<string, string | null> = bag<string | null>();
     for (const key of keys) current[key] = this.read(key);
     const { result, writes, zadds } = fn(current);
     if (writes) {
@@ -163,14 +165,21 @@ interface FilePersisted {
 function loadFile(file: string): FilePersisted {
   try {
     const raw = JSON.parse(fs.readFileSync(file, 'utf8')) as Partial<FilePersisted>;
-    return { strings: raw.strings ?? {}, sorted: raw.sorted ?? {} };
+    const sorted = bag<Record<string, number>>();
+    for (const [board, scores] of Object.entries(raw.sorted ?? {})) sorted[board] = adopt(scores);
+    return { strings: adopt(raw.strings), sorted };
   } catch {
-    return { strings: {}, sorted: {} };
+    return { strings: bag(), sorted: bag() };
   }
 }
 
 // ponytail: sync JSON file, whole-map flush per write. Single process only.
 // Swap for SQL/Redis when the file outgrows memory or more than one process writes.
+// The maps come from `bag()` rather than an inline `Object.create(null)` so the
+// three adapters read identically. CodeQL's js/prototype-polluting-assignment
+// follows that call, but the alert that started this (ADR 0016) was only
+// cleared on a later run — if it ever fires here again, check the indirection
+// still resolves before assuming it does.
 export class FileStore implements Store {
   private state: FilePersisted;
 
@@ -202,7 +211,7 @@ export class FileStore implements Store {
   }
 
   private setScore(key: string, score: number, member: string): void {
-    (this.state.sorted[key] ??= {})[member] = score;
+    (this.state.sorted[key] ??= bag<number>())[member] = score;
   }
 
   async get(key: string): Promise<string | null> {
@@ -226,7 +235,7 @@ export class FileStore implements Store {
     keys: string[],
     fn: (current: Record<string, string | null>) => StoreUpdate<T>,
   ): Promise<T> {
-    const current: Record<string, string | null> = {};
+    const current: Record<string, string | null> = bag<string | null>();
     for (const key of keys) current[key] = this.read(key);
     const { result, writes, zadds } = fn(current);
     if (writes) {

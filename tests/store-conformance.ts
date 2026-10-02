@@ -17,6 +17,11 @@ import type { Store } from '@discord-ts-dev/systems';
 const TTL = 500;
 const PAST_TTL = TTL * 2;
 
+// Names that collide with a property of Object.prototype. A plain object
+// resolves them to inherited state instead of stored values, so every adapter
+// has to treat them as ordinary keys and members (ADR 0016).
+const ADVERSARIAL = ['__proto__', 'constructor', 'prototype'];
+
 let namespaceSeq = 0;
 
 export function storeConformance(label: string, create: () => Store): void {
@@ -31,6 +36,38 @@ export function storeConformance(label: string, create: () => Store): void {
       await store.set(k, 'v');
       expect(await store.get(k)).toBe('v');
     });
+
+    // The same names on the key side. `get` has to answer null for a key nobody
+    // wrote rather than the value its name happens to inherit, and an increment
+    // has to start from what was actually stored under that key.
+    for (const name of ADVERSARIAL) {
+      test(`an adversarial key (${name}) is an ordinary key`, async () => {
+        const store = create();
+        expect(await store.get(name)).toBeNull();
+        await store.set(name, '4');
+        expect(await store.get(name)).toBe('4');
+        expect(await store.incrBy(name, 1)).toBe(5);
+        await store.del(name);
+        expect(await store.get(name)).toBeNull();
+      });
+    }
+
+    // `incrBy` is not the only path to a stored value: `update` reads through a
+    // map it builds from the caller's keys, so an adversarial name has to
+    // arrive in `current` as the value that was stored, not as whatever the
+    // map inherits.
+    for (const name of ADVERSARIAL) {
+      test(`update reads an adversarial key (${name}) as its stored value`, async () => {
+        const store = create();
+        await store.set(name, '4');
+        const out = await store.update([name], (current) => ({
+          result: current[name],
+          writes: { [name]: '5' },
+        }));
+        expect(out).toBe('4');
+        expect(await store.get(name)).toBe('5');
+      });
+    }
 
     test('set without a ttl clears the previous expiry', async () => {
       const store = create();
@@ -125,6 +162,21 @@ export function storeConformance(label: string, create: () => Store): void {
       expect(await store.zscore(k, 'a')).toBe(99);
       expect(await store.zrange(k, 0, -1, true)).toEqual([{ member: 'a', score: 99 }]);
     });
+
+    // A member is the one Store parameter no key module closes off (ADR 0016),
+    // so it is the one an app can get wrong. These names are what turn an
+    // own-property write into a prototype write on a plain object; every
+    // adapter has to keep them ordinary members and reach no other object.
+    for (const name of ADVERSARIAL) {
+      test(`an adversarial member (${name}) is an ordinary member`, async () => {
+        const store = create();
+        const k = key(`proto-member:${name}`);
+        await store.zadd(k, 5, name);
+        expect(await store.zscore(k, name)).toBe(5);
+        expect(await store.zrange(k, 0, -1)).toEqual([{ member: name, score: 5 }]);
+        expect(await store.zincrBy(k, 2, name)).toBe(7);
+      });
+    }
 
     test('equal scores order by member, like Redis', async () => {
       const store = create();

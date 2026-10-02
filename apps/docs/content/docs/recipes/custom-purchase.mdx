@@ -14,6 +14,17 @@ type PurchaseResult =
   | { ok: true; balance: number }
   | { ok: false; reason: 'sold-out' | 'insufficient-funds'; balance: number };
 
+// An item id arrives from a component button, so it can be any string. Copy
+// the parsed map into a prototype-free object: on a plain `{}`, writing
+// `__proto__` re-parents your map instead of stocking an item, and the purchase
+// reports success while storing nothing. The Store port tolerates any key and
+// any member (ADR 0016) — `Object.create(null)` is how an adapter upholds it.
+const copyEntries = <T>(raw: Record<string, T>): Record<string, T> => {
+  const out: Record<string, T> = Object.create(null);
+  for (const [name, value] of Object.entries(raw)) out[name] = value;
+  return out;
+};
+
 export async function buyLastUnit(
   store: Store,
   userId: string,
@@ -28,7 +39,7 @@ export async function buyLastUnit(
     const balance = Number(current[balanceKey] ?? 0) || 0;
     if (stock < 1) return { result: { ok: false, reason: 'sold-out', balance } };
     if (balance < price) return { result: { ok: false, reason: 'insufficient-funds', balance } };
-    const inv = JSON.parse(current[inventoryKey] ?? '{}') as Record<string, number>;
+    const inv = copyEntries(JSON.parse(current[inventoryKey] ?? '{}') as Record<string, number>);
     inv[itemId] = (inv[itemId] ?? 0) + 1;
     return {
       result: { ok: true, balance: balance - price },
@@ -45,6 +56,7 @@ export async function buyLastUnit(
 Notes:
 
 - `fn` must be synchronous — parse with `JSON.parse` inside it, never `await`.
+- Run caller-chosen names through `copyEntries` before writing them as object keys. `itemId` comes from a button, and a plain `{}` turns `__proto__` into a prototype write. The port tolerates any key and any member, so this is on the caller for app-owned value shapes — see [Store](/docs/systems/store#any-key-any-member).
 - Failed checks return no `writes`, so the update is a no-op.
 - The adapter serializes updates that share keys (ADR 0010), so two buyers cannot oversell the last unit.
 - Keep the systems shapes for shared keys: `bal:` is a number string and `inv:` is `Record<string, number>` JSON, so `getBalance()`, `buy()`, and `useItem()` keep working on the same data. Keys like `stock:<item>` are yours.

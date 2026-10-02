@@ -110,7 +110,9 @@ export class RedisStore implements Store {
         if (keys.length > 0) await this.client.send('WATCH', keys);
         let plan: StoreUpdate<T>;
         try {
-          const current: Record<string, string | null> = {};
+          // Prototype-free: keys are the caller's, and a plain `{}` reads
+          // `__proto__` as its prototype instead of a missing key (ADR 0016).
+          const current: Record<string, string | null> = Object.create(null);
           if (keys.length > 0) {
             const values = (await this.client.send('MGET', keys)) as Array<string | null>;
             keys.forEach((key, index) => {
