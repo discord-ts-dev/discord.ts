@@ -7,12 +7,20 @@ Ubiquitous language. Glossary only. No implementation.
 - **Store**: the async key/value plus sorted-set port every system reads
   and writes through. `update()` is the atomic read-modify-write; `incrBy`
   and `zincrBy` are single-key atomic increments. A key holds one type,
-  string or sorted set, never both. Implemented by `MemoryStore` and the
-  single-process file reference adapter `FileStore`, plugged by adapters.
+  string or sorted set, never both. Tolerates **any** key and **any** member:
+  a name colliding with a property of `Object.prototype` is an ordinary one,
+  never a reason to reject a write (ADR 0016). Whether a name is *meaningful*
+  is a system's call, made where the rules are known. Implemented by
+  `MemoryStore`, the single-process file reference adapter `FileStore`, and
+  the Redis adapter `RedisStore` in `@discord-ts-dev/redis`; further adapters
+  are plugged.
 - **Store conformance suite**: the shared test surface that pins the port
   contract across adapters: lazy TTL, integer `incrBy`, sorted-set ordering
-  (equal scores order by member), and atomic `update`. Test-only, in
-  `tests/store-conformance.ts`.
+  (equal scores order by member), atomic `update`, and tolerance of
+  adversarial names as a key, a member, and through `update`'s `current` map.
+  **Every adapter runs it** — a guarantee enforced on two of three is not a
+  port guarantee — so a new adapter inherits the contract rather than
+  restating it. Test-only, in `tests/store-conformance.ts`.
 - **Store keys**: `bal:` balance, `inv:` inventory, `daily:` index and
   streak, `quest:` state, `lb:` leaderboards, `guild:` settings, `vote:`
   stamps. Apps may address these keys; the value shapes belong to the
@@ -29,7 +37,10 @@ Ubiquitous language. Glossary only. No implementation.
   `assignQuest()`, advanced via `addProgress()`, swapped once per window
   via `rerollQuest()`, cashed out via `completeQuest()`.
 - **Shop**: balance plus inventory. Bought via `buy()`, consumed via
-  `useItem()`, topped up via `addBalance()`.
+  `useItem()`, topped up via `addBalance()`. An item id is the one
+  caller-chosen name in a systems value shape, because a component button
+  carries it, so the "any key, any member" rule applies to it as much as to a
+  Store key.
 - **Guild settings**: per-guild per-command enable flags.
   Read via `getSettings()`, toggled via `setCommandEnabled()`.
   Enforced by `EnabledGuard`.

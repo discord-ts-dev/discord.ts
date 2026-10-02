@@ -51,6 +51,20 @@ describe('FileStore persistence', () => {
     expect(await b.get('k')).toBe('v');
     expect(await b.zscore('lb', 'u')).toBe(15);
   });
+
+  // An adversarial name never becomes an own property on a plain object, so it
+  // is dropped by the flush and lost. The shared suite cannot see this:
+  // persistence is FileStore's own contract.
+  test('adversarial keys and members survive a reload', async () => {
+    const file = tmpFile();
+    const a = new FileStore(file);
+    await a.set('__proto__', 'v');
+    await a.zadd('lb', 10, '__proto__');
+    const b = new FileStore(file);
+    expect(await b.get('__proto__')).toBe('v');
+    expect(await b.zscore('lb', '__proto__')).toBe(10);
+    expect(await b.zrange('lb', 0, -1)).toEqual([{ member: '__proto__', score: 10 }]);
+  });
 });
 
 describe('FileStore strings', () => {

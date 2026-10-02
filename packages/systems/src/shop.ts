@@ -1,5 +1,6 @@
 import type { Store } from './store.js';
 import { keys } from './keys.js';
+import { adopt } from './prototype-free.js';
 
 export interface ShopItem {
   id: string;
@@ -15,8 +16,12 @@ export interface MirrorOptions {
   mirrorBoard?: string;
 }
 
+// An item id is a component-button custom id, so it is caller-chosen. A parsed
+// object is a plain `{}`, where writing `__proto__` re-parents the inventory
+// instead of stocking an item (ADR 0016). Copying through `adopt` makes any id
+// an ordinary key and keeps the value plain JSON, as stored.
 function parseInv(raw: string | null): Record<string, number> {
-  return raw === null ? {} : (JSON.parse(raw) as Record<string, number>);
+  return adopt(raw === null ? undefined : (JSON.parse(raw) as Record<string, number>));
 }
 
 export async function getBalance(store: Store, userId: string): Promise<number> {
@@ -71,7 +76,17 @@ export async function buy(
 }
 
 export async function inventory(store: Store, userId: string): Promise<Record<string, number>> {
-  return parseInv(await store.get(keys.inventory(userId)));
+  // Spread back to an ordinary object: `parseInv` returns a prototype-free one
+  // so writing through it is safe, but callers get a plain `Record` and lose
+  // nothing (`hasOwnProperty`, `toString`). Spreading copies own keys only and
+  // defines `__proto__` as an own data property, so an adversarial name stays
+  // a name instead of re-parenting the caller's object.
+  return { ...parseInv(await store.get(keys.inventory(userId))) };
+}
+
+/** Whether a stored count covers a request. A missing key is 0, never `undefined`. */
+function hasStock(held: number | undefined, qty: number): boolean {
+  return (held ?? 0) >= qty;
 }
 
 export async function useItem(
@@ -84,8 +99,8 @@ export async function useItem(
   const inventoryKey = keys.inventory(userId);
   return store.update<boolean>([inventoryKey], (current) => {
     const inv = parseInv(current[inventoryKey]);
-    if ((inv[itemId] ?? 0) < qty) return { result: false };
-    inv[itemId] = (inv[itemId] as number) - qty;
+    if (hasStock(inv[itemId], qty) === false) return { result: false };
+    inv[itemId] = (inv[itemId] ?? 0) - qty;
     if (inv[itemId] === 0) delete inv[itemId];
     return { result: true, writes: { [inventoryKey]: JSON.stringify(inv) } };
   });

@@ -52,6 +52,7 @@ export class WalletCommand {
 - `incrBy` is an integer increment (truncate toward zero), like Redis `INCRBY`. Adapters agree on this through the shared conformance suite.
 - Equal scores order by member, like Redis, so `top()` and `rankOf()` return the same shape on every adapter.
 - A key holds either a string or a sorted set, never both.
+- Any key and any member work, including `__proto__`/`constructor`/`prototype` — Redis keys are opaque bytes, so the guarantee comes free here. See [Store semantics](/docs/systems/store#any-key-any-member).
 - `set` with a non-positive `ttlMs` behaves like an already-expired key.
 - Store operations serialize inside one `RedisStore`, so a transaction never interleaves with another store call. The raw `REDIS` client is not serialized.
 
