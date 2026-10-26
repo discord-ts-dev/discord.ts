@@ -26,11 +26,11 @@
     "@discord-ts-dev/systems": "workspace:*",
     "@discord-ts-dev/utils": "workspace:*",
     "@discord-ts-dev/ux": "workspace:*",
-    "@types/bun": "^1.4.2",
-    "@types/node": "^26.6.2",
-    "oxfmt": "^0.69.0",
-    "oxlint": "^1.84.0",
-    "turbo": "^2.11.2",
+    "@types/bun": "^1.4.3",
+    "@types/node": "^26.6.5",
+    "oxfmt": "^0.73.0",
+    "oxlint": "^1.88.0",
+    "turbo": "^2.11.9",
     "typescript": "^7.0.2"
   },
   "engines": {
