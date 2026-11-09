@@ -1,7 +1,7 @@
 # ponytail: single-stage Bun. The bot runs from TS source direct, no tsc build.
 # `bun run start:bun` resolves the `discord` bin from the workspace root.
 # Only the framework CLI needs dist, built once below (bot code stays TS).
-FROM oven/bun:1.4.2@sha256:9114c058aeae42162ee16dd5084b95fe9473970bb6bcb5b232ab1630f0546895 AS runtime
+FROM oven/bun:1.4.3@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598 AS runtime
 WORKDIR /app
 
 # Manifests first: the install layer stays cached unless deps change.
