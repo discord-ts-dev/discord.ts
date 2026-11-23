@@ -40,15 +40,15 @@
     "@discord-ts-dev/utils": "^0.4.1",
     "@discord-ts-dev/ux": "^1.2.1",
     "class-validator": "^0.15.1",
-    "discord.js": "^14.0.0",
+    "discord.js": "^14.28.1",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.2",
+    "@types/node": "^26.6.6",
     "fast-check": "^4.10.2",
     "typescript": "^7.0.2"
   },
   "peerDependencies": {
-    "discord.js": "^14.0.0"
+    "discord.js": "^14.28.1"
   }
 }

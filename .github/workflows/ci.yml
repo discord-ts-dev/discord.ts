@@ -78,7 +78,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     # ponytail: bots can't write changesets; their bumps ship with the next release.
-    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+    # Key off the PR author, not github.actor: a human fix commit on a bot PR
+    # must not turn the changeset gate back on.
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
     permissions:
       contents: read
     steps:

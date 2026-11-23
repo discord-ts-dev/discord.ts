@@ -34,12 +34,12 @@
     "test": "bun test --preload=../../scripts/test-preload.ts"
   },
   "dependencies": {
-    "discord.js": "^14.0.0"
+    "discord.js": "^14.28.1"
   },
   "devDependencies": {
     "typescript": "^7.0.2"
   },
   "peerDependencies": {
-    "discord.js": "^14.0.0"
+    "discord.js": "^14.28.1"
   }
 }

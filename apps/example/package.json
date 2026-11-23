@@ -24,11 +24,11 @@
     "@discord-ts-dev/utils": "workspace:*",
     "@discord-ts-dev/ux": "workspace:*",
     "class-validator": "^0.15.1",
-    "discord.js": "^14.0.0",
+    "discord.js": "^14.28.1",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.2",
+    "@types/node": "^26.6.6",
     "typescript": "^7.0.2"
   }
 }
