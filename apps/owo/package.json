@@ -21,7 +21,7 @@
     "@discord-ts-dev/systems": "workspace:*",
     "@discord-ts-dev/utils": "workspace:*",
     "@discord-ts-dev/ux": "workspace:*",
-    "@napi-rs/canvas": "^1.1.0",
+    "@napi-rs/canvas": "^1.1.1",
     "class-validator": "^0.15.1",
     "discord.js": "^14.28.1",
     "reflect-metadata": "^0.2.2"
